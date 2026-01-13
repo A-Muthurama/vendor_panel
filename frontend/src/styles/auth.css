@@ -1,0 +1,134 @@
+/* ===== GLOBAL AUTH PAGE ===== */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top,#D4C4B0,#EBE2DB);
+  padding: 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== AUTH BOX ===== */
+.auth-box {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(180deg, #edecec, #f6f4f4);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* ===== HEADINGS ===== */
+.auth-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #6B1540; /* GOLD */
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* ===== LABELS ===== */
+.auth-box label {
+  color: #6B1540;
+  font-size: 13px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ===== INPUTS / TEXTAREA / SELECT ===== */
+.auth-box input,
+.auth-box textarea,
+.auth-box select {
+   width: 100%;
+  display: block;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+
+  font-size: 14px;
+  font-family: inherit;
+
+  border-radius: 10px;
+  border: 1px solid #050000;
+
+  box-sizing: border-box; /* CRITICAL */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+
+}
+
+.auth-box textarea {
+  resize: none;
+}
+
+/* Focus state */
+.auth-box input:focus,
+.auth-box textarea:focus,
+.auth-box select:focus {
+  outline: none;
+  border-color: #d4af37;
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.4);
+}
+
+/* Dropdown options */
+.auth-box option {
+  background: #4C0F2E;
+  color: #f0eded;
+}
+
+/* Disabled select */
+.auth-box select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== BUTTON ===== */
+.auth-box button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #4C0F2E,#4C0F2E);
+  color: #f0eded;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-box button:hover {
+  background: linear-gradient(135deg, #e6c75a, #c9a33b);
+}
+
+.auth-box button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== ERROR TEXT ===== */
+.error-text {
+  background: rgba(0, 0, 0, 0.1);
+  color: #ff6b6b;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* ===== LINKS ===== */
+.auth-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #3302f7;
+}
+
+.auth-link a {
+  color: #d4af37;
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}

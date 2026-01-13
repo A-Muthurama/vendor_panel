@@ -1,0 +1,214 @@
+/* =====================
+   PREMIUM THEME (MAROON & GOLD)
+===================== */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --maroon: #4C0F2E;
+  --maroon-dark: #3a0a22;
+  --gold: #D4AF37;
+  --gold-light: #f3e5ab;
+  --beige: #FDFBF7;
+  --card-bg: #FFFFFF;
+  --text-dark: #2c1e16;
+  --text-muted: #6b4e3d;
+
+  /* Fonts */
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Outfit", sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+/* =====================
+   MAIN CONTAINER
+===================== */
+.pricing-container {
+  min-height: 100vh;
+  padding: 60px 20px;
+  text-align: center;
+  background: radial-gradient(circle at top, #fcf4e9, #efe1d1);
+}
+
+/* Headings */
+.pricing-container h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--maroon);
+  font-family: var(--font-heading);
+}
+
+.pricing-container h3 {
+  color: var(--text-muted);
+  margin-bottom: 50px;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+/* =====================
+   GRID
+===================== */
+.pricing-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =====================
+   CARD
+===================== */
+.pricing-card {
+  background: var(--card-bg);
+  border: 1px solid #e0d0c0;
+  border-radius: 16px;
+  padding: 40px 30px;
+  width: 280px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(76, 15, 46, 0.08);
+  /* Hint of maroon shadow */
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(76, 15, 46, 0.15);
+  border-color: var(--gold);
+}
+
+/* Popular plan */
+.pricing-card.popular {
+  border: 2px solid var(--gold);
+  background: linear-gradient(to bottom, #fff, #fffdf5);
+  transform: scale(1.05);
+  /* Slight lift for popular */
+  z-index: 2;
+}
+
+.pricing-card.popular:hover {
+  transform: scale(1.05) translateY(-8px);
+}
+
+/* =====================
+   BADGE
+===================== */
+.badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 18px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
+}
+
+/* =====================
+   TEXT & PRICE
+===================== */
+.price {
+  font-size: 48px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+  color: var(--maroon);
+  font-family: var(--font-heading);
+}
+
+.posts {
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 30px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* List */
+.pricing-card ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: auto;
+  /* Pushes button to bottom */
+  text-align: left;
+}
+
+.pricing-card ul li {
+  padding: 12px 0;
+  border-bottom: 1px dashed #e0d0c0;
+  color: var(--text-dark);
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pricing-card ul li:last-child {
+  border-bottom: none;
+}
+
+/* =====================
+   BUTTON
+===================== */
+.pricing-card button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: var(--maroon);
+  color: #fff;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(76, 15, 46, 0.2);
+}
+
+.pricing-card button:hover {
+  background: var(--maroon-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 15, 46, 0.3);
+}
+
+/* Popular button gets Gold accent if preferred, or stick to Maroon for consistency. 
+   Let's keep Maroon for consistency but maybe adds a gold border. */
+.pricing-card.popular button {
+  background: var(--maroon);
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 768px) {
+  .pricing-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pricing-card {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .pricing-card.popular {
+    transform: scale(1);
+    order: -1;
+    /* Show popular first on mobile */
+  }
+
+  .pricing-card.popular:hover {
+    transform: translateY(-8px);
+  }
+}
