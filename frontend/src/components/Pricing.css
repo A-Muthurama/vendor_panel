@@ -1,43 +1,23 @@
 /* =====================
-   PREMIUM THEME (MAROON & GOLD)
+   PREMIUM THEME (PROJECT J)
 ===================== */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
-
-:root {
-  --maroon: #4C0F2E;
-  --maroon-dark: #3a0a22;
-  --gold: #D4AF37;
-  --gold-light: #f3e5ab;
-  --beige: #FDFBF7;
-  --card-bg: #FFFFFF;
-  --text-dark: #2c1e16;
-  --text-muted: #6b4e3d;
-
-  /* Fonts */
-  --font-heading: "Playfair Display", serif;
-  --font-body: "Outfit", sans-serif;
-}
-
-body {
-  font-family: var(--font-body);
-}
 
 /* =====================
    MAIN CONTAINER
 ===================== */
 .pricing-container {
-  min-height: 100vh;
-  padding: 60px 20px;
+  /* Removed fixed height/gradient to blend with dashboard styled container */
+  padding: 40px 20px;
   text-align: center;
-  background: radial-gradient(circle at top, #fcf4e9, #efe1d1);
+  background: transparent;
 }
 
 /* Headings */
 .pricing-container h1 {
-  font-size: 42px;
+  font-size: 36px;
   font-weight: 700;
   margin-bottom: 12px;
-  color: var(--maroon);
+  color: var(--primary-plum);
   font-family: var(--font-heading);
 }
 
@@ -64,14 +44,13 @@ body {
    CARD
 ===================== */
 .pricing-card {
-  background: var(--card-bg);
-  border: 1px solid #e0d0c0;
-  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   padding: 40px 30px;
   width: 280px;
   position: relative;
-  box-shadow: 0 10px 30px rgba(76, 15, 46, 0.08);
-  /* Hint of maroon shadow */
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -79,16 +58,16 @@ body {
 
 .pricing-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 15px 40px rgba(76, 15, 46, 0.15);
-  border-color: var(--gold);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-gold);
 }
 
 /* Popular plan */
 .pricing-card.popular {
-  border: 2px solid var(--gold);
-  background: linear-gradient(to bottom, #fff, #fffdf5);
+  border: 2px solid var(--accent-gold);
+  background: linear-gradient(to bottom, #fff, #FFF8E1);
+  /* Subtle Gold Tint */
   transform: scale(1.05);
-  /* Slight lift for popular */
   z-index: 2;
 }
 
@@ -104,12 +83,12 @@ body {
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--gold);
+  background: var(--accent-gold);
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   padding: 6px 18px;
   border-radius: 20px;
   box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
@@ -122,7 +101,7 @@ body {
   font-size: 48px;
   font-weight: 700;
   margin: 20px 0 10px;
-  color: var(--maroon);
+  color: var(--primary-plum);
   font-family: var(--font-heading);
 }
 
@@ -130,7 +109,7 @@ body {
   color: var(--text-muted);
   font-weight: 500;
   margin-bottom: 30px;
-  font-size: 15px;
+  font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -140,13 +119,12 @@ body {
   list-style: none;
   padding: 0;
   margin-bottom: auto;
-  /* Pushes button to bottom */
   text-align: left;
 }
 
 .pricing-card ul li {
   padding: 12px 0;
-  border-bottom: 1px dashed #e0d0c0;
+  border-bottom: 1px dashed var(--border-color);
   color: var(--text-dark);
   font-size: 15px;
   display: flex;
@@ -165,27 +143,29 @@ body {
   width: 100%;
   padding: 14px;
   margin-top: 30px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 30px;
+  /* Pill */
   border: none;
   cursor: pointer;
-  background: var(--maroon);
+  background: var(--primary-plum);
   color: #fff;
   transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(76, 15, 46, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .pricing-card button:hover {
-  background: var(--maroon-dark);
+  background: var(--primary-plum-hover);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(76, 15, 46, 0.3);
 }
 
-/* Popular button gets Gold accent if preferred, or stick to Maroon for consistency. 
-   Let's keep Maroon for consistency but maybe adds a gold border. */
+/* Popular button gets Gold accent if preferred, or stick to Maroon for consistency. */
 .pricing-card.popular button {
-  background: var(--maroon);
+  background: var(--primary-plum);
 }
 
 /* =====================
@@ -205,7 +185,6 @@ body {
   .pricing-card.popular {
     transform: scale(1);
     order: -1;
-    /* Show popular first on mobile */
   }
 
   .pricing-card.popular:hover {

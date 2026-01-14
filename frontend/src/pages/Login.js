@@ -16,8 +16,12 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
+    // Debug: log input values
+    console.log("LOGIN DEBUG: Submitting login", { email, password });
+
     try {
       const res = await loginVendor({ email, password });
+      console.log("LOGIN DEBUG: API response", res);
       const { token, vendorStatus, vendor, rejectionReason } = res.data;
 
       // Save auth globally (context uses 'status' so we map vendorStatus -> status)
@@ -36,6 +40,7 @@ const Login = () => {
         navigate("/vendor/dashboard");
       }
     } catch (err) {
+      console.log("LOGIN DEBUG: API error", err, err?.response);
       setError(
         err.response?.data?.message || "Invalid credentials"
       );
@@ -45,7 +50,7 @@ const Login = () => {
   return (
     <div className="auth-page">
       <form className="auth-box" onSubmit={submit}>
-        <h2>Seller Login</h2>
+        <h2>SELLER LOGIN</h2>
 
         {error && <div className="error-text">{error}</div>}
 

@@ -2,7 +2,7 @@
 import "./Pricing.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import TopHeader from "../components/TopHeader";
 const plans = [
   { id: 1, price: 299, posts: 5 },
   { id: 2, price: 399, posts: 8 },
@@ -68,32 +68,37 @@ export default function PricingPlans() {
   };
 
   return (
-    <div className="pricing-container">
-      <h1>Choose Your Subscription Plan</h1>
-      <h3>Select the best subscription to list your products</h3>
+    <div className="dashboard-container">
+      <TopHeader />
+      <div className="dashboard-content">
+        <div className="pricing-container" style={{ minHeight: "auto", background: "transparent", padding: "20px" }}>
+          <h1>Choose Your Subscription Plan</h1>
+          <h3>Select the best subscription to list your products</h3>
 
-      <div className="pricing-grid">
-        {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`pricing-card ${plan.popular ? "popular" : ""}`}
-          >
-            {plan.popular && <span className="badge">Most Popular</span>}
+          <div className="pricing-grid">
+            {plans.map((plan) => (
+              <div
+                key={plan.id}
+                className={`pricing-card ${plan.popular ? "popular" : ""}`}
+              >
+                {plan.popular && <span className="badge">Most Popular</span>}
 
-            <h2 className="price">₹{plan.price}</h2>
-            <p className="posts">{plan.posts} Product Posts</p>
+                <h2 className="price">₹{plan.price}</h2>
+                <p className="posts">{plan.posts} Product Posts</p>
 
-            <ul>
-              <li>✔ {plan.posts} Listings</li>
-              <li>✔ Admin Approval</li>
-              <li>✔ Visible to Customers</li>
-            </ul>
+                <ul>
+                  <li>✔ {plan.posts} Listings</li>
+                  <li>✔ Admin Approval</li>
+                  <li>✔ Visible to Customers</li>
+                </ul>
 
-            <button onClick={() => handleSelect(plan)}>
-              Choose Plan
-            </button>
+                <button onClick={() => handleSelect(plan)}>
+                  Choose Plan
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

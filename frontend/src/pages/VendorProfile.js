@@ -1,80 +1,90 @@
 import React from "react";
-import "../styles/dashboard.css";
 import { useAuth } from "../context/AuthContext";
+import "../styles/dashboard.css";
+import "../styles/VendorProfile.css";
+
+import TopHeader from "../components/TopHeader";
 
 const VendorProfile = () => {
     const { vendor } = useAuth();
 
+    // Mock KYC data
+    const kycDocs = [
+        { name: "Aadhaar Card", type: "AADHAAR" },
+        { name: "PAN Card", type: "PAN" },
+        { name: "GST Certificate", type: "GST" },
+        { name: "Trade License", type: "TRADE_LICENSE" }
+    ];
+
     return (
-        <div className="dashboard-page">
-            <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-                <div className="dashboard-header">
-                    <div>
-                        <h2 style={{ color: "#4C0F2E" }}>My Profile</h2>
-                        <p className="shop-name">Manage your account and KYC details</p>
-                    </div>
-                </div>
+        <div className="dashboard-container">
+            <TopHeader />
 
-                {/* Profile Card */}
-                <div style={{
-                    background: "#fff",
-                    borderRadius: "16px",
-                    padding: "30px",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
-                    border: "1px solid #efe1d1"
-                }}>
-                    <div style={{ display: "flex", gap: "20px", alignItems: "center", marginBottom: "30px" }}>
-                        <div style={{
-                            width: "80px",
-                            height: "80px",
-                            background: "#4C0F2E",
-                            color: "#fff",
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "32px",
-                            fontWeight: "bold"
-                        }}>
-                            {vendor?.ownerName?.charAt(0) || "U"}
-                        </div>
-                        <div>
-                            <h3 style={{ margin: 0, color: "#4C0F2E", fontSize: "24px" }}>{vendor?.ownerName}</h3>
-                            <p style={{ margin: "5px 0 0", color: "#666" }}>{vendor?.shopName}</p>
-                        </div>
+            <div className="dashboard-content">
+                <div className="profile-content-wrapper">
+
+                    <div className="profile-header">
+                        <p className="profile-subtitle">Manage your account information and verification details</p>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-                        <div className="info-item">
-                            <label style={{ display: "block", color: "#888", fontSize: "12px", marginBottom: "4px" }}>Email Address</label>
-                            <div style={{ padding: "12px", background: "#f9f9f9", borderRadius: "8px", color: "#333", fontWeight: "500" }}>
-                                {vendor?.email}
+                    {/* Main Card */}
+                    <div className="profile-card">
+                        <div className="profile-card-header">
+                            <div className="profile-avatar">
+                                {vendor?.ownerName?.charAt(0).toUpperCase() || "U"}
+                            </div>
+                            <div className="profile-info">
+                                <h3>{vendor?.ownerName || "Vendor Owner"}</h3>
+                                <p>{vendor?.shopName || "Shop Name"}</p>
                             </div>
                         </div>
-                        <div className="info-item">
-                            <label style={{ display: "block", color: "#888", fontSize: "12px", marginBottom: "4px" }}>Phone Number</label>
-                            <div style={{ padding: "12px", background: "#f9f9f9", borderRadius: "8px", color: "#333", fontWeight: "500" }}>
-                                {vendor?.phone || "N/A"}
+
+                        <div className="profile-details">
+                            <div className="detail-group">
+                                <label>Email Address</label>
+                                <div className="detail-value">
+                                    <span className="detail-icon">✉️</span>
+                                    {vendor?.email}
+                                </div>
+                            </div>
+
+                            <div className="detail-group">
+                                <label>Phone Number</label>
+                                <div className="detail-value">
+                                    <span className="detail-icon">📞</span>
+                                    {vendor?.phone || "N/A"}
+                                </div>
+                            </div>
+
+                            <div className="detail-group">
+                                <label>Vendor ID</label>
+                                <div className="detail-value">
+                                    <span className="detail-icon">🆔</span>
+                                    {vendor?.id || "Unknown"}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* KYC Section */}
+                        <div className="kyc-section">
+                            <div className="kyc-header">
+                                <h4>KYC Documents</h4>
+                                <div className="kyc-status submitted">
+                                    <span>✅</span> Documents Submitted
+                                </div>
+                            </div>
+
+                            <div className="kyc-grid">
+                                {kycDocs.map((doc) => (
+                                    <div className="kyc-doc-card" key={doc.type}>
+                                        <span className="doc-icon">📄</span>
+                                        <div className="doc-name">{doc.name}</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
 
-                    <div style={{ marginTop: "30px", paddingTop: "20px", borderTop: "1px dashed #ddd" }}>
-                        <h4 style={{ color: "#4C0F2E", marginBottom: "15px" }}>Verification Status</h4>
-                        <div style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            padding: "8px 16px",
-                            background: "#e6fffa",
-                            color: "#047857",
-                            borderRadius: "20px",
-                            fontWeight: "600",
-                            fontSize: "14px"
-                        }}>
-                            ✅ KYC Documents Submitted
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

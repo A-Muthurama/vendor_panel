@@ -138,6 +138,12 @@ const Signup = () => {
 
       navigate("/vendor/pending-approval");
     } catch (err) {
+      console.error("Signup Error:", err);
+      if (!err.response) {
+        setError("Network Error: Unable to reach server. Please check your connection or try again later.");
+        return;
+      }
+
       // Show detailed error from backend
       const backendError = err.response?.data?.error || "";
       const message = err.response?.data?.message || "Signup failed. Please try again.";
@@ -150,7 +156,7 @@ const Signup = () => {
   return (
     <div className="auth-page">
       <form className="auth-box" onSubmit={submit}>
-        <h2>Seller Signup</h2>
+        <h2>SELLER SIGNUP</h2>
 
         {error && <div className="error-text">{error}</div>}
 

@@ -1,10 +1,11 @@
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import TopHeader from "../components/TopHeader";
 import "../styles/dashboard.css";
 
 const Dashboard = () => {
-  const { token, status, vendor, logout } = useAuth();
+  const { token, status, vendor } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,111 +13,82 @@ const Dashboard = () => {
       navigate("/vendor/login");
       return;
     }
-    // We now allow PENDING users to stay on Dashboard
   }, [token, navigate]);
 
   const isPending = status === "PENDING";
 
-  const handleRestrictedClick = (path) => {
-    if (isPending) {
-      alert("Account is under review. You cannot access this feature yet.");
-      return;
-    }
-    navigate(path);
-  };
-
   return (
-    <div className="dashboard-page">
-      {/* ---------- HEADER ---------- */}
-      <div className="dashboard-header">
-        <div>
-          <h2>Seller Dashboard</h2>
-          <p className="shop-name">
-            {vendor?.shopName || "Your Shop"}
-          </p>
+    <div className="dashboard-container">
+      <TopHeader />
+
+      <div className="dashboard-content">
+
+        {/* Welcome Section */}
+        <div className="welcome-banner">
+          <h1>Welcome Back, {vendor?.ownerName?.split(" ")[0] || "Vendor"}!</h1>
+          <p>Here’s what’s happening with your shop today.</p>
         </div>
 
-        <button className="logout-btn" onClick={logout}>
-          Logout
-        </button>
-      </div>
+        {/* ---------- PENDING ALERT ---------- */}
+        {isPending && (
+          <div className="alert-banner">
+            <span className="alert-icon">⚠️</span>
+            <div className="alert-text">
+              <strong>Account Under Review</strong>
+              <p>Your documents are being verified. You can explore the panel, but offer creation is disabled until approval.</p>
+            </div>
+          </div>
+        )}
 
-      {/* ---------- PENDING BANNER -------- */}
-      {isPending && (
-        <div style={{
-          backgroundColor: "#fff3cd",
-          color: "#856404",
-          padding: "15px",
-          borderRadius: "8px",
-          marginBottom: "20px",
-          border: "1px solid #ffeeba",
-          display: "flex",
-          alignItems: "center",
-          gap: "10px"
-        }}>
-          <span>⚠️</span>
-          <div>
-            <strong>Account Under Review:</strong> You can view subscription plans, but posting offers is disabled until approved.
+        {/* ---------- METRICS GRID ---------- */}
+        <div className="metrics-grid">
+          <div className="metric-card">
+            <div className="metric-icon gold">📦</div>
+            <div className="metric-info">
+              <h3>0</h3>
+              <p>Total Offers</p>
+            </div>
+          </div>
+
+          <div className="metric-card">
+            <div className="metric-icon purple">🚀</div>
+            <div className="metric-info">
+              <h3>0</h3>
+              <p>Active Offers</p>
+            </div>
+          </div>
+
+          <div className="metric-card">
+            <div className="metric-icon roast">💎</div>
+            <div className="metric-info">
+              <h3>Free</h3>
+              <p>Current Plan</p>
+            </div>
           </div>
         </div>
-      )}
 
-      {/* ---------- STATUS CARD ---------- */}
-      <div className={`status-card ${isPending ? "pending" : "approved"}`}>
-        <h4>Account Status</h4>
-        <p>{isPending ? "⏳ Pending Approval" : "✅ Approved"}</p>
-      </div>
+        {/* ---------- QUICK ACTIONS ---------- */}
+        <section className="dashboard-section">
+          <h3>Quick Actions</h3>
+          <div className="actions-row">
+            <button
+              className="action-btn primary"
+              onClick={() => isPending ? alert("Pending Approval") : navigate("/vendor/offers/new")}
+              disabled={isPending}
+            >
+              <span className="btn-icon">➕</span> Create New Offer
+            </button>
 
-      {/* ---------- STATS (PLACEHOLDERS) ---------- */}
-      <div className="stats-grid">
-        <div className="stat-card" style={{ opacity: isPending ? 0.6 : 1 }}>
-          <h3>0</h3>
-          <p>Total Offers</p>
-        </div>
+            <button className="action-btn secondary" onClick={() => navigate("/pricing")}>
+              <span className="btn-icon">💎</span> Upgrade Plan
+            </button>
 
-        <div className="stat-card" style={{ opacity: isPending ? 0.6 : 1 }}>
-          <h3>0</h3>
-          <p>Active Offers</p>
-        </div>
+            <button className="action-btn secondary" onClick={() => navigate("/vendor/profile")}>
+              <span className="btn-icon">⚙️</span> Settings
+            </button>
+          </div>
+        </section>
 
-        <div className="stat-card">
-          <h3>Not Purchased</h3>
-          <p>Subscription</p>
-        </div>
-      </div>
-
-      {/* ---------- ACTIONS ---------- */}
-      <div className="actions-grid">
-        <div
-          className={`action-card ${isPending ? "disabled" : ""}`}
-          onClick={() => handleRestrictedClick("/vendor/offers")}
-          style={{ opacity: isPending ? 0.5 : 1, cursor: isPending ? "not-allowed" : "pointer" }}
-        >
-          Manage Offers
-          {isPending && <small style={{ display: "block", color: "red" }}> (Locked)</small>}
-        </div>
-
-        {/* Subscription Plans - ALWAYS OPEN */}
-        <div
-          className="action-card"
-          onClick={() => navigate("/pricing")}
-        >
-          Subscription Plans
-        </div>
-
-        <div
-          className="action-card"
-          onClick={() => navigate("/vendor/profile")}
-        >
-          Profile & KYC
-        </div>
-
-        <div
-          className="action-card"
-          onClick={() => navigate("/support")}
-        >
-          Support
-        </div>
       </div>
     </div>
   );

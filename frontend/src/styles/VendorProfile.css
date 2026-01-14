@@ -1,0 +1,174 @@
+/* ---------- PROFILE CONTAINER ---------- */
+.profile-content-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.profile-header {
+    margin-bottom: 30px;
+}
+
+/* Subtitle */
+.profile-subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* ---------- MAIN CARD ---------- */
+.profile-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.profile-card-header {
+    background: linear-gradient(135deg, var(--primary-plum), var(--primary-plum-hover));
+    padding: 40px;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--accent-gold);
+    color: var(--primary-plum);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 800;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-info h3 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--font-heading);
+}
+
+.profile-info p {
+    margin: 5px 0 0;
+    opacity: 0.9;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ---------- DETAILS GRID ---------- */
+.profile-details {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    background: white;
+}
+
+.detail-group label {
+    display: block;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.detail-value {
+    background: var(--bg-body);
+    /* Subtle warm tint */
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-icon {
+    color: var(--primary-plum);
+    opacity: 0.8;
+}
+
+/* ---------- KYC SECTION ---------- */
+.kyc-section {
+    padding: 30px 40px;
+    background: #FFFDF9;
+    /* Warm tint */
+    border-top: 1px dashed var(--border-color);
+}
+
+.kyc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.kyc-header h4 {
+    margin: 0;
+    color: var(--primary-plum);
+    font-size: 18px;
+    font-weight: 600;
+    font-family: var(--font-heading);
+}
+
+.kyc-status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.kyc-status.submitted {
+    background: #E0F2F1;
+    color: #00695C;
+    border: 1px solid #80CBC4;
+}
+
+.kyc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.kyc-doc-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.kyc-doc-card:hover {
+    border-color: var(--accent-gold);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.doc-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.doc-name {
+    font-size: 14px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
