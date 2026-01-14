@@ -22,6 +22,35 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/protected", protectedRoutes);
 
+// Health Check Endpoint
+app.get("/api/health", async (req, res) => {
+  try {
+    // Test database connection
+    const { Pool } = await import("pg");
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    });
+    await pool.query("SELECT 1");
+    pool.end();
+
+    res.json({
+      status: "OK",
+      database: "Connected",
+      env: {
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        hasDbUrl: !!process.env.DATABASE_URL,
+        hasCloudinary: !!process.env.CLOUDINARY_CLOUD_NAME
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "ERROR",
+      database: err.message
+    });
+  }
+});
+
 // Admin routes exist but NOT used by vendor panel
 
 

@@ -57,8 +57,9 @@ export const signup = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("SIGNUP ERROR:", err);
-    return res.status(500).json({ message: "Signup failed" });
+    console.error("SIGNUP ERROR:", err.message);
+    console.error("SIGNUP STACK:", err.stack);
+    return res.status(500).json({ message: "Signup failed", error: err.message });
   }
 };
 
