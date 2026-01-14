@@ -138,10 +138,10 @@ const Signup = () => {
 
       navigate("/vendor/pending-approval");
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        "Signup failed. Please try again."
-      );
+      // Show detailed error from backend
+      const backendError = err.response?.data?.error || "";
+      const message = err.response?.data?.message || "Signup failed. Please try again.";
+      setError(backendError ? `${message}: ${backendError}` : message);
     } finally {
       setLoading(false);
     }
