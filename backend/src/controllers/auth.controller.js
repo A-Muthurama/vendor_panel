@@ -1,6 +1,8 @@
 import pool from "../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../config/email.js";
+import crypto from 'crypto';
 
 /* ---------------- SIGNUP ---------------- */
 export const signup = async (req, res) => {
@@ -69,6 +71,26 @@ export const signup = async (req, res) => {
     // 8. Commit
     await client.query("COMMIT");
 
+    // 9. Send Welcome Email (Don't let email failure block signup)
+    try {
+      await sendEmail({
+        to: email,
+        subject: "Welcome to Project J - Registration Successful",
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+            <h2 style="color: #4C0F2E;">Welcome to Project J, ${ownerName}!</h2>
+            <p>Thank you for registering your shop, <strong>${shopName}</strong>, on our platform.</p>
+            <p>Your account is currently <strong>PENDING APPROVAL</strong>. Our team will verify your KYC documents and activate your account within 24-48 business hours.</p>
+            <p>Once approved, you can start posting your jewelry collections and offers.</p>
+            <br/>
+            <p>Best Regards,<br/>Team Project J</p>
+          </div>
+        `
+      });
+    } catch (emailErr) {
+      console.error("Welcome Email Failed:", emailErr);
+    }
+
     return res.status(201).json({
       message: "Signup successful. Await admin approval.",
       token,
@@ -78,6 +100,7 @@ export const signup = async (req, res) => {
         shopName,
         ownerName,
         email,
+        phone,
         state,
         city,
         pincode,
@@ -123,27 +146,21 @@ export const login = async (req, res) => {
 
     if (result.rows.length === 0) {
       console.log("LOGIN DEBUG: No user found with this email.", { email });
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(404).json({
+        message: "This email is not registered with us.",
+        code: "USER_NOT_FOUND"
+      });
     }
 
     const vendor = result.rows[0];
-    console.log("LOGIN DEBUG: User found.", {
-      id: vendor.id,
-      db_email: vendor.email,
-      hash_length: vendor.password_hash ? vendor.password_hash.length : 0,
-      status: vendor.status
-    });
-
-    // Extra debug: print hash and password (for dev only, remove in prod)
-    console.log("LOGIN DEBUG: DB password_hash:", vendor.password_hash);
-    console.log("LOGIN DEBUG: Input password:", password);
 
     const match = await bcrypt.compare(password, vendor.password_hash);
-    console.log("LOGIN DEBUG: Password comparison result:", match);
 
     if (!match) {
-      console.log("LOGIN DEBUG: Password mismatch.", { input: password, hash: vendor.password_hash });
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({
+        message: "Incorrect password. Please try again.",
+        code: "WRONG_PASSWORD"
+      });
     }
 
     const token = jwt.sign(
@@ -163,15 +180,91 @@ export const login = async (req, res) => {
         shopName: vendor.shop_name,
         ownerName: vendor.owner_name,
         email: vendor.email,
+        phone: vendor.phone,
         state: vendor.state,
         city: vendor.city,
         pincode: vendor.pincode,
-        address: vendor.address
+        address: vendor.address,
+        profilePictureUrl: vendor.profile_picture_url
       }
     });
 
   } catch (err) {
     console.error("LOGIN ERROR:", err);
     return res.status(500).json({ message: "Login failed" });
+  }
+};
+
+/* ---------------- FORGOT PASSWORD ---------------- */
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await pool.query("SELECT id, owner_name FROM vendors WHERE email = $1", [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User with this email does not exist." });
+    }
+
+    const vendor = result.rows[0];
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 3600000); // 1 hour
+
+    await pool.query(
+      "UPDATE vendors SET reset_password_token = $1, reset_password_expires = $2 WHERE id = $3",
+      [token, expiry, vendor.id]
+    );
+
+    const resetLink = `${process.env.FRONTEND_URL}/vendor/reset-password?token=${token}&email=${email}`;
+
+    await sendEmail({
+      to: email,
+      subject: "Password Reset Request - Project J",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+          <h2 style="color: #4C0F2E;">Password Reset Request</h2>
+          <p>Hi ${vendor.owner_name},</p>
+          <p>We received a request to reset your password. Click the button below to set a new password:</p>
+          <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; background-color: #4C0F2E; color: white; text-decoration: none; border-radius: 8px; margin: 20px 0;">Reset Password</a>
+          <p>If you didn't request this, you can safely ignore this email. The link will expire in 1 hour.</p>
+          <br/>
+          <p>Best Regards,<br/>Team Project J</p>
+        </div>
+      `
+    });
+
+    res.json({ message: "Password reset link sent to your email." });
+
+  } catch (err) {
+    console.error("FORGOT PASSWORD ERROR:", err);
+    res.status(500).json({ message: "Failed to process request" });
+  }
+};
+
+/* ---------------- RESET PASSWORD ---------------- */
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, token, newPassword } = req.body;
+
+    const result = await pool.query(
+      "SELECT id FROM vendors WHERE email = $1 AND reset_password_token = $2 AND reset_password_expires > NOW()",
+      [email, token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ message: "Invalid or expired reset token." });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await pool.query(
+      "UPDATE vendors SET password_hash = $1, reset_password_token = NULL, reset_password_expires = NULL WHERE id = $2",
+      [hashedPassword, result.rows[0].id]
+    );
+
+    res.json({ message: "Password updated successfully. You can now login." });
+
+  } catch (err) {
+    console.error("RESET PASSWORD ERROR:", err);
+    res.status(500).json({ message: "Failed to reset password" });
   }
 };

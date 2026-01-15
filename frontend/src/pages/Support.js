@@ -1,67 +1,63 @@
 import React from "react";
 import "../styles/dashboard.css";
+import "../styles/Support.css";
 import TopHeader from "../components/TopHeader";
 
 const Support = () => {
+    const contactMethods = [
+        {
+            icon: "✉️",
+            title: "Email Support",
+            value: "support@projectj.com",
+            desc: "Response within 24 hours"
+        },
+        {
+            icon: "📞",
+            title: "Phone Support",
+            value: "+91 99999 99999",
+            desc: "Mon-Sat, 10am - 7pm"
+        },
+        {
+            icon: "💬",
+            title: "WhatsApp",
+            value: "+91 88888 88888",
+            desc: "Instant assistance"
+        }
+    ];
+
     return (
         <div className="dashboard-container">
             <TopHeader />
             <div className="dashboard-content">
-                <div style={{ maxWidth: "600px", margin: "0 auto", textAlign: "center", paddingTop: "40px" }}>
-                    <h2 style={{ color: "#4C0F2E", fontSize: "32px", marginBottom: "10px" }}>Help & Support</h2>
-                    <p style={{ color: "#666", marginBottom: "40px" }}>Have questions? We are here to help you grow your business.</p>
-
-                    <div style={{
-                        background: "#fff",
-                        borderRadius: "16px",
-                        padding: "40px",
-                        boxShadow: "0 15px 40px rgba(76, 15, 46, 0.08)",
-                        borderTop: "5px solid #d4af37"
-                    }}>
-                        <div style={{ marginBottom: "30px" }}>
-                            <div style={{
-                                width: "50px",
-                                height: "50px",
-                                background: "#fff8e1",
-                                color: "#d4af37",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                margin: "0 auto 15px",
-                                fontSize: "24px"
-                            }}>
-                                ✉️
-                            </div>
-                            <h4 style={{ color: "#4C0F2E", margin: "0 0 5px" }}>Email Support</h4>
-                            <p style={{ margin: 0, color: "#666" }}>support@projectj.com</p>
-                        </div>
-
-                        <div style={{ width: "100%", height: "1px", background: "#eee", margin: "30px 0" }}></div>
-
-                        <div>
-                            <div style={{
-                                width: "50px",
-                                height: "50px",
-                                background: "#fff8e1",
-                                color: "#d4af37",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                margin: "0 auto 15px",
-                                fontSize: "24px"
-                            }}>
-                                📞
-                            </div>
-                            <h4 style={{ color: "#4C0F2E", margin: "0 0 5px" }}>Phone Support</h4>
-                            <p style={{ margin: 0, color: "#666" }}>+91 99999 99999</p>
-                            <small style={{ color: "#888" }}>(Mon-Fri, 9am - 6pm)</small>
-                        </div>
+                <div className="support-wrapper">
+                    <div className="support-header">
+                        <h1>Help & Support</h1>
+                        <p>Our dedicated team is here to assist you with your business growth.</p>
                     </div>
 
-                    <div style={{ marginTop: "30px", color: "#888", fontSize: "14px" }}>
-                        &copy; 2026 Project J. All rights reserved.
+                    <div className="support-grid">
+                        {contactMethods.map((method, index) => (
+                            <div className="support-card" key={index}>
+                                <div className="support-icon-box">{method.icon}</div>
+                                <h3>{method.title}</h3>
+                                <div className="support-value">{method.value}</div>
+                                <p>{method.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="faq-section">
+                        <h2>Frequently Asked Questions</h2>
+                        <div className="faq-grid">
+                            <div className="faq-item">
+                                <h4>How do I post a new offer?</h4>
+                                <p>Go to 'Manage Offers' and click on 'Create New Offer'. Fill in the details and your offer will be live instantly.</p>
+                            </div>
+                            <div className="faq-item">
+                                <h4>When will my KYC be approved?</h4>
+                                <p>KYC verification typically takes 24-48 business hours. You'll receive an email notification once approved.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

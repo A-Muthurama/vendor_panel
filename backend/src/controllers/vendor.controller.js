@@ -181,3 +181,94 @@ export const deleteOffer = async (req, res) => {
         res.status(500).json({ message: "Failed to delete offer" });
     }
 };
+
+/* ---------------- GET VENDOR PROFILE ---------------- */
+export const getVendorProfile = async (req, res) => {
+    const vendorId = req.user.id;
+    console.log("BACKEND DEBUG: Fetching profile for vendorId:", vendorId);
+    const client = await pool.connect();
+
+    try {
+        // 1. Get Full Vendor Details
+        const vendorRes = await client.query(
+            "SELECT id, shop_name, owner_name, email, phone, state, city, pincode, address, status, profile_picture_url FROM vendors WHERE id = $1",
+            [vendorId]
+        );
+        const vendor = vendorRes.rows[0];
+
+        if (!vendor) {
+            console.log("BACKEND DEBUG: Vendor not found for ID:", vendorId);
+            return res.status(404).json({ message: "Vendor not found" });
+        }
+
+        // 2. Get KYC Documents list
+        const docsRes = await client.query(
+            "SELECT doc_type, file_url, created_at FROM kyc_documents WHERE vendor_id = $1",
+            [vendorId]
+        );
+        console.log(`BACKEND DEBUG: Found ${docsRes.rows.length} documents for vendor ${vendorId}`);
+        docsRes.rows.forEach(d => console.log(` - ${d.doc_type}`));
+
+        res.json({
+            vendor: {
+                id: vendor.id,
+                shopName: vendor.shop_name,
+                ownerName: vendor.owner_name,
+                email: vendor.email,
+                phone: vendor.phone,
+                state: vendor.state,
+                city: vendor.city,
+                pincode: vendor.pincode,
+                address: vendor.address,
+                status: vendor.status,
+                profilePictureUrl: vendor.profile_picture_url
+            },
+            documents: docsRes.rows.map(d => ({
+                type: d.doc_type,
+                url: d.file_url,
+                date: d.created_at
+            }))
+        });
+
+    } catch (err) {
+        console.error("GET PROFILE ERROR:", err);
+        res.status(500).json({ message: "Failed to fetch profile" });
+    } finally {
+        client.release();
+    }
+};
+
+/* ---------------- UPDATE PROFILE PICTURE ---------------- */
+export const updateProfilePicture = async (req, res) => {
+    const vendorId = req.user.id;
+
+    try {
+        // Check if file was uploaded
+        if (!req.file) {
+            return res.status(400).json({ message: "No image file provided" });
+        }
+
+        // Get Cloudinary URL from uploaded file
+        const profilePictureUrl = req.file.path;
+
+        // Update database
+        const result = await pool.query(
+            "UPDATE vendors SET profile_picture_url = $1 WHERE id = $2 RETURNING id, profile_picture_url",
+            [profilePictureUrl, vendorId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Vendor not found" });
+        }
+
+        res.json({
+            message: "Profile picture updated successfully",
+            profilePictureUrl: result.rows[0].profile_picture_url
+        });
+
+    } catch (err) {
+        console.error("UPDATE PROFILE PICTURE ERROR:", err);
+        res.status(500).json({ message: "Failed to update profile picture" });
+    }
+};
+

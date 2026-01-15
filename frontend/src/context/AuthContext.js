@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -23,7 +23,13 @@ export const AuthProvider = ({ children }) => {
     }
   });
 
+  // Debug: Log vendor data on mount
+  useEffect(() => {
+    console.log("AuthContext - Vendor Data:", vendor);
+  }, [vendor]);
+
   const login = (token, status, vendor) => {
+    console.log("Login called with vendor:", vendor);
     setToken(token);
     setStatus(status);
     setVendor(vendor);
@@ -31,6 +37,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("token", token);
     localStorage.setItem("status", status);
     localStorage.setItem("vendor", JSON.stringify(vendor));
+  };
+
+  const updateVendor = (updatedVendor) => {
+    setVendor(updatedVendor);
+    localStorage.setItem("vendor", JSON.stringify(updatedVendor));
   };
 
   const logout = () => {
@@ -50,7 +61,8 @@ export const AuthProvider = ({ children }) => {
         status,
         vendor,
         login,
-        logout
+        logout,
+        updateVendor
       }}
     >
       {children}

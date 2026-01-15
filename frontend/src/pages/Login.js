@@ -41,9 +41,16 @@ const Login = () => {
       }
     } catch (err) {
       console.log("LOGIN DEBUG: API error", err, err?.response);
-      setError(
-        err.response?.data?.message || "Invalid credentials"
-      );
+      const code = err.response?.data?.code;
+      const message = err.response?.data?.message || "Invalid credentials";
+
+      if (code === "USER_NOT_FOUND") {
+        setError(<>This email is not registered. <Link to="/vendor/signup" style={{ color: '#d4af37' }}>Register here</Link></>);
+      } else if (code === "WRONG_PASSWORD") {
+        setError(<>Incorrect password. <Link to="/vendor/forgot-password" style={{ color: '#d4af37' }}>Reset it?</Link></>);
+      } else {
+        setError(message);
+      }
     }
   };
 
@@ -71,6 +78,12 @@ const Login = () => {
         />
 
         <button type="submit">Login</button>
+
+        <div className="auth-link" style={{ marginBottom: '10px' }}>
+          <Link to="/vendor/forgot-password" style={{ color: '#4C0F2E', fontSize: '14px', textDecoration: 'underline' }}>
+            Forgot Password?
+          </Link>
+        </div>
 
         <div className="auth-link">
           New Seller? <Link to="/vendor/signup">Sign up</Link>

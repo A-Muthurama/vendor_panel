@@ -1,23 +1,34 @@
-/* ---------- PROFILE CONTAINER ---------- */
+/* ==========================================
+   VENDOR PROFILE - ELEGANT & USER-FRIENDLY
+   ========================================== */
+
+/* ---------- CONTAINER ---------- */
 .profile-content-wrapper {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
-.profile-header {
+/* ---------- PAGE HEADER ---------- */
+.profile-page-header {
     margin-bottom: 30px;
 }
 
-/* Subtitle */
+.profile-page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-plum);
+    margin: 0 0 8px 0;
+    font-family: var(--font-heading);
+}
+
 .profile-subtitle {
     color: var(--text-muted);
     font-size: 15px;
-    opacity: 0.8;
     margin: 0;
 }
 
-/* ---------- MAIN CARD ---------- */
-.profile-card {
+/* ---------- MAIN PROFILE CARD ---------- */
+.profile-main-card {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
@@ -25,150 +36,266 @@
     border: 1px solid var(--border-color);
 }
 
+/* ---------- CARD HEADER ---------- */
 .profile-card-header {
-    background: linear-gradient(135deg, var(--primary-plum), var(--primary-plum-hover));
+    background: linear-gradient(135deg, var(--primary-plum) 0%, #3b0b22 100%);
     padding: 40px;
-    color: var(--text-light);
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 30px;
+    border-bottom: 3px solid var(--accent-gold);
 }
 
-.profile-avatar {
-    width: 90px;
-    height: 90px;
+.profile-avatar-large {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     background: var(--accent-gold);
     color: var(--primary-plum);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 36px;
+    font-size: 42px;
     font-weight: 800;
-    border: 4px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
 }
 
-.profile-info h3 {
-    margin: 0;
-    font-size: 26px;
+.profile-header-info {
+    flex: 1;
+    color: white;
+}
+
+.profile-header-info h2 {
+    font-size: 28px;
     font-weight: 700;
+    margin: 0 0 8px 0;
     font-family: var(--font-heading);
+    color: white;
 }
 
-.profile-info p {
-    margin: 5px 0 0;
-    opacity: 0.9;
+.owner-name {
     font-size: 16px;
+    margin: 0 0 15px 0;
+    opacity: 0.9;
     color: rgba(255, 255, 255, 0.9);
 }
 
-/* ---------- DETAILS GRID ---------- */
-.profile-details {
-    padding: 40px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    background: white;
-}
-
-.detail-group label {
-    display: block;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.detail-value {
-    background: var(--bg-body);
-    /* Subtle warm tint */
-    border: 1px solid var(--border-color);
-    padding: 15px;
-    border-radius: var(--radius-md);
-    color: var(--text-dark);
-    font-weight: 500;
-    font-size: 16px;
-    display: flex;
+.verification-badge {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-}
-
-.detail-icon {
-    color: var(--primary-plum);
-    opacity: 0.8;
-}
-
-/* ---------- KYC SECTION ---------- */
-.kyc-section {
-    padding: 30px 40px;
-    background: #FFFDF9;
-    /* Warm tint */
-    border-top: 1px dashed var(--border-color);
-}
-
-.kyc-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.kyc-header h4 {
-    margin: 0;
-    color: var(--primary-plum);
-    font-size: 18px;
-    font-weight: 600;
-    font-family: var(--font-heading);
-}
-
-.kyc-status {
-    padding: 6px 14px;
+    gap: 8px;
+    padding: 8px 16px;
     border-radius: 20px;
     font-size: 13px;
     font-weight: 600;
-    display: inline-flex;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.verification-badge.verified {
+    background: rgba(76, 175, 80, 0.2);
+    color: #A5D6A7;
+    border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+.verification-badge svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ---------- PROFILE SECTIONS ---------- */
+.profile-section {
+    padding: 35px 40px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-plum);
+    margin: 0 0 20px 0;
+    display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 12px;
+    font-family: var(--font-heading);
 }
 
-.kyc-status.submitted {
-    background: #E0F2F1;
-    color: #00695C;
-    border: 1px solid #80CBC4;
+.title-icon {
+    font-size: 24px;
 }
 
-.kyc-grid {
+.section-description {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: -10px 0 25px 0;
+}
+
+/* ---------- INFO GRID ---------- */
+.info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-item label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.info-value {
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+.info-value:hover {
+    border-color: var(--accent-gold);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
+}
+
+/* ---------- KYC DOCUMENTS GRID ---------- */
+.kyc-documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
 }
 
-.kyc-doc-card {
-    background: white;
+.kyc-document-card {
+    background: var(--bg-body);
     border: 1px solid var(--border-color);
-    padding: 15px;
     border-radius: var(--radius-md);
-    text-align: center;
-    transition: all 0.2s;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
 }
 
-.kyc-doc-card:hover {
+.kyc-document-card:hover {
     border-color: var(--accent-gold);
-    transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
 }
 
-.doc-icon {
-    font-size: 24px;
-    margin-bottom: 10px;
-    display: block;
+.doc-icon-large {
+    font-size: 36px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
 }
 
-.doc-name {
-    font-size: 14px;
+.doc-info {
+    flex: 1;
+}
+
+.doc-info h4 {
+    font-size: 15px;
+    font-weight: 700;
     color: var(--text-dark);
-    font-weight: 500;
+    margin: 0 0 8px 0;
+}
+
+.doc-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kyc-document-card.not-submitted {
+    opacity: 0.6;
+    border-style: dashed;
+    background: #f9f9f9;
+}
+
+.doc-status.submitted {
+    color: #4CAF50;
+}
+
+.doc-status.pending {
+    color: var(--text-muted);
+}
+
+.doc-status svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+    .profile-card-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+    .profile-section {
+        padding: 25px 20px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .kyc-documents-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-page-header h1 {
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-avatar-large {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+    }
+
+    .profile-header-info h2 {
+        font-size: 22px;
+    }
+
+    .kyc-document-card {
+        flex-direction: column;
+        text-align: center;
+    }
 }

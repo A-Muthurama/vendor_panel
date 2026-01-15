@@ -140,14 +140,17 @@ const Signup = () => {
     } catch (err) {
       console.error("Signup Error:", err);
       if (!err.response) {
-        setError("Network Error: Unable to reach server. Please check your connection or try again later.");
+        setError("Network Error: Unable to reach server.");
         return;
       }
 
-      // Show detailed error from backend
-      const backendError = err.response?.data?.error || "";
-      const message = err.response?.data?.message || "Signup failed. Please try again.";
-      setError(backendError ? `${message}: ${backendError}` : message);
+      const message = err.response?.data?.message || "Signup failed.";
+
+      if (message.includes("already registered")) {
+        setError(<>This email is already registered. <Link to="/vendor/login" style={{ color: '#d4af37' }}>Login here</Link></>);
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
