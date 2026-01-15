@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 /* ---------------- SIGNUP ---------------- */
-/* ---------------- SIGNUP ---------------- */
 export const signup = async (req, res) => {
   let client;
   try {
@@ -14,23 +13,20 @@ export const signup = async (req, res) => {
 
     // 2. Client-side validation fallback
     if (!shopName || !ownerName || !email || !phone || !password || !state || !city || !pincode || !address) {
-      if (client) client.release();
       return res.status(400).json({ message: "Missing fields" });
     }
 
     if (!req.files?.AADHAAR || !req.files?.PAN || !req.files?.GST) {
-      if (client) client.release();
       return res.status(400).json({ message: "Required KYC missing" });
     }
 
     // 3. Start Transaction
     await client.query("BEGIN");
 
-    // 4. Check email uniqueness overlap
+    // 4. Check email uniqueness
     const existingUser = await client.query("SELECT id FROM vendors WHERE email = $1", [email]);
     if (existingUser.rows.length > 0) {
       await client.query("ROLLBACK");
-      client.release();
       return res.status(400).json({ message: "Email already registered" });
     }
 
