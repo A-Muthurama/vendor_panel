@@ -88,6 +88,13 @@ export const createOffer = async (req, res) => {
     try {
         await client.query("BEGIN");
 
+        // 0. Check Vendor Status
+        const vendorStatusRes = await client.query("SELECT status FROM vendors WHERE id = $1", [vendorId]);
+        if (vendorStatusRes.rows[0]?.status !== "APPROVED") {
+            await client.query("ROLLBACK");
+            return res.status(403).json({ message: "Verification Required: Your account must be APPROVED to create offers." });
+        }
+
         // 1. Check Subscription
         const subRes = await client.query(
             `SELECT id, remaining_posts FROM subscriptions 
@@ -140,6 +147,12 @@ export const buySubscription = async (req, res) => {
     const { planName, price, posts, paymentId } = req.body; // paymentId logic skipped for simplicity, assume verified
 
     try {
+        // 0. Check Vendor Status
+        const vendorRes = await pool.query("SELECT status FROM vendors WHERE id = $1", [vendorId]);
+        if (vendorRes.rows[0]?.status !== "APPROVED") {
+            return res.status(403).json({ message: "Verification Required: Your account must be APPROVED to purchase plans." });
+        }
+
         // Calculate Expiry (30 days default)
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + 30);

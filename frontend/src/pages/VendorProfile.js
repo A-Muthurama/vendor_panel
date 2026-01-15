@@ -85,7 +85,7 @@ const VendorProfile = () => {
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                                     </svg>
-                                    Account Status: {vendor?.status || "PENDING"}
+                                    {vendor?.status === 'APPROVED' ? 'VERIFIED' : 'SUBMITTED'}
                                 </div>
                             </div>
                         </div>
@@ -166,12 +166,16 @@ const VendorProfile = () => {
                                                 {fetchingDocs && submittedDocs.length === 0 ? (
                                                     <span className="doc-status checking">Checking...</span>
                                                 ) : submitted ? (
-                                                    <span className="doc-status submitted">
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                                                        </svg>
-                                                        VERIFIED
-                                                    </span>
+                                                    vendor?.status === 'APPROVED' ? (
+                                                        <span className="doc-status submitted">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                                            </svg>
+                                                            VERIFIED
+                                                        </span>
+                                                    ) : (
+                                                        <span className="doc-status pending">SUBMITTED</span>
+                                                    )
                                                 ) : (
                                                     <span className="doc-status pending">NOT SUBMITTED</span>
                                                 )}

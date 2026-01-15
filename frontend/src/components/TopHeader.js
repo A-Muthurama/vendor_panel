@@ -47,14 +47,17 @@ const TopHeader = () => {
 
             {/* 3. User Actions (Right Side) */}
             <div className="header-right">
-                {/* Shop Name - Clickable, redirects to Profile */}
-                <span
-                    className="shop-name-link"
+                {/* Shop Profile Button - Clickable, redirects to Profile */}
+                <button
+                    className="shop-profile-btn"
                     onClick={() => navigate("/vendor/profile")}
-                    style={{ cursor: 'pointer', marginRight: '20px', fontWeight: '600', color: '#4C0F2E', fontSize: '14px' }}
+                    title="View Shop Profile"
                 >
-                    {vendor?.shopName?.toUpperCase() || "MY SHOP"}
-                </span>
+                    <span className="shop-icon">🏪</span>
+                    <span className="shop-name-text">
+                        {vendor?.shopName?.toUpperCase() || "MY SHOP"}
+                    </span>
+                </button>
 
                 {/* Logout Button */}
                 <button className="header-logout-btn" onClick={logout}>

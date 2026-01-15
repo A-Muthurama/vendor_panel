@@ -100,6 +100,13 @@
     border: 1px solid rgba(76, 175, 80, 0.4);
 }
 
+.verification-badge.pending,
+.verification-badge.pending_approval {
+    background: rgba(212, 175, 55, 0.2);
+    color: #ffd95b;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
 .verification-badge svg {
     width: 16px;
     height: 16px;

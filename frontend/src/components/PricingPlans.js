@@ -30,7 +30,13 @@ export default function PricingPlans() {
   };
 
   const handleSelect = async (plan) => {
-    // Bypass payment for now
+    // Safety check: Only approved vendors can pay/subscribe
+    if (vendor?.status !== 'APPROVED') {
+      alert("⚠️ Business Not Verified: You can only purchase plans once your business documents are VERIFIED by our team. Please check your Profile for status.");
+      return;
+    }
+
+    // Bypass payment for now (as per existing code)
     navigate("/upload", { state: { plan } });
 
 

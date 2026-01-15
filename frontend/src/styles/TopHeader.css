@@ -70,12 +70,40 @@
     align-items: center;
 }
 
-.shop-name-link {
-    transition: color 0.2s;
+.shop-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8e7f3;
+    border: 1px solid rgba(76, 15, 46, 0.1);
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-right: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.shop-name-link:hover {
-    color: #D4AF37 !important;
+.shop-profile-btn:hover {
+    background: #ffffff;
+    border-color: #D4AF37;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 15, 46, 0.08);
+}
+
+.shop-icon {
+    font-size: 18px;
+    transition: transform 0.3s;
+}
+
+.shop-profile-btn:hover .shop-icon {
+    transform: scale(1.1);
+}
+
+.shop-name-text {
+    font-weight: 700;
+    color: #4C0F2E;
+    font-size: 13px;
+    letter-spacing: 0.5px;
 }
 
 .header-logout-btn {

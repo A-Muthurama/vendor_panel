@@ -50,7 +50,7 @@ const Dashboard = () => {
             </h1>
             <p>Overview for <strong>{vendorData.shop_name || vendor?.shopName}</strong></p>
           </div>
-          <div className={`status-indicator status-glow ${status?.toLowerCase()}`}> 
+          <div className={`status-indicator status-glow ${status?.toLowerCase()}`}>
             <span className={`status-dot ${status?.toLowerCase()}`}></span>
             {status}
           </div>
@@ -71,34 +71,36 @@ const Dashboard = () => {
         )}
 
         {/* ---------- COMPACT METRICS ---------- */}
-        <div className="metrics-grid enhanced-metrics">
-          <div className="metric-card animated-card">
-            <div className="metric-icon-box gold animated-icon">📦</div>
+        <div className="metrics-grid">
+          <div className="metric-card">
+            <div className="metric-icon-box cream">📦</div>
             <div className="metric-content">
-              <span className="metric-label">Total Listings</span>
-              <h2 className="metric-value count-animate">{currentStats.totalOffers || 0}</h2>
-              <span className="metric-footer">Across categories</span>
+              <h2 className="metric-value">{currentStats.totalOffers || 0}</h2>
+              <span className="metric-label">Total Offers</span>
             </div>
           </div>
 
-          <div className="metric-card animated-card">
-            <div className="metric-icon-box purple animated-icon">🚀</div>
+          <div className="metric-card">
+            <div className="metric-icon-box pink">🚀</div>
             <div className="metric-content">
+              <h2 className="metric-value">{currentStats.activeOffers || 0}</h2>
               <span className="metric-label">Active Offers</span>
-              <h2 className="metric-value count-animate">{currentStats.activeOffers || 0}</h2>
-              <span className="metric-footer">Live now</span>
             </div>
           </div>
 
-          <div className="metric-card primary-gradient-card animated-card">
-            <div className="metric-icon-box gradient-icon">💎</div>
+          <div className="metric-card">
+            <div className="metric-icon-box grey">💎</div>
             <div className="metric-content">
-              <span className="metric-label">Business Plan</span>
               <h2 className="metric-value">{subscription.planName || "Free"}</h2>
-              <span className="metric-footer">
-                {subscription.remainingPosts !== undefined ? `${subscription.remainingPosts} posts left` : "Standard access"}
-                {!subscription.planName && <button className="upgrade-mini-btn" onClick={() => navigate("/pricing")}>Upgrade</button>}
-              </span>
+              <span className="metric-label">Current Plan</span>
+              {(subscription.planName === "Free" || !subscription.planName) && (
+                <button
+                  className="upgrade-mini-btn"
+                  onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: You can upgrade your plan once your account is VERIFIED.") : navigate("/pricing")}
+                >
+                  Upgrade
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -106,25 +108,25 @@ const Dashboard = () => {
         {/* ---------- QUICK TOOLS ---------- */}
         <section className="dashboard-section">
           <h3 className="section-title-animated">Business Growth Tools</h3>
-          <div className="actions-grid enhanced-actions">
-            <div className="action-card animated-card" onClick={() => isPending ? alert("Approval required") : navigate("/upload")}> 
-              <div className="action-icon-circle tool-animate">✨</div>
+          <div className="actions-grid">
+            <div className="action-card" onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: Your account must be APPROVED to create new offers.") : navigate("/upload")}>
+              <div className="action-icon-circle">✨</div>
               <div className="action-info">
                 <h4>New Offer</h4>
                 <p>Post collection</p>
               </div>
             </div>
 
-            <div className="action-card animated-card" onClick={() => navigate("/pricing")}> 
-              <div className="action-icon-circle tool-animate">💰</div>
+            <div className="action-card" onClick={() => navigate("/pricing")}>
+              <div className="action-icon-circle">💰</div>
               <div className="action-info">
                 <h4>Plans</h4>
                 <p>View upgrades</p>
               </div>
             </div>
 
-            <div className="action-card animated-card" onClick={() => navigate("/vendor/offers")}> 
-              <div className="action-icon-circle tool-animate">📊</div>
+            <div className="action-card" onClick={() => navigate("/vendor/offers")}>
+              <div className="action-icon-circle">📊</div>
               <div className="action-info">
                 <h4>Offers</h4>
                 <p>Manage listings</p>
