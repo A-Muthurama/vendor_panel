@@ -304,5 +304,22 @@
     .kyc-document-card {
         flex-direction: column;
         text-align: center;
+        padding: 15px;
+    }
+
+    .doc-icon-large {
+        width: 50px;
+        height: 50px;
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 360px) {
+    .profile-page-header h1 {
+        font-size: 20px;
+    }
+
+    .profile-card-header {
+        padding: 20px 15px;
     }
 }

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TopHeader from "../components/TopHeader";
 import "../styles/dashboard.css";
+import { Clock } from 'lucide-react';
 
 const Dashboard = () => {
   const { token, status: authStatus, vendor } = useAuth();
@@ -60,7 +61,7 @@ const Dashboard = () => {
         {isPending && (
           <div className="alert-banner">
             <div className="alert-content">
-              <span className="alert-icon">🕒</span>
+              <span className="alert-icon"><Clock size={32} color="#666" /></span>
               <div className="alert-text">
                 <h4>Verification in Progress</h4>
                 <p>Limited access until documents are verified.</p>
@@ -76,7 +77,7 @@ const Dashboard = () => {
             <div className="metric-icon-box cream">📦</div>
             <div className="metric-content">
               <h2 className="metric-value">{currentStats.totalOffers || 0}</h2>
-              <span className="metric-label">Total Offers</span>
+              <span className="metric-label">TOTAL OFFERS</span>
             </div>
           </div>
 
@@ -84,7 +85,7 @@ const Dashboard = () => {
             <div className="metric-icon-box pink">🚀</div>
             <div className="metric-content">
               <h2 className="metric-value">{currentStats.activeOffers || 0}</h2>
-              <span className="metric-label">Active Offers</span>
+              <span className="metric-label">ACTIVE OFFERS</span>
             </div>
           </div>
 
@@ -92,13 +93,13 @@ const Dashboard = () => {
             <div className="metric-icon-box grey">💎</div>
             <div className="metric-content">
               <h2 className="metric-value">{subscription.planName || "Free"}</h2>
-              <span className="metric-label">Current Plan</span>
+              <span className="metric-label">CURRENT PLAN</span>
               {(subscription.planName === "Free" || !subscription.planName) && (
                 <button
                   className="upgrade-mini-btn"
                   onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: You can upgrade your plan once your account is VERIFIED.") : navigate("/pricing")}
                 >
-                  Upgrade
+                  UPGRADE
                 </button>
               )}
             </div>
@@ -107,7 +108,7 @@ const Dashboard = () => {
 
         {/* ---------- QUICK TOOLS ---------- */}
         <section className="dashboard-section">
-          <h3 className="section-title-animated">Business Growth Tools</h3>
+          <h3>Business Growth Tools</h3>
           <div className="actions-grid">
             <div className="action-card" onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: Your account must be APPROVED to create new offers.") : navigate("/upload")}>
               <div className="action-icon-circle">✨</div>
@@ -126,7 +127,7 @@ const Dashboard = () => {
             </div>
 
             <div className="action-card" onClick={() => navigate("/vendor/offers")}>
-              <div className="action-icon-circle">📊</div>
+              <div className="action-icon-circle">�</div>
               <div className="action-info">
                 <h4>Offers</h4>
                 <p>Manage listings</p>

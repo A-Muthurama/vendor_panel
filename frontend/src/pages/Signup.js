@@ -1,13 +1,24 @@
 import "../styles/auth.css";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { signupVendor } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { locations } from "../data/locations";
+import SearchableDropdown from "../components/SearchableDropdown";
 
 const Signup = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  // Flatten locations to handle Union Territories as states
+  const flattenedLocations = useMemo(() => {
+    const data = { ...locations };
+    if (data["Union Territories"]) {
+      Object.assign(data, data["Union Territories"]);
+      delete data["Union Territories"];
+    }
+    return data;
+  }, []);
 
   const [form, setForm] = useState({
     shopName: "",
@@ -36,15 +47,18 @@ const Signup = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "state") {
-      setForm({ ...form, state: value, city: "" });
-      return;
-    }
-
     if (name === "phone" && !/^\d{0,10}$/.test(value)) return;
     if (name === "pincode" && !/^\d{0,6}$/.test(value)) return;
 
     setForm({ ...form, [name]: value });
+  };
+
+  const handleLocationChange = (name, value) => {
+    if (name === "state") {
+      setForm({ ...form, state: value, city: "" });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   // ---------------- FILE CHANGE ----------------
@@ -77,6 +91,12 @@ const Signup = () => {
     setLoading(true);
 
     // ---------- VALIDATIONS ----------
+    if (!form.state || !form.city) {
+      setError("Please select both State and District");
+      setLoading(false);
+      return;
+    }
+
     if (form.phone.length !== 10) {
       setError("Phone number must be exactly 10 digits");
       setLoading(false);
@@ -168,25 +188,22 @@ const Signup = () => {
         <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
         <input name="phone" placeholder="Phone (10-digit)" value={form.phone} onChange={handleChange} required />
 
-        <select disabled value="India">
-          <option>India</option>
-        </select>
-
-        <select name="state" value={form.state} onChange={handleChange} required>
-          <option value="">Select State</option>
-          {Object.keys(locations).map((state) => (
-            <option key={state} value={state}>{state}</option>
-          ))}
-        </select>
-
-        <select name="city" value={form.city} onChange={handleChange} disabled={!form.state} required>
-          <option value="">
-            {form.state ? "Select District" : "Select State first"}
-          </option>
-          {(locations[form.state] || []).map((city) => (
-            <option key={city} value={city}>{city}</option>
-          ))}
-        </select>
+        {/* Searchable Selects for Locations */}
+        <div style={{ display: 'flex', gap: '15px', width: '100%', marginBottom: '5px' }}>
+          <SearchableDropdown
+            options={Object.keys(flattenedLocations)}
+            value={form.state}
+            onChange={(val) => handleLocationChange("state", val)}
+            placeholder="Select State"
+          />
+          <SearchableDropdown
+            options={flattenedLocations[form.state] || []}
+            value={form.city}
+            onChange={(val) => handleLocationChange("city", val)}
+            placeholder={form.state ? "Select District" : "Select State First"}
+            disabled={!form.state}
+          />
+        </div>
 
         <input name="pincode" placeholder="Pincode" value={form.pincode} onChange={handleChange} required />
         <textarea name="address" placeholder="Full Address" value={form.address} onChange={handleChange} required />

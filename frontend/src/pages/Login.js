@@ -84,7 +84,6 @@ const Login = () => {
             Forgot Password?
           </Link>
         </div>
-
         <div className="auth-link">
           New Seller? <Link to="/vendor/signup">Sign up</Link>
         </div>

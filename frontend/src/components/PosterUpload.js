@@ -1,338 +1,447 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import './PosterUpload.css';
-import './Pricing.css';
 import { useAuth } from '../context/AuthContext';
+import TopHeader from './TopHeader';
+import { Upload, Film, MapPin, Tag, Calendar, Link as LinkIcon, Info } from 'lucide-react';
+import './PosterUpload.css';
+import { locations } from '../data/locations';
+import SearchableDropdown from './SearchableDropdown';
 
 export default function PosterUpload() {
     const locationState = useLocation();
     const navigate = useNavigate();
-    const { status } = useAuth();
+    const { vendor, status } = useAuth();
 
     // Redirect if pending
-    React.useEffect(() => {
+    useEffect(() => {
         if (status === "PENDING" || status === "PENDING_APPROVAL") {
             alert("Your account is under review. You have limited access.");
             navigate("/vendor/dashboard");
         }
     }, [status, navigate]);
 
-    const plan = locationState.state?.plan || { posts: 0, price: 0 }; // Default if accessed directly
+    const plan = locationState.state?.plan || { posts: 5, price: 0 }; // Default plan if accessed directly
+
+    // Flatten locations to handle Union Territories as states
+    const flattenedLocations = React.useMemo(() => {
+        const data = { ...locations };
+        if (data["Union Territories"]) {
+            Object.assign(data, data["Union Territories"]);
+            delete data["Union Territories"];
+        }
+        return data;
+    }, []);
+
+    // Form State
+    const [formData, setFormData] = useState({
+        productTitle: '',
+        shopName: vendor?.shopName || '',
+        category: 'Gold',
+        discountType: 'Making Charges',
+        discountValue: '',
+        discountValueNumeric: '',
+        description: '',
+        validFrom: '',
+        validUntil: '',
+        buyLink: '',
+        isFeatured: false,
+        location: {
+            state: vendor?.state || '',
+            city: vendor?.city || '',
+            area: vendor?.area || '',
+            pincode: vendor?.pincode || ''
+        }
+    });
 
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const [history, setHistory] = useState([]); // Array to store upload history
-    const [manualLocation, setManualLocation] = useState('');
-
-    const [video, setVideo] = useState(null);
+    const [, setVideo] = useState(null);
     const [videoPreview, setVideoPreview] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // New State for Offer Details
-    const [description, setDescription] = useState('');
-    const [offerRate, setOfferRate] = useState('');
-    const [offerPeriod, setOfferPeriod] = useState('');
+    // Update shop name when vendor changes
+    useEffect(() => {
+        if (vendor) {
+            setFormData(prev => ({
+                ...prev,
+                shopName: vendor.shopName,
+                location: {
+                    state: vendor.state || prev.location.state,
+                    city: vendor.city || prev.location.city,
+                    pincode: vendor.pincode || prev.location.pincode,
+                    area: prev.location.area
+                }
+            }));
+        }
+    }, [vendor]);
 
-    // Derived state
-    const uploadsCount = history.length;
-    const remainingUploads = plan.posts - uploadsCount;
-
-    // Handle Drag & Drop for Poster
-    const [isDragOver, setIsDragOver] = useState(false);
-    const handleDragOver = (e) => { e.preventDefault(); setIsDragOver(true); };
-    const handleDragLeave = () => setIsDragOver(false);
-    const handleDrop = (e) => {
-        e.preventDefault();
-        setIsDragOver(false);
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) handleFile(file);
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            setFormData(prev => ({
+                ...prev,
+                [parent]: { ...prev[parent], [child]: value }
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: type === 'checkbox' ? checked : value
+            }));
+        }
     };
 
-    // Handle Drag & Drop for Video
-    const [isVideoDragOver, setIsVideoDragOver] = useState(false);
-    const handleVideoDragOver = (e) => { e.preventDefault(); setIsVideoDragOver(true); };
-    const handleVideoDragLeave = () => setIsVideoDragOver(false);
-    const handleVideoDrop = (e) => {
-        e.preventDefault();
-        setIsVideoDragOver(false);
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('video/')) handleVideoFile(file);
+    const handleLocationChange = (name, value) => {
+        setFormData(prev => ({
+            ...prev,
+            location: {
+                ...prev.location,
+                [name]: value,
+                ...(name === 'state' ? { city: '' } : {})
+            }
+        }));
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = (e, type) => {
         const file = e.target.files[0];
-        if (file) handleFile(file);
+        if (!file) return;
+
+        if (type === 'image') {
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Image size must be less than 2MB");
+                return;
+            }
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                alert("Allowed formats: JPEG, PNG, WebP");
+                return;
+            }
+            setImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => setPreview(reader.result);
+            reader.readAsDataURL(file);
+        } else {
+            if (file.size > 10 * 1024 * 1024) {
+                alert("Video size must be less than 10MB");
+                return;
+            }
+            if (!['video/mp4', 'video/quicktime'].includes(file.type)) {
+                alert("Allowed formats: MP4, MOV");
+                return;
+            }
+            setVideo(file);
+            const url = URL.createObjectURL(file);
+            setVideoPreview(url);
+        }
     };
 
-    const handleVideoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) handleVideoFile(file);
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.productTitle) newErrors.productTitle = "Title is required";
+        if (!formData.description) newErrors.description = "Description is required";
+        if (!formData.discountValue) newErrors.discountValue = "Discount value is required";
+        if (!formData.validFrom) newErrors.validFrom = "Start date is required";
+        if (!formData.validUntil) newErrors.validUntil = "End date is required";
+        if (!formData.location.area) newErrors.area = "Area is required";
+        if (!image) newErrors.image = "Product image is required";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
-    const handleFile = (file) => {
-        if (remainingUploads <= 0) {
-            alert("You have reached your upload limit for this plan!");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validate()) {
+            window.scrollTo(0, 0);
             return;
         }
-        setImage(file);
-        const reader = new FileReader();
-        reader.onloadend = () => setPreview(reader.result);
-        reader.readAsDataURL(file);
-    };
 
-    const handleVideoFile = (file) => {
-        if (remainingUploads <= 0) {
-            alert("You have reached your upload limit for this plan!");
-            return;
-        }
-        setVideo(file);
-        const url = URL.createObjectURL(file);
-        setVideoPreview(url);
-    };
-
-    const handleSubmit = () => {
-        if (!image) return alert("Please upload a poster first.");
-
-        if (!description || !offerRate || !offerPeriod) {
-            return alert("Please fill in all offer details.");
-        }
-
-        if (!manualLocation) {
-            alert("Please paste a Google Maps location link.");
-            return;
-        }
-
-        // Add to history
-        const newUpload = {
-            id: Date.now(),
-            name: image.name,
-            preview: preview,
-            video: video ? video.name : null,
-            videoPreview: videoPreview,
-            description,
-            offerRate,
-            offerPeriod,
-            date: new Date().toLocaleDateString(),
-            location: " Link Provided",
-            locationDetails: manualLocation,
-            status: "Pending Approval"
-        };
-
-        setHistory([newUpload, ...history]);
-
-        // Reset form
-        setImage(null);
-        setPreview(null);
-        setVideo(null);
-        setVideoPreview(null);
-        setManualLocation('');
-        setDescription('');
-        setOfferRate('');
-        setOfferPeriod('');
-
-        alert("Content Submitted Successfully!");
+        setIsSubmitting(true);
+        // Simulate API Call
+        setTimeout(() => {
+            setIsSubmitting(false);
+            alert("Offer Submitted Successfully for Review!");
+            navigate("/vendor/offers");
+        }, 1500);
     };
 
     return (
-        <div className="upload-page-wrapper" style={{ minHeight: '100vh', padding: '40px 20px' }}>
+        <div className="upload-page-root">
+            <TopHeader />
 
-            {/* Top Section: Plan Info */}
-            <div className="plan-status-bar">
-                <div className="status-text">
-                    <h3>Subscription: {plan.posts} Posts Plan</h3>
-                </div>
-                <div className="limit-badge">
-                    Remaining: <strong>{remainingUploads}</strong> / {plan.posts}
-                </div>
-            </div>
-
-            <div className="upload-container">
-                <h1>Create New Post</h1>
-                <p>Fill in the details below to publish your offer.</p>
-
-                <div className="upload-grid-layout">
-
-                    {/* Card 1: Poster Upload */}
-                    <div className="upload-card">
-                        <div className="card-header">
-                            <h3>1. Upload Poster</h3>
+            <main className="upload-main-content">
+                <header className="upload-header-section">
+                    <div className="upload-title-box">
+                        <h1>Post New Offer</h1>
+                        <p>Share your latest collections and exclusive deals with customers.</p>
+                    </div>
+                    <div className="plan-usage-card">
+                        <div className="usage-info">
+                            <span>Plan: <strong>{plan.posts} Posts</strong></span>
+                            <div className="usage-bar">
+                                <div className="usage-progress" style={{ width: '20%' }}></div>
+                            </div>
+                            <span className="remaining-text">4/5 Posts remaining</span>
                         </div>
-                        <div className="card-body">
-                            {remainingUploads > 0 ? (
-                                <label
-                                    className={`upload-dropzone compact ${isDragOver ? 'active' : ''}`}
-                                    onDragOver={handleDragOver}
-                                    onDragLeave={handleDragLeave}
-                                    onDrop={handleDrop}
-                                >
-                                    <input type="file" accept="image/*" onChange={handleFileChange} />
-                                    {preview ? (
-                                        <div className="preview-wrapper compact">
-                                            <img src={preview} alt="Preview" className="upload-preview" />
-                                            <div className="preview-overlay">
-                                                <span>Replace</span>
+                    </div>
+                </header>
+
+                <form className="upload-form-grid" onSubmit={handleSubmit}>
+
+                    {/* Left Column: Visuals */}
+                    <div className="form-column visual-upload-column">
+                        <section className="form-section card-box">
+                            <div className="section-header">
+                                <Upload size={18} className="icon-gold" />
+                                <h3>Product Media</h3>
+                            </div>
+
+                            <div className="media-upload-container">
+                                <div className={`media-box image-box ${errors.image ? 'error-border' : ''}`}>
+                                    <label className="upload-label">
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'image')} />
+                                        {preview ? (
+                                            <div className="preview-container">
+                                                <img src={preview} alt="Offer Preview" />
+                                                <div className="change-overlay">Change Image</div>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="dropzone-content compact">
-                                            <span className="upload-icon">☁️</span>
-                                            <p>Click or Drop Image</p>
-                                        </div>
-                                    )}
-                                </label>
-                            ) : (
-                                <div className="limit-reached-message">Limit Reached</div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Card 2: Video Upload */}
-                    <div className="upload-card">
-                        <div className="card-header">
-                            <h3>2. Upload Video (Optional)</h3>
-                        </div>
-                        <div className="card-body">
-                            {remainingUploads > 0 && (
-                                <label
-                                    className={`upload-dropzone compact ${isVideoDragOver ? 'active' : ''}`}
-                                    onDragOver={handleVideoDragOver}
-                                    onDragLeave={handleVideoDragLeave}
-                                    onDrop={handleVideoDrop}
-                                >
-                                    <input type="file" accept="video/*" onChange={handleVideoChange} />
-                                    {videoPreview ? (
-                                        <div className="preview-wrapper compact">
-                                            <video src={videoPreview} controls className="upload-preview" />
-                                            <div className="preview-overlay">
-                                                <span>Replace</span>
+                                        ) : (
+                                            <div className="upload-placeholder">
+                                                <Upload size={32} />
+                                                <span>Upload Main Poster</span>
+                                                <small>Max 10MB (JPEG, PNG, WebP)</small>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="dropzone-content compact">
-                                            <span className="upload-icon">🎥</span>
-                                            <p>Click or Drop Video</p>
-                                        </div>
-                                    )}
-                                </label>
-                            )}
-                        </div>
-                    </div>
+                                        )}
+                                    </label>
+                                    {errors.image && <span className="error-text">{errors.image}</span>}
+                                </div>
 
-                    {/* Card 3: Description */}
-                    <div className="upload-card full-width">
-                        <div className="card-header">
-                            <h3>3. Offer Description</h3>
-                        </div>
-                        <div className="card-body">
-                            <div className="form-group">
-                                <label>Description about the offer</label>
-                                <textarea
-                                    placeholder="Describe your offer in detail..."
-                                    rows="4"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    className="text-input"
-                                ></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Card 4: Offer Rate */}
-                    <div className="upload-card">
-                        <div className="card-header">
-                            <h3>4. Offer Rate</h3>
-                        </div>
-                        <div className="card-body">
-                            <div className="form-group">
-                                <label>Rate (₹ or %)</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. 50% OFF or ₹999"
-                                    value={offerRate}
-                                    onChange={(e) => setOfferRate(e.target.value)}
-                                    className="text-input"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Card 5: Offer Period */}
-                    <div className="upload-card">
-                        <div className="card-header">
-                            <h3>5. Offer Period</h3>
-                        </div>
-                        <div className="card-body">
-                            <div className="form-group">
-                                <label>Validity Period</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Valid till 31st Dec"
-                                    value={offerPeriod}
-                                    onChange={(e) => setOfferPeriod(e.target.value)}
-                                    className="text-input"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Card 6: Location */}
-                    <div className="upload-card full-width">
-                        <div className="card-header">
-                            <h3>6. Location</h3>
-                        </div>
-                        <div className="card-body">
-                            <div className="form-group">
-                                <label>Google Maps Link</label>
-                                <input
-                                    type="text"
-                                    placeholder="Paste Google Maps Link here..."
-                                    value={manualLocation}
-                                    onChange={(e) => setManualLocation(e.target.value)}
-                                    disabled={remainingUploads <= 0}
-                                    className="text-input"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div className="submit-section">
-                    <button className="btn-primary" onClick={handleSubmit} disabled={!image || remainingUploads <= 0 || !manualLocation || !description}>
-                        Publish Post
-                    </button>
-                </div>
-            </div>
-
-            {/* Bottom Section: History */}
-            <div className="history-section">
-                <h2>Upload History</h2>
-                {history.length === 0 ? (
-                    <p className="no-history">No uploads yet.</p>
-                ) : (
-                    <div className="history-grid">
-                        {history.map(item => (
-                            <div key={item.id} className="history-card">
-                                <img src={item.preview} alt="poster" />
-                                <div className="history-info">
-                                    <h4>{item.name}</h4>
-                                    {item.video && <span className="video-badge">🎥 Video</span>}
-                                    <p className="history-desc">{item.description?.substring(0, 50)}...</p>
-                                    <div className="history-meta">
-                                        <span>🏷️ {item.offerRate}</span>
-                                        <span>📅 {item.offerPeriod}</span>
-                                    </div>
-                                    <div className="history-footer">
-                                        <span>{item.date}</span>
-                                        <a href={item.locationDetails} target="_blank" rel="noopener noreferrer">Map ↗</a>
-                                    </div>
-                                    <span className="status-badge">{item.status}</span>
+                                <div className="media-box video-box">
+                                    <label className="upload-label">
+                                        <input type="file" accept="video/mp4,video/quicktime" onChange={(e) => handleFileChange(e, 'video')} />
+                                        {videoPreview ? (
+                                            <div className="preview-container">
+                                                <video src={videoPreview} muted />
+                                                <div className="change-overlay">Change Video</div>
+                                            </div>
+                                        ) : (
+                                            <div className="upload-placeholder">
+                                                <Film size={32} />
+                                                <span>Upload Showcase Video (Optional)</span>
+                                                <small>Max 10MB (MP4, MOV)</small>
+                                            </div>
+                                        )}
+                                    </label>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                        </section>
 
+                        <section className="form-section card-box">
+                            <div className="section-header">
+                                <LinkIcon size={18} className="icon-gold" />
+                                <h3>External Links</h3>
+                            </div>
+                            <div className="input-group">
+                                <label>Buy Online Link (Optional)</label>
+                                <input
+                                    type="url"
+                                    name="buyLink"
+                                    placeholder="https://yourwebsite.com/product"
+                                    value={formData.buyLink}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Right Column: Details */}
+                    <div className="form-column details-column">
+                        <section className="form-section card-box">
+                            <div className="section-header">
+                                <Info size={18} className="icon-gold" />
+                                <h3>Basic Information</h3>
+                            </div>
+
+                            <div className="input-row">
+                                <div className={`input-group full ${errors.productTitle ? 'has-error' : ''}`}>
+                                    <label>Product Title*</label>
+                                    <input
+                                        type="text"
+                                        name="productTitle"
+                                        placeholder="e.g. Heritage Bridal Choker"
+                                        value={formData.productTitle}
+                                        onChange={handleInputChange}
+                                    />
+                                    {errors.productTitle && <span className="error-hint">{errors.productTitle}</span>}
+                                </div>
+                            </div>
+
+                            <div className="input-row">
+                                <div className="input-group">
+                                    <label>Shop Name</label>
+                                    <input type="text" value={formData.shopName} readOnly className="readonly-input" />
+                                </div>
+                                <div className="input-group">
+                                    <label>Category</label>
+                                    <select name="category" value={formData.category} onChange={handleInputChange}>
+                                        <option>Gold</option>
+                                        <option>Silver</option>
+                                        <option>Diamond</option>
+                                        <option>Platinum</option>
+                                        <option>Collection</option>
+                                        <option>Others</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="input-group full">
+                                <label>Description*</label>
+                                <textarea
+                                    name="description"
+                                    rows="4"
+                                    placeholder="Exquisite handcrafted 22K gold choker..."
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                ></textarea>
+                                {errors.description && <span className="error-hint">{errors.description}</span>}
+                            </div>
+                        </section>
+
+                        <section className="form-section card-box">
+                            <div className="section-header">
+                                <Tag size={18} className="icon-gold" />
+                                <h3>Pricing & Discount</h3>
+                            </div>
+
+                            <div className="input-row">
+                                <div className="input-group">
+                                    <label>Discount Type</label>
+                                    <select name="discountType" value={formData.discountType} onChange={handleInputChange}>
+                                        <option>Making Charges</option>
+                                        <option>Flat Discount</option>
+                                        <option>Percentage Off</option>
+                                        <option>Buy 1 Get 1</option>
+                                    </select>
+                                </div>
+                                <div className="input-group">
+                                    <label>Discount Label*</label>
+                                    <input
+                                        type="text"
+                                        name="discountValue"
+                                        placeholder="50% OFF on Making"
+                                        value={formData.discountValue}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="input-group">
+                                    <label>Numeric Value (%)</label>
+                                    <input
+                                        type="number"
+                                        name="discountValueNumeric"
+                                        placeholder="50"
+                                        value={formData.discountValueNumeric}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="form-section card-box">
+                            <div className="section-header">
+                                <Calendar size={18} className="icon-gold" />
+                                <h3>Validity Period</h3>
+                            </div>
+                            <div className="input-row">
+                                <div className="input-group">
+                                    <label>Valid From*</label>
+                                    <input
+                                        type="date"
+                                        name="validFrom"
+                                        value={formData.validFrom}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="input-group">
+                                    <label>Valid Until*</label>
+                                    <input
+                                        type="date"
+                                        name="validUntil"
+                                        value={formData.validUntil}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="form-section card-box">
+                            <div className="section-header">
+                                <MapPin size={18} className="icon-gold" />
+                                <h3>Store Availability</h3>
+                            </div>
+                            <div className="input-row">
+                                <div className="input-group">
+                                    <label>State</label>
+                                    <SearchableDropdown
+                                        options={Object.keys(flattenedLocations)}
+                                        value={formData.location.state}
+                                        onChange={(val) => handleLocationChange("state", val)}
+                                        placeholder="Select State"
+                                    />
+                                </div>
+                                <div className="input-group">
+                                    <label>City/District</label>
+                                    <SearchableDropdown
+                                        options={flattenedLocations[formData.location.state] || []}
+                                        value={formData.location.city}
+                                        onChange={(val) => handleLocationChange("city", val)}
+                                        placeholder={formData.location.state ? "Select District" : "Select State First"}
+                                        disabled={!formData.location.state}
+                                    />
+                                </div>
+                            </div>
+                            <div className="input-row">
+                                <div className={`input-group ${errors.area ? 'has-error' : ''}`}>
+                                    <label>Area*</label>
+                                    <input
+                                        type="text"
+                                        name="location.area"
+                                        placeholder="Andheri West"
+                                        value={formData.location.area}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="input-group">
+                                    <label>Pincode</label>
+                                    <input type="text" value={formData.location.pincode} readOnly className="readonly-input" />
+                                </div>
+                            </div>
+                        </section>
+
+                        <div className="featured-opt-in">
+                            <label className="checkbox-container">
+                                <input
+                                    type="checkbox"
+                                    name="isFeatured"
+                                    checked={formData.isFeatured}
+                                    onChange={handleInputChange}
+                                />
+                                <span className="checkmark"></span>
+                                <div className="checkbox-label">
+                                    <strong>Feature this offer</strong>
+                                    <p>Featured offers appear at the top of search results.</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div className="form-actions">
+                            <button type="button" className="btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
+                            <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                                {isSubmitting ? 'Publishing...' : 'Publish Offer'}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </main>
         </div>
     );
 }
