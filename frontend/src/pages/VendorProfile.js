@@ -66,7 +66,7 @@ const VendorProfile = () => {
 
                     {/* Page Header */}
                     <div className="profile-page-header">
-                        <h1>Vendor Profile</h1>
+                        <h1>Profile</h1>
                         <p className="profile-subtitle">Review your verified business credentials</p>
                     </div>
 
