@@ -75,15 +75,32 @@ export const signup = async (req, res) => {
     try {
       await sendEmail({
         to: email,
-        subject: "Welcome to Project J - Registration Successful",
+        subject: "Welcome to Project J - Registration Successful!",
         html: `
-          <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-            <h2 style="color: #4C0F2E;">Welcome to Project J, ${ownerName}!</h2>
-            <p>Thank you for registering your shop, <strong>${shopName}</strong>, on our platform.</p>
-            <p>Your account is currently <strong>PENDING APPROVAL</strong>. Our team will verify your KYC documents and activate your account within 24-48 business hours.</p>
-            <p>Once approved, you can start posting your jewelry collections and offers.</p>
-            <br/>
-            <p>Best Regards,<br/>Team Project J</p>
+          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+              <h2 style="color: #4C0F2E; margin-top: 0;">Welcome to Project J, ${ownerName}!</h2>
+              <p>Congratulations! Your shop, <strong>${shopName}</strong>, has been successfully registered on our platform.</p>
+              
+              <div style="background-color: #fff9fa; border-left: 4px solid #4C0F2E; padding: 15px; margin: 20px 0;">
+                <p style="margin: 0; font-weight: bold; color: #4C0F2E;">Account Status: PENDING APPROVAL</p>
+                <p style="margin: 5px 0 0 0; font-size: 14px;">Our team is currently verifying your KYC documents. This process usually takes 24-48 business hours.</p>
+              </div>
+
+              <p>Once approved, you will be able to:</p>
+              <ul style="color: #555;">
+                <li>Upload and manage your jewelry offers</li>
+                <li>Reach more customers in your area</li>
+                <li>Access your vendor dashboard</li>
+              </ul>
+
+              <p style="font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
+                If you have any questions, feel free to reply to this email or contact our support team.
+              </p>
+              <p style="font-size: 14px; color: #333;">
+                Best Regards,<br/><strong>Team Project J</strong>
+              </p>
+            </div>
           </div>
         `
       });
@@ -110,6 +127,8 @@ export const signup = async (req, res) => {
 
   } catch (err) {
     console.error("SIGNUP ERROR TRACE:", err);
+    console.error("SIGNUP ERROR MESSAGE:", err.message);
+    console.error("SIGNUP ERROR STACK:", err.stack);
     if (client) {
       try {
         await client.query("ROLLBACK");
@@ -199,6 +218,7 @@ export const login = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    console.log(`FORGOT PASSWORD: Request received for [${email}]`);
     const result = await pool.query("SELECT id, owner_name FROM vendors WHERE email = $1", [email]);
 
     if (result.rows.length === 0) {
@@ -207,7 +227,7 @@ export const forgotPassword = async (req, res) => {
 
     const vendor = result.rows[0];
     const token = crypto.randomBytes(32).toString('hex');
-    const expiry = new Date(Date.now() + 3600000); // 1 hour
+    const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await pool.query(
       "UPDATE vendors SET reset_password_token = $1, reset_password_expires = $2 WHERE id = $3",
@@ -220,14 +240,28 @@ export const forgotPassword = async (req, res) => {
       to: email,
       subject: "Password Reset Request - Project J",
       html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-          <h2 style="color: #4C0F2E;">Password Reset Request</h2>
-          <p>Hi ${vendor.owner_name},</p>
-          <p>We received a request to reset your password. Click the button below to set a new password:</p>
-          <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; background-color: #4C0F2E; color: white; text-decoration: none; border-radius: 8px; margin: 20px 0;">Reset Password</a>
-          <p>If you didn't request this, you can safely ignore this email. The link will expire in 1 hour.</p>
-          <br/>
-          <p>Best Regards,<br/>Team Project J</p>
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <h2 style="color: #4C0F2E; margin-top: 0;">Password Reset Request</h2>
+            <p>Hi ${vendor.owner_name},</p>
+            <p>We received a request to reset your password for your Project J account. If you didn't make this request, you can ignore this email.</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetLink}" style="background-color: #4C0F2E; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">Reset My Password</a>
+            </div>
+
+            <p style="font-size: 14px; color: #666; margin-top: 30px;">
+              If the button doesn't work, copy and paste this link into your browser:<br/>
+              <span style="color: #4C0F2E; word-break: break-all;">${resetLink}</span>
+            </p>
+
+            <p style="font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
+              This link will expire in <strong>15 minutes</strong> for your security.
+            </p>
+            <p style="font-size: 14px; color: #333;">
+              Best Regards,<br/><strong>Team Project J</strong>
+            </p>
+          </div>
         </div>
       `
     });
@@ -266,5 +300,85 @@ export const resetPassword = async (req, res) => {
   } catch (err) {
     console.error("RESET PASSWORD ERROR:", err);
     res.status(500).json({ message: "Failed to reset password" });
+  }
+};
+
+/* ---------------- SEND OTP ---------------- */
+export const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if email already exists
+    const existing = await pool.query("SELECT id FROM vendors WHERE email = $1", [email]);
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Delete any existing OTP for this email
+    await pool.query("DELETE FROM otp_verifications WHERE email = $1", [email]);
+
+    // Insert new OTP
+    await pool.query(
+      "INSERT INTO otp_verifications (email, otp, expires_at) VALUES ($1, $2, $3)",
+      [email, otp, expiry]
+    );
+
+    // Send Email
+    await sendEmail({
+      to: email,
+      subject: `Your OTP for Project J Signup: ${otp}`,
+      html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
+          <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <h2 style="color: #4C0F2E; margin-top: 0; text-align: center;">Email Verification</h2>
+            <p>Please use the following One-Time Password (OTP) to verify your email address and continue your registration:</p>
+            
+            <div style="background-color: #f4f4f4; padding: 20px; border-radius: 8px; text-align: center; margin: 30px 0;">
+              <h1 style="color: #4C0F2E; letter-spacing: 5px; margin: 0; font-size: 32px;">${otp}</h1>
+            </div>
+
+            <p style="font-size: 13px; color: #999; text-align: center;">
+              This OTP is valid for <strong>10 minutes</strong>.
+            </p>
+            
+            <p style="font-size: 14px; color: #333; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
+              Best Regards,<br/><strong>Team Project J</strong>
+            </p>
+          </div>
+        </div>
+      `
+    });
+
+    res.json({ message: "OTP sent to your email" });
+  } catch (err) {
+    console.error("SEND OTP ERROR:", err);
+    res.status(500).json({ message: "Failed to send OTP" });
+  }
+};
+
+/* ---------------- VERIFY OTP ---------------- */
+export const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const result = await pool.query(
+      "SELECT id FROM otp_verifications WHERE email = $1 AND otp = $2 AND expires_at > NOW()",
+      [email, otp]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // OTP is valid, delete it so it can't be used again
+    await pool.query("DELETE FROM otp_verifications WHERE email = $1", [email]);
+
+    res.json({ message: "Email verified successfully", success: true });
+  } catch (err) {
+    console.error("VERIFY OTP ERROR:", err);
+    res.status(500).json({ message: "Verification failed" });
   }
 };
