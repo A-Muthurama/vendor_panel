@@ -1,6 +1,6 @@
 import "../styles/auth.css";
 import { useState, useMemo } from "react";
-import { signupVendor } from "../api/authApi";
+import { signupVendor, sendEmailOTP, verifyEmailOTP } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { locations } from "../data/locations";
@@ -41,9 +41,57 @@ const Signup = () => {
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(""); // Add success message state
   const [loading, setLoading] = useState(false);
 
-  // ---------------- FORM CHANGE ----------------
+  // ---------- OTP STATES ----------
+  const [otp, setOtp] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isOtpSending, setIsOtpSending] = useState(false);
+  const [isOtpVerifying, setIsOtpVerifying] = useState(false);
+
+  // ---------------- OTP HANDLERS ----------------
+  const handleSendOTP = async () => {
+    if (!form.email) {
+      setError("Please enter your email first");
+      return;
+    }
+    setError("");
+    setSuccess("");
+    setIsOtpSending(true);
+
+    try {
+      const res = await sendEmailOTP({ email: form.email });
+      setSuccess(res.data.message);
+      setShowOtpInput(true);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setIsOtpSending(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!otp) {
+      setError("Please enter the OTP");
+      return;
+    }
+    setError("");
+    setSuccess("");
+    setIsOtpVerifying(true);
+
+    try {
+      await verifyEmailOTP({ email: form.email, otp });
+      setIsEmailVerified(true);
+      setShowOtpInput(false);
+      setSuccess("Email verified successfully!");
+    } catch (err) {
+      setError(err.response?.data?.message || "Invalid or expired OTP");
+    } finally {
+      setIsOtpVerifying(false);
+    }
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -121,6 +169,13 @@ const Signup = () => {
       return;
     }
 
+    // ---------- EMAIL VERIFICATION CHECK ----------
+    if (!isEmailVerified) {
+      setError("Please verify your email via OTP first");
+      setLoading(false);
+      return;
+    }
+
     // ---------- REQUIRED KYC CHECK ----------
     if (!files.AADHAAR || !files.PAN || !files.GST) {
       setError("Aadhaar, PAN, and GST documents are mandatory");
@@ -181,11 +236,78 @@ const Signup = () => {
       <form className="auth-box" onSubmit={submit}>
         <h2>SELLER SIGNUP</h2>
 
-        {error && <div className="error-text">{error}</div>}
+        {error && <div className="error-text" style={{ padding: '10px', borderRadius: '8px', marginBottom: '15px' }}>{error}</div>}
+        {success && <div className="success-text" style={{ color: 'green', fontSize: '14px', textAlign: 'center', marginBottom: '15px' }}>{success}</div>}
 
         <input name="shopName" placeholder="Shop Name" value={form.shopName} onChange={handleChange} required />
         <input name="ownerName" placeholder="Owner Name" value={form.ownerName} onChange={handleChange} required />
-        <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
+
+        <div style={{ position: 'relative', width: '100%' }}>
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            readOnly={isEmailVerified}
+            style={isEmailVerified ? { backgroundColor: '#f0f0f0', border: '1px solid #2ecc71' } : {}}
+          />
+          {!isEmailVerified && !showOtpInput && (
+            <button
+              type="button"
+              onClick={handleSendOTP}
+              disabled={isOtpSending}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 'auto',
+                padding: '5px 15px',
+                fontSize: '12px',
+                height: 'auto',
+                margin: 0,
+                backgroundColor: '#4C0F2E'
+              }}
+            >
+              {isOtpSending ? "Sending..." : "Verify"}
+            </button>
+          )}
+          {isEmailVerified && (
+            <span style={{
+              position: 'absolute',
+              right: '15px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#2ecc71',
+              fontWeight: 'bold',
+              fontSize: '14px'
+            }}>✓ Verified</span>
+          )}
+        </div>
+
+        {showOtpInput && !isEmailVerified && (
+          <div style={{ display: 'flex', gap: '10px', width: '100%', marginBottom: '15px' }}>
+            <input
+              type="text"
+              placeholder="Enter 6-digit OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              maxLength={6}
+              style={{ marginBottom: 0 }}
+            />
+            <button
+              type="button"
+              onClick={handleVerifyOTP}
+              disabled={isOtpVerifying}
+              style={{ width: 'auto', whiteSpace: 'nowrap', backgroundColor: '#4C0F2E' }}
+            >
+              {isOtpVerifying ? "Verifying..." : "Confirm OTP"}
+            </button>
+          </div>
+        )}
+
         <input name="phone" placeholder="Phone (10-digit)" value={form.phone} onChange={handleChange} required />
 
         {/* Searchable Selects for Locations */}

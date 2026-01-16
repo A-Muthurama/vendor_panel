@@ -47,7 +47,7 @@ const Dashboard = () => {
         <div className="welcome-banner">
           <div className="welcome-text">
             <h1>
-              Welcome Back, <span className="highlighted-name">{vendor?.ownerName?.split(" ")[0] || "Vendor"}</span>! <span className="emoji-sparkle">✨</span>
+              Welcome Back, <span className="highlighted-name">{vendor?.ownerName?.split(" ")[0] || "Vendor"}</span>! <span className="emoji-sparkle"></span>
             </h1>
             <p>Overview for <strong>{vendorData.shop_name || vendor?.shopName}</strong></p>
           </div>
