@@ -14,8 +14,10 @@ const plans = [
 
 export default function PricingPlans() {
   const navigate = useNavigate();
-  const { vendor, status } = useAuth();
+  // const { vendor, status } = useAuth(); // 'vendor' unused
+  const { status } = useAuth();
 
+  /*
   const loadRazorpay = () => {
     return new Promise((resolve) => {
       if (window.Razorpay) {
@@ -30,6 +32,7 @@ export default function PricingPlans() {
       document.body.appendChild(script);
     });
   };
+  */
 
   const handleSelect = async (plan) => {
     // Safety check: Only approved vendors can pay/subscribe
