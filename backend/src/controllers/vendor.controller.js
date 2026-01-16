@@ -82,62 +82,74 @@ export const getOffers = async (req, res) => {
 /* ---------------- CREATE OFFER ---------------- */
 export const createOffer = async (req, res) => {
     const vendorId = req.user.id;
-    const { title, description, posterUrl, category, startDate, endDate, shopAddress, mapLink } = req.body;
+    const { title, description, category, startDate, endDate, shopAddress, mapLink, buyLink } = req.body;
+
+    // 1. Image & Video Storage
+    // upload.fields returns an object: { poster: [file], video: [file] }
+    const posterUrl = req.files['poster'] ? req.files['poster'][0].path : null;
+    const videoUrl = req.files['video'] ? req.files['video'][0].path : null;
+
+    if (!posterUrl) {
+        return res.status(400).json({ message: "Product Media (Poster) is required." });
+    }
 
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
 
-        // 0. Check Vendor Status
+        // 2. Auth & Verification Check
         const vendorStatusRes = await client.query("SELECT status FROM vendors WHERE id = $1", [vendorId]);
-        if (vendorStatusRes.rows[0]?.status !== "APPROVED") {
+        const vendorStatus = vendorStatusRes.rows[0]?.status;
+
+        if (vendorStatus !== "APPROVED" && vendorStatus !== "VERIFIED") {
             await client.query("ROLLBACK");
-            return res.status(403).json({ message: "Verification Required: Your account must be APPROVED to create offers." });
+            return res.status(403).json({
+                message: `Account Verification Required. Current status: ${vendorStatus}. Please contact admin.`
+            });
         }
 
-        // 1. Check Subscription
+        // 3. Plan & Limit Check
         const subRes = await client.query(
             `SELECT id, remaining_posts FROM subscriptions 
-       WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW()
-       ORDER BY expiry_date DESC LIMIT 1`,
+             WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW()
+             ORDER BY expiry_date DESC LIMIT 1`,
             [vendorId]
         );
 
         if (subRes.rows.length === 0) {
             await client.query("ROLLBACK");
-            return res.status(403).json({ message: "No active subscription found. Please upgrade." });
+            return res.status(403).json({ message: "No active subscription. Please upgrade your plan." });
         }
 
         const subscription = subRes.rows[0];
         if (subscription.remaining_posts <= 0) {
             await client.query("ROLLBACK");
-            return res.status(403).json({ message: "Post limit reached. Please upgrade plan." });
+            return res.status(403).json({ message: "Post limit reached for your current plan." });
         }
 
-        // 2. Insert Offer
+        // 4. Data Storage: Save everything to Neon DB
         const offerRes = await client.query(
             `INSERT INTO offers 
-       (vendor_id, title, description, poster_url, category, start_date, end_date, shop_address, map_link)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING *`,
-            [vendorId, title, description, posterUrl, category, startDate, endDate, shopAddress, mapLink]
+             (vendor_id, title, description, poster_url, video_url, category, start_date, end_date, shop_address, map_link, buy_link, status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'PENDING')
+             RETURNING *`,
+            [vendorId, title, description, posterUrl, videoUrl, category, startDate, endDate, shopAddress, mapLink, buyLink]
         );
 
-        // 3. Deduct Post Count
+        // 5. Update Subscription Count
         await client.query(
             "UPDATE subscriptions SET remaining_posts = remaining_posts - 1 WHERE id = $1",
             [subscription.id]
         );
 
         await client.query("COMMIT");
-        res.status(201).json({ message: "Offer created successfully", offer: offerRes.rows[0] });
+        res.status(201).json({
+            message: "Offer published! Awaiting Admin verification.",
+            offer: offerRes.rows[0]
+        });
 
-    } catch (err) {
-        await client.query("ROLLBACK");
-        console.error("CREATE OFFER ERROR:", err);
-        res.status(500).json({ message: "Failed to create offer" });
     } finally {
-        client.release();
+        if (client) client.release();
     }
 };
 

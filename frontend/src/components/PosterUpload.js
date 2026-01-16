@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import TopHeader from './TopHeader';
 import { Upload, Film, MapPin, Tag, Calendar, Link as LinkIcon, Info } from 'lucide-react';
@@ -10,7 +11,7 @@ import SearchableDropdown from './SearchableDropdown';
 export default function PosterUpload() {
     const locationState = useLocation();
     const navigate = useNavigate();
-    const { vendor, status } = useAuth();
+    const { vendor, status, token } = useAuth();
 
     // Redirect if pending
     useEffect(() => {
@@ -20,9 +21,31 @@ export default function PosterUpload() {
         }
     }, [status, navigate]);
 
-    const plan = locationState.state?.plan || { posts: 5, price: 0 }; // Default plan if accessed directly
+    const [stats, setStats] = useState(null);
 
-    // Flatten locations to handle Union Territories as states
+    useEffect(() => {
+        if (!token) return;
+        const fetchStats = async () => {
+            try {
+                const res = await axios.get(`${process.env.REACT_APP_API_URL}/protected/stats`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setStats(res.data.subscription);
+            } catch (err) {
+                console.error("Error fetching stats:", err);
+            }
+        };
+        fetchStats();
+    }, [token]);
+
+    const displayPlan = stats ? {
+        posts: stats.totalPosts,
+        remaining: stats.remainingPosts
+    } : (locationState.state?.plan ? {
+        posts: locationState.state.plan.posts,
+        remaining: locationState.state.plan.posts // Assuming new plan
+    } : { posts: 0, remaining: 0 });
+
     const flattenedLocations = React.useMemo(() => {
         const data = { ...locations };
         if (data["Union Territories"]) {
@@ -32,7 +55,6 @@ export default function PosterUpload() {
         return data;
     }, []);
 
-    // Form State
     const [formData, setFormData] = useState({
         productTitle: '',
         shopName: vendor?.shopName || '',
@@ -44,6 +66,7 @@ export default function PosterUpload() {
         validFrom: '',
         validUntil: '',
         buyLink: '',
+        gmapLink: '', // Google Maps Link
         isFeatured: false,
         location: {
             state: vendor?.state || '',
@@ -55,12 +78,11 @@ export default function PosterUpload() {
 
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const [, setVideo] = useState(null);
+    const [video, setVideo] = useState(null);
     const [videoPreview, setVideoPreview] = useState(null);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Update shop name when vendor changes
     useEffect(() => {
         if (vendor) {
             setFormData(prev => ({
@@ -121,8 +143,8 @@ export default function PosterUpload() {
             reader.onloadend = () => setPreview(reader.result);
             reader.readAsDataURL(file);
         } else {
-            if (file.size > 10 * 1024 * 1024) {
-                alert("Video size must be less than 10MB");
+            if (file.size > 100 * 1024 * 1024) {
+                alert("Video size must be less than 100MB");
                 return;
             }
             if (!['video/mp4', 'video/quicktime'].includes(file.type)) {
@@ -143,26 +165,61 @@ export default function PosterUpload() {
         if (!formData.validFrom) newErrors.validFrom = "Start date is required";
         if (!formData.validUntil) newErrors.validUntil = "End date is required";
         if (!formData.location.area) newErrors.area = "Area is required";
+        if (!formData.location.pincode) newErrors.pincode = "Pincode is required";
+        if (!formData.buyLink) newErrors.buyLink = "Buy online link is required";
+        if (!formData.gmapLink) newErrors.gmapLink = "Google Maps link is required";
         if (!image) newErrors.image = "Product image is required";
 
         setErrors(newErrors);
+        const firstError = Object.keys(newErrors)[0];
+        if (firstError) {
+            const element = document.getElementsByName(firstError)[0];
+            if (element) element.focus();
+        }
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) {
-            window.scrollTo(0, 0);
             return;
         }
 
         setIsSubmitting(true);
-        // Simulate API Call
-        setTimeout(() => {
-            setIsSubmitting(false);
-            alert("Offer Submitted Successfully for Review!");
+
+        try {
+            const data = new FormData();
+            data.append("title", formData.productTitle);
+            data.append("description", formData.description);
+            data.append("category", formData.category);
+            data.append("startDate", formData.validFrom);
+            data.append("endDate", formData.validUntil);
+            data.append("poster", image);
+            if (video) {
+                data.append("video", video);
+            }
+
+            const fullAddress = `${formData.location.area}, ${formData.location.city}, ${formData.location.state} - ${formData.location.pincode}`;
+            data.append("shopAddress", fullAddress);
+            data.append("mapLink", formData.gmapLink); // Google Maps Link
+            data.append("buyLink", formData.buyLink);   // Buy Online Link
+
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/protected/offers`, data, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            alert(res.data.message);
             navigate("/vendor/offers");
-        }, 1500);
+        } catch (err) {
+            console.error("Full Submission Error:", err);
+            console.error("Response Data:", err.response?.data);
+            alert(err.response?.data?.message || "Failed to submit offer. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -177,11 +234,11 @@ export default function PosterUpload() {
                     </div>
                     <div className="plan-usage-card">
                         <div className="usage-info">
-                            <span>Plan: <strong>{plan.posts} Posts</strong></span>
+                            <span>Plan: <strong>{displayPlan.posts} Posts</strong></span>
                             <div className="usage-bar">
-                                <div className="usage-progress" style={{ width: '20%' }}></div>
+                                <div className="usage-progress" style={{ width: `${((displayPlan.remaining) / (displayPlan.posts || 1)) * 100}%` }}></div>
                             </div>
-                            <span className="remaining-text">4/5 Posts remaining</span>
+                            <span className="remaining-text">{displayPlan.remaining}/{displayPlan.posts} Posts remaining</span>
                         </div>
                     </div>
                 </header>
@@ -193,7 +250,7 @@ export default function PosterUpload() {
                         <section className="form-section card-box">
                             <div className="section-header">
                                 <Upload size={18} className="icon-gold" />
-                                <h3>Product Media</h3>
+                                <h3 className="section-title">Product Media</h3>
                             </div>
 
                             <div className="media-upload-container">
@@ -239,10 +296,10 @@ export default function PosterUpload() {
                         <section className="form-section card-box">
                             <div className="section-header">
                                 <LinkIcon size={18} className="icon-gold" />
-                                <h3>External Links</h3>
+                                <h3 className="section-title">External Links</h3>
                             </div>
                             <div className="input-group">
-                                <label>Buy Online Link (Optional)</label>
+                                <label>Buy Online Link*</label>
                                 <input
                                     type="url"
                                     name="buyLink"
@@ -250,6 +307,18 @@ export default function PosterUpload() {
                                     value={formData.buyLink}
                                     onChange={handleInputChange}
                                 />
+                                {errors.buyLink && <span className="error-hint">{errors.buyLink}</span>}
+                            </div>
+                            <div className="input-group">
+                                <label>Location (Google Maps Link)*</label>
+                                <input
+                                    type="url"
+                                    name="gmapLink"
+                                    placeholder="https://maps.google.com/..."
+                                    value={formData.gmapLink}
+                                    onChange={handleInputChange}
+                                />
+                                {errors.gmapLink && <span className="error-hint">{errors.gmapLink}</span>}
                             </div>
                         </section>
                     </div>
@@ -411,8 +480,16 @@ export default function PosterUpload() {
                                     />
                                 </div>
                                 <div className="input-group">
-                                    <label>Pincode</label>
-                                    <input type="text" value={formData.location.pincode} readOnly className="readonly-input" />
+                                    <label>Pincode*</label>
+                                    <input
+                                        type="text"
+                                        name="location.pincode"
+                                        placeholder="Enter Pincode"
+                                        value={formData.location.pincode}
+                                        onChange={handleInputChange}
+                                        maxLength={6}
+                                    />
+                                    {errors.pincode && <span className="error-hint">{errors.pincode}</span>}
                                 </div>
                             </div>
                         </section>

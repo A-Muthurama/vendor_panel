@@ -204,6 +204,7 @@ export const login = async (req, res) => {
         city: vendor.city,
         pincode: vendor.pincode,
         address: vendor.address,
+        status: vendor.status,
         profilePictureUrl: vendor.profile_picture_url
       }
     });
@@ -234,7 +235,14 @@ export const forgotPassword = async (req, res) => {
       [token, expiry, vendor.id]
     );
 
-    const resetLink = `${process.env.FRONTEND_URL}/vendor/reset-password?token=${token}&email=${email}`;
+    let baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    try {
+      const urlObj = new URL(baseUrl);
+      baseUrl = urlObj.origin; // This gets only 'https://your-app.vercel.app'
+    } catch (e) {
+      baseUrl = baseUrl.replace(/\/$/, "");
+    }
+    const resetLink = `${baseUrl}/vendor/reset-password?token=${token}&email=${email}`;
 
     await sendEmail({
       to: email,

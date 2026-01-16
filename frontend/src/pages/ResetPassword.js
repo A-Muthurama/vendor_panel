@@ -17,8 +17,9 @@ const ResetPassword = () => {
     const email = query.get("email");
 
     useEffect(() => {
+        console.log("Reset Password Params:", { token, email });
         if (!token || !email) {
-            setError("Invalid or missing reset link. Please request a new one.");
+            setError("Invalid or missing reset link. Please make sure you clicked the full link from your email.");
         }
     }, [token, email]);
 

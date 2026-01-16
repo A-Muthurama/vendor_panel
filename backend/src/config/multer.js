@@ -5,8 +5,9 @@ import cloudinary from "./cloudinary.js";
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "vendor_kyc",
-    allowed_formats: ["jpg", "jpeg", "png", "pdf"]
+    folder: "vendor_uploads",
+    resource_type: "auto", // Allow images and videos
+    allowed_formats: ["jpg", "jpeg", "png", "webp", "mp4", "mov", "pdf"]
   }
 });
 

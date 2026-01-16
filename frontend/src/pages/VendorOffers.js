@@ -11,6 +11,23 @@ const VendorOffers = () => {
     const { token } = useAuth();
     const [offers, setOffers] = useState([]);
     const [fetching, setFetching] = useState(true);
+    const [activeTab, setActiveTab] = useState("ALL");
+
+    const formatToIST = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'Asia/Kolkata'
+        });
+    };
+
+    const filteredOffers = offers.filter(offer => {
+        if (activeTab === "ALL") return true;
+        return offer.status === activeTab;
+    });
 
     useEffect(() => {
         const fetchOffers = async () => {
@@ -56,6 +73,33 @@ const VendorOffers = () => {
                         </button>
                     </div>
 
+                    <div className="offers-tabs">
+                        <button
+                            className={activeTab === "ALL" ? "active" : ""}
+                            onClick={() => setActiveTab("ALL")}
+                        >
+                            All ({offers.length})
+                        </button>
+                        <button
+                            className={activeTab === "PENDING" ? "active" : ""}
+                            onClick={() => setActiveTab("PENDING")}
+                        >
+                            Submitted ({offers.filter(o => o.status === 'PENDING').length})
+                        </button>
+                        <button
+                            className={activeTab === "APPROVED" ? "active" : ""}
+                            onClick={() => setActiveTab("APPROVED")}
+                        >
+                            Approved ({offers.filter(o => o.status === 'APPROVED').length})
+                        </button>
+                        <button
+                            className={activeTab === "REJECTED" ? "active" : ""}
+                            onClick={() => setActiveTab("REJECTED")}
+                        >
+                            Rejected ({offers.filter(o => o.status === 'REJECTED').length})
+                        </button>
+                    </div>
+
                     {fetching ? (
                         <div className="loading-state-mini">
                             <div className="loader-dots">
@@ -65,20 +109,25 @@ const VendorOffers = () => {
                         </div>
                     ) : offers.length > 0 ? (
                         <div className="offers-grid">
-                            {offers.map((offer) => (
+                            {filteredOffers.map((offer) => (
                                 <div className="offer-card" key={offer.id}>
                                     <div className="offer-image">
                                         <img src={offer.poster_url || "https://via.placeholder.com/300x200"} alt={offer.title} />
                                         <div className={`status-badge ${offer.status.toLowerCase()}`}>
-                                            {offer.status}
+                                            {offer.status === 'PENDING' ? 'SUBMITTED' : offer.status}
                                         </div>
                                     </div>
                                     <div className="offer-details">
                                         <h3>{offer.title}</h3>
                                         <p className="offer-cat">{offer.category}</p>
                                         <div className="offer-dates">
-                                            <span>📅 {new Date(offer.start_date).toLocaleDateString()}</span>
+                                            <span>📅 {formatToIST(offer.start_date)} - {formatToIST(offer.end_date)}</span>
                                         </div>
+                                        {offer.status === 'REJECTED' && offer.rejection_reason && (
+                                            <div className="rejection-box">
+                                                <strong>Reason:</strong> {offer.rejection_reason}
+                                            </div>
+                                        )}
                                         <div className="offer-actions">
                                             <button className="delete-btn" onClick={() => handleDelete(offer.id)}>Delete</button>
                                         </div>
