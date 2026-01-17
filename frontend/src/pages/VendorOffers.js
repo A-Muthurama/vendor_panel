@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { Heart, Calendar } from "lucide-react";
+import { Heart } from "lucide-react";
 import "../styles/dashboard.css";
 import "../styles/VendorOffers.css";
 import TopHeader from "../components/TopHeader";
