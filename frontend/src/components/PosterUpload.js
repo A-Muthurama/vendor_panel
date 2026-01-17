@@ -204,6 +204,12 @@ export default function PosterUpload() {
             data.append("mapLink", formData.gmapLink); // Google Maps Link
             data.append("buyLink", formData.buyLink);   // Buy Online Link
 
+            // New fields for Pricing & Discount
+            data.append("discountType", formData.discountType);
+            data.append("discountLabel", formData.discountValue); // Discount Label
+            data.append("discountValueNumeric", formData.discountValueNumeric);
+            data.append("isFeatured", formData.isFeatured);
+
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/protected/offers`, data, {
                 headers: {
                     'Authorization': `Bearer ${token}`,

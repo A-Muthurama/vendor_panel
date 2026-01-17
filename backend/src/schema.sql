@@ -40,12 +40,19 @@ CREATE TABLE IF NOT EXISTS offers (
   title VARCHAR(255) NOT NULL,
   description TEXT,
   poster_url TEXT NOT NULL,
+  video_url TEXT,
   category VARCHAR(50) NOT NULL, -- Gold, Diamond, Silver, Collection
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   shop_address TEXT NOT NULL,
   map_link TEXT,
+  buy_link TEXT,
+  discount_type VARCHAR(50),
+  discount_label VARCHAR(255),
+  discount_value_numeric DECIMAL(10, 2) DEFAULT 0,
+  is_featured BOOLEAN DEFAULT FALSE,
   status VARCHAR(20) DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED, EXPIRED
   rejection_reason TEXT,
+  like_count INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

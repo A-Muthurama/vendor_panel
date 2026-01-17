@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { Heart, Calendar } from "lucide-react";
 import "../styles/dashboard.css";
 import "../styles/VendorOffers.css";
 import TopHeader from "../components/TopHeader";
@@ -112,6 +113,10 @@ const VendorOffers = () => {
                             {filteredOffers.map((offer) => (
                                 <div className="offer-card" key={offer.id}>
                                     <div className="offer-image">
+                                        <div className="like-badge">
+                                            <Heart size={14} />
+                                            <span>{offer.like_count || 0}</span>
+                                        </div>
                                         <img src={offer.poster_url || "https://via.placeholder.com/300x200"} alt={offer.title} />
                                         <div className={`status-badge ${offer.status.toLowerCase()}`}>
                                             {offer.status === 'PENDING' ? 'SUBMITTED' : offer.status}

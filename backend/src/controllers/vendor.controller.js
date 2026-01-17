@@ -26,10 +26,10 @@ export const getDashboardStats = async (req, res) => {
         // 3. Get Offer Counts
         const offersRes = await client.query(
             `SELECT 
-         COUNT(*) FILTER (WHERE status = 'ACTIVE' AND end_date >= CURRENT_DATE) as active_offers,
-         COUNT(*) FILTER (WHERE status = 'EXPIRED' OR end_date < CURRENT_DATE) as expired_offers,
-         COUNT(*) as total_offers
-       FROM offers WHERE vendor_id = $1`,
+          COUNT(*) FILTER (WHERE status = 'APPROVED') as approved_offers,
+          COUNT(*) FILTER (WHERE status = 'PENDING') as pending_offers,
+          COUNT(*) as total_offers
+        FROM offers WHERE vendor_id = $1`,
             [vendorId]
         );
         const stats = offersRes.rows[0];
@@ -43,8 +43,8 @@ export const getDashboardStats = async (req, res) => {
                 expiryDate: subscription.expiry_date
             } : null,
             stats: {
-                activeOffers: parseInt(stats.active_offers),
-                expiredOffers: parseInt(stats.expired_offers),
+                approvedOffers: parseInt(stats.approved_offers),
+                pendingOffers: parseInt(stats.pending_offers),
                 totalOffers: parseInt(stats.total_offers)
             }
         });
@@ -82,7 +82,20 @@ export const getOffers = async (req, res) => {
 /* ---------------- CREATE OFFER ---------------- */
 export const createOffer = async (req, res) => {
     const vendorId = req.user.id;
-    const { title, description, category, startDate, endDate, shopAddress, mapLink, buyLink } = req.body;
+    const {
+        title,
+        description,
+        category,
+        startDate,
+        endDate,
+        shopAddress,
+        mapLink,
+        buyLink,
+        discountType,
+        discountLabel,
+        discountValueNumeric,
+        isFeatured
+    } = req.body;
 
     // 1. Image & Video Storage
     // upload.fields returns an object: { poster: [file], video: [file] }
@@ -130,10 +143,26 @@ export const createOffer = async (req, res) => {
         // 4. Data Storage: Save everything to Neon DB
         const offerRes = await client.query(
             `INSERT INTO offers 
-             (vendor_id, title, description, poster_url, video_url, category, start_date, end_date, shop_address, map_link, buy_link, status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'PENDING')
+             (vendor_id, title, description, poster_url, video_url, category, start_date, end_date, shop_address, map_link, buy_link, discount_type, discount_label, discount_value_numeric, is_featured, status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 'PENDING')
              RETURNING *`,
-            [vendorId, title, description, posterUrl, videoUrl, category, startDate, endDate, shopAddress, mapLink, buyLink]
+            [
+                vendorId,
+                title,
+                description,
+                posterUrl,
+                videoUrl,
+                category,
+                startDate,
+                endDate,
+                shopAddress,
+                mapLink,
+                buyLink,
+                discountType,
+                discountLabel,
+                discountValueNumeric || 0,
+                isFeatured === 'true', // FormData sends everything as strings
+            ]
         );
 
         // 5. Update Subscription Count
