@@ -9,12 +9,15 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     // Debug: log input values
     console.log("LOGIN DEBUG: Submitting login", { email, password });
@@ -51,6 +54,8 @@ const Login = () => {
       } else {
         setError(message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,7 +82,9 @@ const Login = () => {
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Loading..." : "Login"}
+        </button>
 
         <div className="auth-link" style={{ marginBottom: '10px' }}>
           <Link to="/vendor/forgot-password" style={{ color: '#4C0F2E', fontSize: '14px', textDecoration: 'underline' }}>

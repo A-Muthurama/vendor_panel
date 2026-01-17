@@ -347,7 +347,7 @@ const Signup = () => {
         <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => handleFileChange("TRADE_LICENSE", e.target.files[0])} />
 
         <button disabled={loading}>
-          {loading ? "Please wait..." : "Register"}
+          {loading ? "Loading..." : "Register"}
         </button>
 
         <div className="auth-link">

@@ -358,14 +358,6 @@
     .upload-form-grid {
         grid-template-columns: 1fr;
     }
-
-    .visual-upload-column {
-        order: 2;
-    }
-
-    .details-column {
-        order: 1;
-    }
 }
 
 @media (max-width: 768px) {
