@@ -47,7 +47,7 @@ export default function PricingPlans() {
     }
 
     const options = {
-      key: "rzp_test_RrmurNVGRTmBXH",
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_RrmurNVGRTmBXH",
       amount: plan.price * 100, // in paise
       currency: "INR",
       name: "Seller Marketplace",
