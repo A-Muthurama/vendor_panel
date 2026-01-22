@@ -60,6 +60,7 @@ export default function PosterUpload() {
         shopName: vendor?.shopName || '',
         category: 'Gold',
         discountType: 'Making Charges',
+        customDiscountType: '',
         discountValue: '',
         discountValueNumeric: '',
         description: '',
@@ -201,11 +202,13 @@ export default function PosterUpload() {
 
             const fullAddress = `${formData.location.area}, ${formData.location.city}, ${formData.location.state} - ${formData.location.pincode}`;
             data.append("shopAddress", fullAddress);
-            data.append("mapLink", formData.gmapLink); // Google Maps Link
-            data.append("buyLink", formData.buyLink);   // Buy Online Link
+            data.append("mapLink", formData.gmapLink);
+            data.append("buyLink", formData.buyLink);
 
             // New fields for Pricing & Discount
-            data.append("discountType", formData.discountType);
+            // If discountType is 'Other', use the customDiscountType value
+            const finalDiscountType = formData.discountType === 'Other' ? formData.customDiscountType : formData.discountType;
+            data.append("discountType", finalDiscountType);
             data.append("discountLabel", formData.discountValue); // Discount Label
             data.append("discountValueNumeric", formData.discountValueNumeric);
             data.append("isFeatured", formData.isFeatured);
@@ -357,14 +360,21 @@ export default function PosterUpload() {
                                     <input type="text" value={formData.shopName} readOnly className="readonly-input" />
                                 </div>
                                 <div className="input-group">
-                                    <label>Category</label>
+                                    <label>Category of this offer</label>
                                     <select name="category" value={formData.category} onChange={handleInputChange}>
                                         <option>Gold</option>
-                                        <option>Silver</option>
                                         <option>Diamond</option>
-                                        <option>Platinum</option>
-                                        <option>Collection</option>
-                                        <option>Others</option>
+                                        <option>Silver</option>
+                                        <option>Collections</option>
+                                        <option>Gold Bar</option>
+                                        <option>Silver Bar</option>
+                                        <option>Coins</option>
+                                        <option>Gems</option>
+                                        <option>Savings Schemes</option>
+                                        <option>Corporate Offers</option>
+                                        <option>Gift Articles</option>
+                                        <option>Digital Gold</option>
+                                        <option>Gold Exchange</option>
                                     </select>
                                 </div>
                             </div>
@@ -396,8 +406,22 @@ export default function PosterUpload() {
                                         <option>Flat Discount</option>
                                         <option>Percentage Off</option>
                                         <option>Buy 1 Get 1</option>
+                                        <option>Other</option>
                                     </select>
                                 </div>
+                                {formData.discountType === 'Other' && (
+                                    <div className="input-group">
+                                        <label>Specify Discount Type*</label>
+                                        <input
+                                            type="text"
+                                            name="customDiscountType"
+                                            placeholder="e.g. Exchange Bonus"
+                                            value={formData.customDiscountType}
+                                            onChange={handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                )}
                                 <div className="input-group">
                                     <label>Discount Label*</label>
                                     <input

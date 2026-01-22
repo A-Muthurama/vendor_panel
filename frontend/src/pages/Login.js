@@ -3,10 +3,12 @@ import { useState } from "react";
 import { loginVendor } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -66,23 +68,35 @@ const Login = () => {
 
         {error && <div className="error-text">{error}</div>}
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <div className="input-field">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="input-field password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" className="submit-btn" disabled={loading}>
           {loading ? "Loading..." : "Login"}
         </button>
 
@@ -100,3 +114,4 @@ const Login = () => {
 };
 
 export default Login;
+

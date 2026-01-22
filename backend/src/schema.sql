@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS vendors (
   address TEXT,
   status VARCHAR(50) DEFAULT 'PENDING',
   rejection_reason TEXT,
+  reset_password_token TEXT,
+  reset_password_expires TIMESTAMP,
+  profile_picture_url TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -54,5 +57,13 @@ CREATE TABLE IF NOT EXISTS offers (
   status VARCHAR(20) DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED, EXPIRED
   rejection_reason TEXT,
   like_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS otp_verifications (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  otp VARCHAR(6) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

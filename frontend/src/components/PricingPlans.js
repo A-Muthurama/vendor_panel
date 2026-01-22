@@ -14,10 +14,8 @@ const plans = [
 
 export default function PricingPlans() {
   const navigate = useNavigate();
-  // const { vendor, status } = useAuth(); // 'vendor' unused
-  const { status } = useAuth();
+  const { vendor, status } = useAuth();
 
-  /*
   const loadRazorpay = () => {
     return new Promise((resolve) => {
       if (window.Razorpay) {
@@ -32,7 +30,6 @@ export default function PricingPlans() {
       document.body.appendChild(script);
     });
   };
-  */
 
   const handleSelect = async (plan) => {
     // Safety check: Only approved vendors can pay/subscribe
@@ -41,74 +38,48 @@ export default function PricingPlans() {
       return;
     }
 
-    // Bypass payment for now (Testing)
-    try {
-      await subscribePlan({
-        planName: "Premium (Test)",
-        price: plan.price,
-        posts: plan.posts,
-        paymentId: "bypass_test_" + Date.now()
-      });
-      alert("Subscription Activated (Test Mode)");
-      navigate("/upload");
-    } catch (err) {
-      console.error("Subscription Error:", err);
-      alert("Failed to activate subscription: " + (err.response?.data?.message || err.message));
-    }
-    return; // Stop here for now to avoid Razorpay flow while testing
-
-    /* 
-    // Razorpay Flow (Uncomment when ready)
+    // Razorpay Flow
     const res = await loadRazorpay();
-    
+
     if (!res) {
       alert("Razorpay SDK failed to load. Check internet connection.");
       return;
     }
-    
+
     const options = {
-      key: "rzp_test_RrmurNVGRTmBXH", // ✅ Your Test Key
+      key: "rzp_test_RrmurNVGRTmBXH",
       amount: plan.price * 100, // in paise
       currency: "INR",
       name: "Seller Marketplace",
       description: `${plan.posts} Product Posts Subscription`,
       handler: async function (response) {
         try {
-            await subscribePlan({
-                planName: "Premium", // You might want to pass the real plan name
-                price: plan.price,
-                posts: plan.posts,
-                paymentId: response.razorpay_payment_id
-            });
-            alert("Payment Successful & Subscription Activated");
-            navigate("/upload");
+          await subscribePlan({
+            planName: "Premium",
+            price: plan.price,
+            posts: plan.posts,
+            paymentId: response.razorpay_payment_id
+          });
+          alert("Payment Successful & Subscription Activated");
+          navigate("/upload"); // Should be /vendor/offers or /vendor/dashboard usually, but user seems to want upload or something
         } catch (err) {
-            alert("Payment successful but activation failed. Contact support.");
-             navigate("/vendor/dashboard");
+          console.error("Subscription Error:", err);
+          alert("Payment successful but activation failed. Contact support.");
+          navigate("/vendor/dashboard");
         }
       },
-      // ... rest of options
+      prefill: {
+        name: vendor?.ownerName || "Seller Name",
+        email: vendor?.email || "seller@email.com",
+        contact: vendor?.phone || "9999999999"
+      },
+      theme: {
+        color: "#ca8a04" // Yellow-600
+      }
     };
-     
+
     const razorpay = new window.Razorpay(options);
     razorpay.open();
-    */
-    /*
-    // START OF COMMENTED OUT RAZORPAY CODE
-    prefill: {
-      name: vendor?.ownerName || "Seller Name",
-      email: vendor?.email || "seller@email.com",
-      contact: vendor?.phone || "9999999999"
-    },
-    theme: {
-      color: "#ca8a04" // Yellow-600
-    }
-  };
-
-  const razorpay = new window.Razorpay(options);
-  razorpay.open();
-  // END OF COMMENTED OUT RAZORPAY CODE
-  */
   };
 
   return (
