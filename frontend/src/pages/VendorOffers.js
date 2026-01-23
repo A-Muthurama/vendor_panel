@@ -9,7 +9,7 @@ import TopHeader from "../components/TopHeader";
 
 const VendorOffers = () => {
     const navigate = useNavigate();
-    const { token } = useAuth();
+    const { token, status } = useAuth();
     const [offers, setOffers] = useState([]);
     const [fetching, setFetching] = useState(true);
     const [activeTab, setActiveTab] = useState("ALL");
@@ -59,6 +59,14 @@ const VendorOffers = () => {
         }
     };
 
+    const handleCreateNew = () => {
+        if (status === "APPROVED") {
+            navigate("/upload");
+        } else {
+            navigate("/pricing");
+        }
+    };
+
     return (
         <div className="dashboard-container">
             <TopHeader />
@@ -69,8 +77,8 @@ const VendorOffers = () => {
                             <h1>Manage Offers</h1>
                             <p>Track and manage your product showcases</p>
                         </div>
-                        <button className="create-btn" onClick={() => navigate("/upload")}>
-                            + Create New
+                        <button className="create-btn" onClick={handleCreateNew}>
+                            {status === "APPROVED" ? "+ Create New" : "Choose a Plan"}
                         </button>
                     </div>
 
@@ -146,7 +154,9 @@ const VendorOffers = () => {
                             <h2>No Active Offers</h2>
                             <p>Start showcasing your collections to reach more customers.</p>
                             <div className="empty-actions">
-                                <button className="primary-empty-btn" onClick={() => navigate("/upload")}>Create First Offer</button>
+                                <button className="primary-empty-btn" onClick={handleCreateNew}>
+                                    {status === "APPROVED" ? "Create First Offer" : "Choose a Plan"}
+                                </button>
                             </div>
                         </div>
                     )}

@@ -87,10 +87,10 @@
 .auth-box button {
   width: 100%;
   padding: 14px;
-  background: var(--primary-plum);
-  color: white;
+  background-color: var(--primary-plum);
+  color: rgb(191, 183, 183);
   border: none;
-  border-radius: 30px;
+  border-radius: 55px;
   /* Pill shape */
   font-weight: 600;
   font-size: 16px;
@@ -202,4 +202,39 @@ input[type="file"]:hover {
     padding: 12px;
     font-size: 14px;
   }
+}
+
+/* Password Toggle Styles */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  padding-right: 50px !important;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  margin-top: 0 !important;
+  width: auto !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.password-toggle:hover {
+  color: var(--primary-plum);
+  background: none !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
