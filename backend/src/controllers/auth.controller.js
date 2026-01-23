@@ -2,7 +2,8 @@ import pool from "../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../config/email.js";
-import crypto from 'crypto';
+import crypto from "crypto";
+import axios from "axios";
 
 /* ---------------- SIGNUP ---------------- */
 export const signup = async (req, res) => {
@@ -11,10 +12,30 @@ export const signup = async (req, res) => {
     // 1. Establish connection first (inside try to catch connection errors)
     client = await pool.connect();
 
-    const { shopName, ownerName, email, phone, password, state, city, pincode, address } = req.body;
+    const {
+      shopName,
+      ownerName,
+      email,
+      phone,
+      password,
+      state,
+      city,
+      pincode,
+      address,
+    } = req.body;
 
     // 2. Client-side validation fallback
-    if (!shopName || !ownerName || !email || !phone || !password || !state || !city || !pincode || !address) {
+    if (
+      !shopName ||
+      !ownerName ||
+      !email ||
+      !phone ||
+      !password ||
+      !state ||
+      !city ||
+      !pincode ||
+      !address
+    ) {
       return res.status(400).json({ message: "Missing fields" });
     }
 
@@ -26,7 +47,10 @@ export const signup = async (req, res) => {
     await client.query("BEGIN");
 
     // 4. Check email uniqueness
-    const existingUser = await client.query("SELECT id FROM vendors WHERE email = $1", [email]);
+    const existingUser = await client.query(
+      "SELECT id FROM vendors WHERE email = $1",
+      [email],
+    );
     if (existingUser.rows.length > 0) {
       await client.query("ROLLBACK");
       return res.status(400).json({ message: "Email already registered" });
@@ -39,11 +63,22 @@ export const signup = async (req, res) => {
       `INSERT INTO vendors 
        (shop_name, owner_name, email, phone, password_hash, state, city, pincode, address)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-       RETURNING id`,
-      [shopName, ownerName, email, phone, hashedPassword, state, city, pincode, address]
+       RETURNING id, shop_name, owner_name, email`,
+      [
+        shopName,
+        ownerName,
+        email,
+        phone,
+        hashedPassword,
+        state,
+        city,
+        pincode,
+        address,
+      ],
     );
 
-    const vendorId = vendorResult.rows[0].id;
+    const vendor = vendorResult.rows[0];
+    const vendorId = vendor.id;
 
     // 6. Insert KYC Docs
     for (const docType in req.files) {
@@ -57,7 +92,7 @@ export const signup = async (req, res) => {
       await client.query(
         `INSERT INTO kyc_documents (vendor_id, doc_type, file_url)
          VALUES ($1,$2,$3)`,
-        [vendorId, docType, fileUrl]
+        [vendorId, docType, fileUrl],
       );
     }
 
@@ -65,11 +100,40 @@ export const signup = async (req, res) => {
     const token = jwt.sign(
       { id: vendorId, role: "VENDOR" },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     // 8. Commit
     await client.query("COMMIT");
+
+    // 8.1 Sync vendor to admin backend (do not block signup on failure)
+    try {
+      const adminBackendUrl = process.env.ADMIN_BACKEND_URL;
+      const internalSyncKey = process.env.INTERNAL_SYNC_KEY;
+
+      if (!adminBackendUrl || !internalSyncKey) {
+        console.warn(
+          "Vendor sync skipped: missing ADMIN_BACKEND_URL or INTERNAL_SYNC_KEY",
+        );
+      } else {
+        await axios.post(
+          `${adminBackendUrl.replace(/\/$/, "")}/internal/vendors`,
+          {
+            externalVendorId: vendor.id, // vendors.id
+            shopName: vendor.shop_name,
+            ownerName: vendor.owner_name,
+            email: vendor.email,
+          },
+          {
+            headers: {
+              "x-internal-key": internalSyncKey,
+            },
+          },
+        );
+      }
+    } catch (syncErr) {
+      console.error("Vendor sync failed:", syncErr?.response?.data || syncErr);
+    }
 
     // 9. Send Welcome Email (Don't let email failure block signup)
     try {
@@ -102,7 +166,7 @@ export const signup = async (req, res) => {
               </p>
             </div>
           </div>
-        `
+        `,
       });
     } catch (emailErr) {
       console.error("Welcome Email Failed:", emailErr);
@@ -121,10 +185,9 @@ export const signup = async (req, res) => {
         state,
         city,
         pincode,
-        address
-      }
+        address,
+      },
     });
-
   } catch (err) {
     console.error("SIGNUP ERROR TRACE:", err);
     console.error("SIGNUP ERROR MESSAGE:", err.message);
@@ -139,7 +202,7 @@ export const signup = async (req, res) => {
     // Return JSON error so frontend displays it
     return res.status(500).json({
       message: "Signup failed",
-      error: err.message || "Internal Server Error"
+      error: err.message || "Internal Server Error",
     });
   } finally {
     if (client) {
@@ -156,18 +219,19 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(`LOGIN DEBUG: Attempting login for email: [${email}] password: [${password}]`);
-
-    const result = await pool.query(
-      "SELECT * FROM vendors WHERE email = $1",
-      [email]
+    console.log(
+      `LOGIN DEBUG: Attempting login for email: [${email}] password: [${password}]`,
     );
+
+    const result = await pool.query("SELECT * FROM vendors WHERE email = $1", [
+      email,
+    ]);
 
     if (result.rows.length === 0) {
       console.log("LOGIN DEBUG: No user found with this email.", { email });
       return res.status(404).json({
         message: "This email is not registered with us.",
-        code: "USER_NOT_FOUND"
+        code: "USER_NOT_FOUND",
       });
     }
 
@@ -178,14 +242,14 @@ export const login = async (req, res) => {
     if (!match) {
       return res.status(401).json({
         message: "Incorrect password. Please try again.",
-        code: "WRONG_PASSWORD"
+        code: "WRONG_PASSWORD",
       });
     }
 
     const token = jwt.sign(
       { id: vendor.id, role: "VENDOR" },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     console.log("LOGIN DEBUG: Login successful for vendor id:", vendor.id);
@@ -205,10 +269,9 @@ export const login = async (req, res) => {
         pincode: vendor.pincode,
         address: vendor.address,
         status: vendor.status,
-        profilePictureUrl: vendor.profile_picture_url
-      }
+        profilePictureUrl: vendor.profile_picture_url,
+      },
     });
-
   } catch (err) {
     console.error("LOGIN ERROR:", err);
     return res.status(500).json({ message: "Login failed" });
@@ -220,19 +283,24 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     console.log(`FORGOT PASSWORD: Request received for [${email}]`);
-    const result = await pool.query("SELECT id, owner_name FROM vendors WHERE email = $1", [email]);
+    const result = await pool.query(
+      "SELECT id, owner_name FROM vendors WHERE email = $1",
+      [email],
+    );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: "User with this email does not exist." });
+      return res
+        .status(404)
+        .json({ message: "User with this email does not exist." });
     }
 
     const vendor = result.rows[0];
-    const token = crypto.randomBytes(32).toString('hex');
+    const token = crypto.randomBytes(32).toString("hex");
     const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await pool.query(
       "UPDATE vendors SET reset_password_token = $1, reset_password_expires = $2 WHERE id = $3",
-      [token, expiry, vendor.id]
+      [token, expiry, vendor.id],
     );
 
     let baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
@@ -271,11 +339,10 @@ export const forgotPassword = async (req, res) => {
             </p>
           </div>
         </div>
-      `
+      `,
     });
 
     res.json({ message: "Password reset link sent to your email." });
-
   } catch (err) {
     console.error("FORGOT PASSWORD ERROR:", err);
     res.status(500).json({ message: "Failed to process request" });
@@ -289,22 +356,23 @@ export const resetPassword = async (req, res) => {
 
     const result = await pool.query(
       "SELECT id FROM vendors WHERE email = $1 AND reset_password_token = $2 AND reset_password_expires > NOW()",
-      [email, token]
+      [email, token],
     );
 
     if (result.rows.length === 0) {
-      return res.status(400).json({ message: "Invalid or expired reset token." });
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired reset token." });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await pool.query(
       "UPDATE vendors SET password_hash = $1, reset_password_token = NULL, reset_password_expires = NULL WHERE id = $2",
-      [hashedPassword, result.rows[0].id]
+      [hashedPassword, result.rows[0].id],
     );
 
     res.json({ message: "Password updated successfully. You can now login." });
-
   } catch (err) {
     console.error("RESET PASSWORD ERROR:", err);
     res.status(500).json({ message: "Failed to reset password" });
@@ -317,7 +385,10 @@ export const sendOTP = async (req, res) => {
     const { email } = req.body;
 
     // Check if email already exists
-    const existing = await pool.query("SELECT id FROM vendors WHERE email = $1", [email]);
+    const existing = await pool.query(
+      "SELECT id FROM vendors WHERE email = $1",
+      [email],
+    );
     if (existing.rows.length > 0) {
       return res.status(400).json({ message: "Email already registered" });
     }
@@ -331,7 +402,7 @@ export const sendOTP = async (req, res) => {
     // Insert new OTP
     await pool.query(
       "INSERT INTO otp_verifications (email, otp, expires_at) VALUES ($1, $2, $3)",
-      [email, otp, expiry]
+      [email, otp, expiry],
     );
 
     // Send Email
@@ -357,7 +428,7 @@ export const sendOTP = async (req, res) => {
             </p>
           </div>
         </div>
-      `
+      `,
     });
 
     res.json({ message: "OTP sent to your email" });
@@ -374,7 +445,7 @@ export const verifyOTP = async (req, res) => {
 
     const result = await pool.query(
       "SELECT id FROM otp_verifications WHERE email = $1 AND otp = $2 AND expires_at > NOW()",
-      [email, otp]
+      [email, otp],
     );
 
     if (result.rows.length === 0) {
