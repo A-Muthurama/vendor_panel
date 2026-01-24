@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import protectedRoutes from "./routes/protected.routes.js";
+import internalRoutes from "./routes/internal.routes.js";
 
 
 dotenv.config();
@@ -28,6 +29,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/protected", protectedRoutes);
+app.use("/internal", internalRoutes);
 
 // Health Check Endpoint
 app.get("/api/health", async (req, res) => {
@@ -62,6 +64,15 @@ app.get("/api/health", async (req, res) => {
 
 // Admin routes exist but NOT used by vendor panel
 
+
+// Additional health endpoint for monitoring
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    service: "Vendor API",
+    time: new Date().toISOString()
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
