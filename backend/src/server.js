@@ -34,9 +34,11 @@ app.get("/api/health", async (req, res) => {
   try {
     // Test database connection
     const { Pool } = await import("pg");
+    const isLocal = process.env.DATABASE_URL?.includes("localhost") || process.env.DATABASE_URL?.includes("127.0.0.1");
+    console.log("Health Check DB Config:", { isLocal, ssl: isLocal ? false : { rejectUnauthorized: false } });
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
+      ssl: isLocal ? false : { rejectUnauthorized: false }
     });
     await pool.query("SELECT 1");
     pool.end();
@@ -62,6 +64,28 @@ app.get("/api/health", async (req, res) => {
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Auth server running on port ${PORT}`);
+  console.log("Environment check:", {
+    hasDbUrl: !!process.env.DATABASE_URL,
+    // safe log part of url
+    dbUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + "..." : "MISSING"
+  });
+});
+
+// Debug Heartbeat
+setInterval(() => {
+  console.log("Server Heartbeat - Process Active");
+}, 2000);
+
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION! Shutting down...', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION! Shutting down...', err);
+  server.close(() => {
+    process.exit(1);
+  });
 });
