@@ -26,7 +26,11 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes); // Fallback for requests missing /api prefix
+
 app.use("/api/protected", protectedRoutes);
+app.use("/protected", protectedRoutes); // Fallback
+
 app.use("/internal", internalRoutes);
 
 // Health Check Endpoint
@@ -83,10 +87,7 @@ const server = app.listen(PORT, () => {
   });
 });
 
-// Debug Heartbeat
-setInterval(() => {
-  console.log("Server Heartbeat - Process Active");
-}, 2000);
+
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION! Shutting down...', err);
