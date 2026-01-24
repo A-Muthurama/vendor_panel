@@ -12,15 +12,13 @@ const app = express();
 
 // Time: 16 Jan 2026, 22:15 IST
 const corsOptions = {
-  origin: (origin, callback) => {
-    console.log(`Incoming request from origin: ${origin}`);
-    callback(null, true);
-  },
+  origin: true, // Reflects the request origin
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();

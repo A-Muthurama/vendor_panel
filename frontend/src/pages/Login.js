@@ -47,7 +47,12 @@ const Login = () => {
     } catch (err) {
       console.log("LOGIN DEBUG: API error", err, err?.response);
       const code = err.response?.data?.code;
-      const message = err.response?.data?.message || "Invalid credentials";
+      let message = err.response?.data?.message;
+
+      if (!message) {
+        message = "Invalid credentials";
+        if (err.message) message += ` (Debug: ${err.message})`;
+      }
 
       if (code === "USER_NOT_FOUND") {
         setError(<>This email is not registered. <Link to="/vendor/signup" style={{ color: '#d4af37' }}>Register here</Link></>);
