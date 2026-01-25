@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Key Test</title>
+</head>
+<body style="font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+    <h1>Razorpay Key Isolation Test</h1>
+    <p>This page tests the Key ID: <strong>rzp_test_S68TWLPshRESNF</strong> directly, outside of the React app.</p>
+    
+    <button id="rzp-button1" style="padding: 15px 30px; font-size: 18px; background: #D4AF37; color: white; border: none; cursor: pointer; border-radius: 5px;">
+        Test Payment (₹1.00)
+    </button>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            "key": "rzp_test_S68TWLPshRESNF", // Enter the Key ID generated from the Dashboard
+            "amount": "100", // Amount is in currency subunits. Default currency is INR. Hence 50000 refers to 50000 paise
+            "currency": "INR",
+            "name": "Test Transaction",
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "handler": function (response){
+                alert("Success! Payment ID: " + response.razorpay_payment_id);
+            },
+            "prefill": {
+                "name": "Test User",
+                "email": "test.user@example.com",
+                "contact": "9999999999"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response){
+                alert("Failed code: " + response.error.code + "\nDescription: " + response.error.description);
+        });
+        document.getElementById('rzp-button1').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html>

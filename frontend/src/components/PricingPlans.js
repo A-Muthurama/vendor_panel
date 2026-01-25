@@ -3,7 +3,7 @@ import "./Pricing.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import TopHeader from "../components/TopHeader";
-import { subscribePlan } from "../api/vendorApi";
+import { subscribePlan, createOrder } from "../api/vendorApi";
 
 const plans = [
   { id: 1, name: "Starter", price: 299, posts: 5 },
@@ -38,67 +38,67 @@ export default function PricingPlans() {
       return;
     }
 
-    // Razorpay Flow
-    console.log("Loading Razorpay SDK...");
-    const res = await loadRazorpay();
-
-    if (!res) {
-      alert("Error: Razorpay SDK failed to load. Please check your internet connection.");
-      return;
-    }
-
-    const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_RrmurNVGRTmBXH";
-    console.log("Razorpay Key being used:", razorpayKey);
-
-    if (!razorpayKey) {
-      alert("Error: Razorpay Key is missing in configuration.");
-      return;
-    }
-
-    const amountInPaise = Math.round(plan.price * 100);
-
-    const options = {
-      key: razorpayKey,
-      amount: amountInPaise, // in paise
-      currency: "INR",
-      name: "Seller Marketplace",
-      description: `${plan.name} Plan - ${plan.posts} Posts`,
-      // image: "", // Add logo URL if available
-      handler: async function (response) {
-        // console.log("Razorpay Response:", response);
-        try {
-          await subscribePlan({
-            planName: plan.name,
-            price: plan.price,
-            posts: plan.posts,
-            paymentId: response.razorpay_payment_id
-          });
-          alert("Payment Successful & Subscription Activated");
-          navigate("/vendor/dashboard");
-        } catch (err) {
-          console.error("Subscription Error:", err);
-          const msg = err.response?.data?.message || "Payment successful but activation failed. Contact support.";
-          alert(`Error: ${msg}`);
-          navigate("/vendor/dashboard");
-        }
-      },
-      prefill: {
-        name: vendor?.ownerName || "Seller Name",
-        email: vendor?.email || "seller@email.com",
-        contact: vendor?.phone ? String(vendor.phone) : "9999999999"
-      },
-      theme: {
-        color: "#ca8a04" // Yellow-600
-      },
-      modal: {
-        ondismiss: function () {
-          console.log('Checkout form closed');
-        }
-      }
-    };
-
     try {
-      console.log("Initializing Razorpay with options:", { ...options, key: "HIDDEN" });
+      // Step 1: Create order on backend
+      console.log("Creating Razorpay order on server...");
+      const orderResponse = await createOrder({
+        amount: plan.price,
+        planName: plan.name,
+        posts: plan.posts
+      });
+
+      const { orderId, amount, keyId } = orderResponse.data;
+      console.log("Order created:", orderId);
+
+      // Step 2: Load Razorpay SDK
+      const res = await loadRazorpay();
+      if (!res) {
+        alert("Error: Razorpay SDK failed to load. Please check your internet connection.");
+        return;
+      }
+
+      // Step 3: Open Razorpay with server-created order
+      const options = {
+        key: keyId,
+        amount: amount,
+        currency: "INR",
+        name: "Seller Marketplace",
+        description: `${plan.name} Plan - ${plan.posts} Posts`,
+        order_id: orderId, // Server-created order ID
+        handler: async function (response) {
+          try {
+            await subscribePlan({
+              planName: plan.name,
+              price: plan.price,
+              posts: plan.posts,
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+              signature: response.razorpay_signature
+            });
+            alert("Payment Successful & Subscription Activated");
+            navigate("/vendor/dashboard");
+          } catch (err) {
+            console.error("Subscription Error:", err);
+            const msg = err.response?.data?.message || "Payment successful but activation failed. Contact support.";
+            alert(`Error: ${msg}`);
+            navigate("/vendor/dashboard");
+          }
+        },
+        prefill: {
+          name: vendor?.ownerName || "Seller Name",
+          email: vendor?.email || "seller@email.com",
+          contact: vendor?.phone ? String(vendor.phone) : "9999999999"
+        },
+        theme: {
+          color: "#ca8a04"
+        },
+        modal: {
+          ondismiss: function () {
+            console.log('Checkout form closed');
+          }
+        }
+      };
+
       const razorpay = new window.Razorpay(options);
 
       razorpay.on('payment.failed', function (response) {
@@ -107,9 +107,10 @@ export default function PricingPlans() {
       });
 
       razorpay.open();
+
     } catch (e) {
-      console.error("Razorpay Initialization Error:", e);
-      alert(`Failed to open payment gateway: ${e.message}`);
+      console.error("Payment Initialization Error:", e);
+      alert(`Failed to initialize payment: ${e.response?.data?.message || e.message}`);
     }
   };
 

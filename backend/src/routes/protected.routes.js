@@ -25,6 +25,7 @@ router.post("/offers", authMiddleware, upload.fields([{ name: 'poster', maxCount
 router.delete("/offers/:id", authMiddleware, vendorController.deleteOffer);
 
 // Subscription
+router.post("/create-order", authMiddleware, vendorController.createRazorpayOrder);
 router.post("/subscribe", authMiddleware, vendorController.buySubscription);
 
 // Profile Picture Upload

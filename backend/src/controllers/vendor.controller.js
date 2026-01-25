@@ -182,6 +182,52 @@ export const createOffer = async (req, res) => {
     }
 };
 
+/* ---------------- CREATE RAZORPAY ORDER ---------------- */
+export const createRazorpayOrder = async (req, res) => {
+    const vendorId = req.user.id;
+    const { amount, planName, posts } = req.body;
+
+    try {
+        // Check vendor status
+        const vendorRes = await pool.query("SELECT status FROM vendors WHERE id = $1", [vendorId]);
+        if (vendorRes.rows[0]?.status !== "APPROVED") {
+            return res.status(403).json({ message: "Verification Required: Your account must be APPROVED to purchase plans." });
+        }
+
+        // Import Razorpay
+        const Razorpay = (await import('razorpay')).default;
+
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET
+        });
+
+        const options = {
+            amount: amount * 100, // amount in paise
+            currency: "INR",
+            receipt: `order_${vendorId}_${Date.now()}`,
+            notes: {
+                vendorId,
+                planName,
+                posts
+            }
+        };
+
+        const order = await razorpay.orders.create(options);
+
+        res.json({
+            orderId: order.id,
+            amount: order.amount,
+            currency: order.currency,
+            keyId: process.env.RAZORPAY_KEY_ID
+        });
+
+    } catch (err) {
+        console.error("CREATE RAZORPAY ORDER ERROR:", err);
+        res.status(500).json({ message: "Failed to create payment order", error: err.message });
+    }
+};
+
 /* ---------------- BUY SUBSCRIPTION ---------------- */
 export const buySubscription = async (req, res) => {
     const vendorId = req.user.id;
