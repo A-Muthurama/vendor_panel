@@ -42,12 +42,12 @@ export default function PricingPlans() {
     const res = await loadRazorpay();
 
     if (!res) {
-      alert("Razorpay SDK failed to load. Check internet connection.");
+      alert("Error: Razorpay SDK failed to load. Please check your internet connection.");
       return;
     }
 
     const options = {
-      key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_RrmurNVGRTmBXH",
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_S68TWLPshRESNF",
       amount: plan.price * 100, // in paise
       currency: "INR",
       name: "Seller Marketplace",
@@ -61,10 +61,11 @@ export default function PricingPlans() {
             paymentId: response.razorpay_payment_id
           });
           alert("Payment Successful & Subscription Activated");
-          navigate("/upload"); // Should be /vendor/offers or /vendor/dashboard usually, but user seems to want upload or something
+          navigate("/vendor/dashboard");
         } catch (err) {
           console.error("Subscription Error:", err);
-          alert("Payment successful but activation failed. Contact support.");
+          const msg = err.response?.data?.message || "Payment successful but activation failed. Contact support.";
+          alert(`Error: ${msg}`);
           navigate("/vendor/dashboard");
         }
       },
@@ -78,8 +79,16 @@ export default function PricingPlans() {
       }
     };
 
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
+    try {
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+      razorpay.on('payment.failed', function (response) {
+        alert(`Payment Failed: ${response.error.description || "Unknown error"}`);
+      });
+    } catch (e) {
+      console.error("Razorpay Init Error", e);
+      alert("Failed to initialize payment gateway.");
+    }
   };
 
   return (
