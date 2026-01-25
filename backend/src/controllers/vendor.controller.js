@@ -194,6 +194,22 @@ export const createRazorpayOrder = async (req, res) => {
             return res.status(403).json({ message: "Verification Required: Your account must be APPROVED to purchase plans." });
         }
 
+        // Validate Razorpay credentials
+        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+            console.error("RAZORPAY CREDENTIALS MISSING:", {
+                hasKeyId: !!process.env.RAZORPAY_KEY_ID,
+                hasSecret: !!process.env.RAZORPAY_KEY_SECRET
+            });
+            return res.status(500).json({ message: "Payment gateway not configured. Contact support." });
+        }
+
+        console.log("Creating Razorpay order with:", {
+            amount,
+            planName,
+            vendorId,
+            keyId: process.env.RAZORPAY_KEY_ID
+        });
+
         // Import Razorpay
         const Razorpay = (await import('razorpay')).default;
 
@@ -207,13 +223,15 @@ export const createRazorpayOrder = async (req, res) => {
             currency: "INR",
             receipt: `order_${vendorId}_${Date.now()}`,
             notes: {
-                vendorId,
+                vendorId: String(vendorId),
                 planName,
-                posts
+                posts: String(posts)
             }
         };
 
         const order = await razorpay.orders.create(options);
+
+        console.log("Razorpay order created successfully:", order.id);
 
         res.json({
             orderId: order.id,
@@ -223,8 +241,16 @@ export const createRazorpayOrder = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("CREATE RAZORPAY ORDER ERROR:", err);
-        res.status(500).json({ message: "Failed to create payment order", error: err.message });
+        console.error("CREATE RAZORPAY ORDER ERROR:", {
+            message: err.message,
+            statusCode: err.statusCode,
+            error: err.error
+        });
+        res.status(500).json({
+            message: "Failed to create payment order",
+            error: err.message,
+            details: err.error?.description || "Unknown error"
+        });
     }
 };
 
