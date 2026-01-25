@@ -13,6 +13,7 @@ import PricingPlans from "./components/PricingPlans";
 import PosterUpload from "./components/PosterUpload";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import PublicSupport from "./pages/PublicSupport";
 
 function App() {
   return (
@@ -28,7 +29,9 @@ function App() {
           <Route path="/vendor/forgot-password" element={<ForgotPassword />} />
           <Route path="/vendor/reset-password" element={<ResetPassword />} />
           <Route path="/vendor/pending-approval" element={<PendingApproval />} />
+
           <Route path="/vendor/rejected" element={<Rejected />} />
+          <Route path="/vendor/help-support" element={<PublicSupport />} />
 
           {/* Protected Routes */}
           <Route

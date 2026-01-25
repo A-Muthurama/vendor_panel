@@ -4,6 +4,7 @@ import { loginVendor } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import AuthHeader from "../components/AuthHeader";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -67,54 +68,57 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-page">
-      <form className="auth-box" onSubmit={submit}>
-        <h2>SELLER LOGIN</h2>
+    <>
+      <AuthHeader />
+      <div className="auth-page">
+        <form className="auth-box" onSubmit={submit}>
+          <h2>SELLER LOGIN</h2>
 
-        {error && <div className="error-text">{error}</div>}
+          {error && <div className="error-text">{error}</div>}
 
-        <div className="input-field">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+          <div className="input-field">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <div className="input-field password-field">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button
-            type="button"
-            className="password-toggle"
-            onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          <div className="input-field password-field">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? "Loading..." : "Login"}
           </button>
-        </div>
 
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? "Loading..." : "Login"}
-        </button>
-
-        <div className="auth-link" style={{ marginBottom: '10px' }}>
-          <Link to="/vendor/forgot-password" style={{ color: '#4C0F2E', fontSize: '14px', textDecoration: 'underline' }}>
-            Forgot Password?
-          </Link>
-        </div>
-        <div className="auth-link">
-          New Seller? <Link to="/vendor/signup">Sign up</Link>
-        </div>
-      </form>
-    </div>
+          <div className="auth-link" style={{ marginBottom: '10px' }}>
+            <Link to="/vendor/forgot-password" style={{ color: '#4C0F2E', fontSize: '14px', textDecoration: 'underline' }}>
+              Forgot Password?
+            </Link>
+          </div>
+          <div className="auth-link">
+            New Seller? <Link to="/vendor/signup">Sign up</Link>
+          </div>
+        </form>
+      </div>
+    </>
   );
 };
 

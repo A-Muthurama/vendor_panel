@@ -1,0 +1,99 @@
+/* src/styles/AuthHeader.css */
+.auth-header {
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    height: 80px;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.auth-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #4C0F2E;
+    text-decoration: none;
+    cursor: default;
+}
+
+.auth-brand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #D4AF37;
+}
+
+.auth-brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin: 0;
+    white-space: nowrap;
+    display: block;
+    line-height: normal;
+}
+
+.auth-header-nav {
+    display: flex;
+    gap: 30px;
+}
+
+.auth-nav-item {
+    text-decoration: none;
+    color: #666;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 10px 0;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-nav-item:hover,
+.auth-nav-item.active {
+    color: #4C0F2E;
+}
+
+.auth-cta-btn {
+    background-color: #4C0F2E;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
+
+.auth-cta-btn:hover {
+    background-color: #6d1541;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(76, 15, 46, 0.2);
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .auth-header {
+        padding: 0 20px;
+        height: 70px;
+    }
+
+    .auth-header-nav {
+        display: none;
+    }
+
+    .auth-brand-title {
+        font-size: 20px;
+    }
+}
