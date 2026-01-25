@@ -39,6 +39,7 @@ export default function PricingPlans() {
     }
 
     // Razorpay Flow
+    console.log("Loading Razorpay SDK...");
     const res = await loadRazorpay();
 
     if (!res) {
@@ -46,13 +47,25 @@ export default function PricingPlans() {
       return;
     }
 
+    const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_S68TWLPshRESNF";
+    console.log("Razorpay Key being used:", razorpayKey);
+
+    if (!razorpayKey) {
+      alert("Error: Razorpay Key is missing in configuration.");
+      return;
+    }
+
+    const amountInPaise = Math.round(plan.price * 100);
+
     const options = {
-      key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_S68TWLPshRESNF",
-      amount: plan.price * 100, // in paise
+      key: razorpayKey,
+      amount: amountInPaise, // in paise
       currency: "INR",
       name: "Seller Marketplace",
       description: `${plan.name} Plan - ${plan.posts} Posts`,
+      // image: "", // Add logo URL if available
       handler: async function (response) {
+        // console.log("Razorpay Response:", response);
         try {
           await subscribePlan({
             planName: plan.name,
@@ -72,22 +85,31 @@ export default function PricingPlans() {
       prefill: {
         name: vendor?.ownerName || "Seller Name",
         email: vendor?.email || "seller@email.com",
-        contact: vendor?.phone || "9999999999"
+        contact: vendor?.phone ? String(vendor.phone) : "9999999999"
       },
       theme: {
         color: "#ca8a04" // Yellow-600
+      },
+      modal: {
+        ondismiss: function () {
+          console.log('Checkout form closed');
+        }
       }
     };
 
     try {
+      console.log("Initializing Razorpay with options:", { ...options, key: "HIDDEN" });
       const razorpay = new window.Razorpay(options);
-      razorpay.open();
+
       razorpay.on('payment.failed', function (response) {
-        alert(`Payment Failed: ${response.error.description || "Unknown error"}`);
+        console.error("Payment Failed Event:", response.error);
+        alert(`Payment Failed: ${response.error.description || response.error.reason || "Unknown error"}`);
       });
+
+      razorpay.open();
     } catch (e) {
-      console.error("Razorpay Init Error", e);
-      alert("Failed to initialize payment gateway.");
+      console.error("Razorpay Initialization Error:", e);
+      alert(`Failed to open payment gateway: ${e.message}`);
     }
   };
 
