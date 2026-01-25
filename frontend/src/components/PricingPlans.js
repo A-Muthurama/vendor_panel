@@ -47,7 +47,7 @@ export default function PricingPlans() {
       return;
     }
 
-    const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_S68TWLPshRESNF";
+    const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_RrmurNVGRTmBXH";
     console.log("Razorpay Key being used:", razorpayKey);
 
     if (!razorpayKey) {
