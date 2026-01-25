@@ -1,6 +1,6 @@
 import React from "react";
 import AuthHeader from "../components/AuthHeader";
-import { Mail, Phone, MessageSquare, Info } from "lucide-react";
+import { Mail, Phone, MessageSquare } from "lucide-react";
 import "../styles/PublicSupport.css";
 
 const PublicSupport = () => {
@@ -82,7 +82,6 @@ const PublicSupport = () => {
                         </div>
                     </div>
 
-                    {/* Bottom Info */}
 
                 </div>
             </div>
