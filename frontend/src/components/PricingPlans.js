@@ -6,10 +6,10 @@ import TopHeader from "../components/TopHeader";
 import { subscribePlan } from "../api/vendorApi";
 
 const plans = [
-  { id: 1, price: 299, posts: 5 },
-  { id: 2, price: 399, posts: 8 },
-  { id: 3, price: 599, posts: 15 },
-  { id: 4, price: 999, posts: 30 }
+  { id: 1, name: "Starter", price: 299, posts: 5 },
+  { id: 2, name: "Growth", price: 399, posts: 8, popular: true },
+  { id: 3, name: "Professional", price: 599, posts: 15 },
+  { id: 4, name: "Enterprise", price: 999, posts: 30 }
 ];
 
 export default function PricingPlans() {
@@ -51,11 +51,11 @@ export default function PricingPlans() {
       amount: plan.price * 100, // in paise
       currency: "INR",
       name: "Seller Marketplace",
-      description: `${plan.posts} Product Posts Subscription`,
+      description: `${plan.name} Plan - ${plan.posts} Posts`,
       handler: async function (response) {
         try {
           await subscribePlan({
-            planName: "Premium",
+            planName: plan.name,
             price: plan.price,
             posts: plan.posts,
             paymentId: response.razorpay_payment_id
@@ -98,6 +98,7 @@ export default function PricingPlans() {
               >
                 {plan.popular && <span className="badge">Most Popular</span>}
 
+                <h3 className="plan-name" style={{ color: '#4C0F2E', fontSize: '24px', margin: '10px 0' }}>{plan.name}</h3>
                 <h2 className="price">₹{plan.price}</h2>
                 <p className="posts">{plan.posts} Product Posts</p>
 
@@ -108,7 +109,7 @@ export default function PricingPlans() {
                 </ul>
 
                 <button onClick={() => handleSelect(plan)}>
-                  Choose Plan
+                  Choose {plan.name}
                 </button>
               </div>
             ))}
