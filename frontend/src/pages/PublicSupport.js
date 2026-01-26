@@ -90,3 +90,4 @@ const PublicSupport = () => {
 };
 
 export default PublicSupport;
+//public support page, it is for without login users
