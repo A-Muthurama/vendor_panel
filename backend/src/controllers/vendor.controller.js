@@ -188,6 +188,20 @@ export const createRazorpayOrder = async (req, res) => {
     const { amount, planName, posts } = req.body;
 
     try {
+        // Validate input
+        if (!amount || !planName || !posts) {
+            console.error("CREATE ORDER - Missing required fields:", { amount, planName, posts });
+            return res.status(400).json({
+                message: "Missing required fields: amount, planName, and posts are required"
+            });
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+            return res.status(400).json({
+                message: "Invalid amount. Must be a positive number."
+            });
+        }
+
         // Check vendor status
         const vendorRes = await pool.query("SELECT status FROM vendors WHERE id = $1", [vendorId]);
         if (vendorRes.rows[0]?.status !== "APPROVED") {
@@ -241,15 +255,29 @@ export const createRazorpayOrder = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("CREATE RAZORPAY ORDER ERROR:", {
+        console.error("CREATE RAZORPAY ORDER ERROR - Full Details:", {
             message: err.message,
             statusCode: err.statusCode,
-            error: err.error
+            error: err.error,
+            description: err.error?.description,
+            code: err.error?.code,
+            source: err.error?.source,
+            step: err.error?.step,
+            reason: err.error?.reason,
+            field: err.error?.field,
+            stack: err.stack
         });
+
+        // More detailed error response
+        const errorMessage = err.error?.description || err.message || "Unknown error";
+        const errorCode = err.error?.code || err.statusCode || "UNKNOWN";
+
         res.status(500).json({
             message: "Failed to create payment order",
-            error: err.message,
-            details: err.error?.description || "Unknown error"
+            error: errorMessage,
+            errorCode: errorCode,
+            details: err.error?.description || err.message,
+            razorpayError: err.error || null
         });
     }
 };
@@ -395,6 +423,53 @@ export const updateProfilePicture = async (req, res) => {
     } catch (err) {
         console.error("UPDATE PROFILE PICTURE ERROR:", err);
         res.status(500).json({ message: "Failed to update profile picture" });
+    }
+};
+
+/* ---------------- TEST RAZORPAY CONFIG ---------------- */
+export const testRazorpayConfig = async (req, res) => {
+    try {
+        // Check if credentials exist
+        const hasKeyId = !!process.env.RAZORPAY_KEY_ID;
+        const hasSecret = !!process.env.RAZORPAY_KEY_SECRET;
+
+        if (!hasKeyId || !hasSecret) {
+            return res.status(500).json({
+                status: "ERROR",
+                message: "Razorpay credentials missing",
+                config: {
+                    hasKeyId,
+                    hasSecret,
+                    keyIdPrefix: process.env.RAZORPAY_KEY_ID ? process.env.RAZORPAY_KEY_ID.substring(0, 8) + "..." : "MISSING"
+                }
+            });
+        }
+
+        // Try to initialize Razorpay
+        const Razorpay = (await import('razorpay')).default;
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET
+        });
+
+        res.json({
+            status: "OK",
+            message: "Razorpay configured successfully",
+            config: {
+                hasKeyId: true,
+                hasSecret: true,
+                keyIdPrefix: process.env.RAZORPAY_KEY_ID.substring(0, 8) + "...",
+                razorpayInitialized: true
+            }
+        });
+
+    } catch (err) {
+        console.error("RAZORPAY CONFIG TEST ERROR:", err);
+        res.status(500).json({
+            status: "ERROR",
+            message: "Razorpay initialization failed",
+            error: err.message
+        });
     }
 };
 

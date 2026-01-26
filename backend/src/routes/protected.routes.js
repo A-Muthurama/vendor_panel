@@ -31,4 +31,7 @@ router.post("/subscribe", authMiddleware, vendorController.buySubscription);
 // Profile Picture Upload
 router.put("/profile/picture", authMiddleware, upload.single('profilePicture'), vendorController.updateProfilePicture);
 
+// Test Razorpay Configuration (for debugging)
+router.get("/test-razorpay", authMiddleware, vendorController.testRazorpayConfig);
+
 export default router;
