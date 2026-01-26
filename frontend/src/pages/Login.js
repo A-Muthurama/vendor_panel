@@ -30,16 +30,21 @@ const Login = () => {
       console.log("LOGIN DEBUG: API response", res);
       const { token, vendorStatus, vendor, rejectionReason } = res.data;
 
+      // Convert status to uppercase for consistency
+      const normalizedStatus = (vendorStatus || "").toUpperCase();
+      console.log("LOGIN DEBUG: Normalized status:", normalizedStatus);
+
       // Save auth globally (context uses 'status' so we map vendorStatus -> status)
-      login(token, vendorStatus, vendor);
+      login(token, normalizedStatus, vendor);
 
       // Status-based redirect
-      if (vendorStatus === "APPROVED") {
+      if (normalizedStatus === "APPROVED") {
         navigate("/vendor/dashboard");
-      } else if (vendorStatus === "PENDING" || vendorStatus === "PENDING_APPROVAL") {
-        // User requested to go to Pending Approval page, not Dashboard
+      } else if (normalizedStatus === "PENDING" || normalizedStatus === "PENDING_APPROVAL") {
         navigate("/vendor/pending-approval");
-      } else if (vendorStatus === "REJECTED") {
+      } else if (normalizedStatus === "LOGIN_APPROVAL" || normalizedStatus === "OFFERS_APPROVAL") {
+        navigate("/vendor/pending-approval");
+      } else if (normalizedStatus === "REJECTED") {
         navigate("/vendor/rejected", { state: { reason: rejectionReason } });
       } else {
         // Fallback
