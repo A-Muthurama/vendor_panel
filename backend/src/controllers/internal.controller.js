@@ -18,7 +18,7 @@ export const rejectVendorInternal = async (req, res) => {
   const { reason } = req.body;
 
   await pool.query(
-    "UPDATE vendors SET status = 'REJECTED', rejection_reason = $2 WHERE id = $1",
+    "UPDATE vendors SET status = 'REJECTED', rejection_reason = $2, reasons = $2 WHERE id = $1",
     [id, reason || null]
   );
 

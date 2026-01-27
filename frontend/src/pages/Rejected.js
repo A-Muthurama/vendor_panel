@@ -4,7 +4,7 @@ import "../styles/auth.css";
 const Rejected = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const reason = location.state?.reason || "Your application does not meet our criteria.";
+    const reason = location.state?.reason || location.state?.reasons || "Your application does not meet our criteria.";
 
     return (
         <div className="auth-page">

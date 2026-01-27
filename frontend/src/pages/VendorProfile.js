@@ -85,8 +85,25 @@ const VendorProfile = () => {
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                                     </svg>
-                                    {vendor?.status === 'APPROVED' ? 'VERIFIED' : 'SUBMITTED'}
+                                    {vendor?.status === 'APPROVED' ? 'VERIFIED' : (vendor?.status === 'REJECTED' ? 'REJECTED' : 'SUBMITTED')}
                                 </div>
+                                {vendor?.status === 'REJECTED' && (
+                                    <div className="rejection-reason-box" style={{
+                                        marginTop: '15px',
+                                        padding: '12px 15px',
+                                        backgroundColor: '#fff1f0',
+                                        border: '1px solid #ffa39e',
+                                        borderRadius: '6px',
+                                        color: '#cf1322',
+                                        fontSize: '14px',
+                                        maxWidth: '400px'
+                                    }}>
+                                        <div style={{ fontWeight: 'bold', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span>❌</span> Rejection Reason:
+                                        </div>
+                                        <div>{vendor.reasons || vendor.rejectionReason || "Your application was rejected. Please contact support."}</div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

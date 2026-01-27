@@ -8,7 +8,7 @@ export const getDashboardStats = async (req, res) => {
     try {
         // 1. Get Vendor Status & Details
         const vendorRes = await client.query(
-            "SELECT shop_name, owner_name, status, rejection_reason FROM vendors WHERE id = $1",
+            "SELECT shop_name, owner_name, status, rejection_reason, reasons FROM vendors WHERE id = $1",
             [vendorId]
         );
         const vendor = vendorRes.rows[0];
@@ -46,7 +46,9 @@ export const getDashboardStats = async (req, res) => {
                 approvedOffers: parseInt(stats.approved_offers),
                 pendingOffers: parseInt(stats.pending_offers),
                 totalOffers: parseInt(stats.total_offers)
-            }
+            },
+            rejection_reason: vendor.rejection_reason || vendor.reasons,
+            reasons: vendor.reasons
         });
 
     } catch (err) {
@@ -345,7 +347,7 @@ export const getVendorProfile = async (req, res) => {
     try {
         // 1. Get Full Vendor Details
         const vendorRes = await client.query(
-            "SELECT id, shop_name, owner_name, email, phone, state, city, pincode, address, status, profile_picture_url FROM vendors WHERE id = $1",
+            "SELECT id, shop_name, owner_name, email, phone, state, city, pincode, address, status, profile_picture_url, rejection_reason, reasons FROM vendors WHERE id = $1",
             [vendorId]
         );
         const vendor = vendorRes.rows[0];
@@ -375,7 +377,9 @@ export const getVendorProfile = async (req, res) => {
                 pincode: vendor.pincode,
                 address: vendor.address,
                 status: vendor.status,
-                profilePictureUrl: vendor.profile_picture_url
+                profilePictureUrl: vendor.profile_picture_url,
+                rejectionReason: vendor.rejection_reason || vendor.reasons,
+                reasons: vendor.reasons
             },
             documents: docsRes.rows.map(d => ({
                 type: d.doc_type,

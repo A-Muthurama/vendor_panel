@@ -257,7 +257,8 @@ export const login = async (req, res) => {
     return res.json({
       token,
       vendorStatus: vendor.status,
-      rejectionReason: vendor.rejection_reason,
+      rejectionReason: vendor.rejection_reason || vendor.reasons,
+      reasons: vendor.reasons,
       vendor: {
         id: vendor.id,
         shopName: vendor.shop_name,
