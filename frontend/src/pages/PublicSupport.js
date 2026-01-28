@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Phone, MessageSquare } from "lucide-react";
 import "../styles/PublicSupport.css";
 import "../styles/AuthHeader.css";
+import jpLogo from "../assets/jp-logo.png";
+import AuthFooter from "../components/AuthFooter";
 
 const PublicSupport = () => {
     const navigate = useNavigate();
@@ -52,17 +54,31 @@ const PublicSupport = () => {
             {/* Custom Header with Sign Up Button */}
             <header className="auth-header">
                 {/* 1. Brand / Logo */}
-                <div className="auth-header-brand">
-                    <div className="auth-brand-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6 3L3 9L12 22L21 9L18 3H6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12 22L9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12 22L15 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M3 9H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12 3V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </div>
-                    <h2 className="auth-brand-title">PROJECT J</h2>
+                {/* 1. Brand / Logo */}
+                {/* 1. Brand / Logo */}
+                <div className="auth-header-brand" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <img
+                        src={jpLogo}
+                        alt="JP Logo"
+                        className="auth-brand-icon"
+                        style={{
+                            height: '55px',
+                            width: 'auto',
+                            objectFit: 'contain',
+                            mixBlendMode: 'multiply'
+                        }}
+                    />
+                    <h2 className="auth-brand-title" style={{
+                        fontFamily: "'Playfair Display', serif",
+                        fontSize: '22px',
+                        fontWeight: '700',
+                        letterSpacing: '1px',
+                        background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        textTransform: 'uppercase',
+                        margin: 0
+                    }}>JEWELLERS PARADISE</h2>
                 </div>
 
                 {/* 2. Navigation Menu */}
@@ -71,8 +87,33 @@ const PublicSupport = () => {
                     <Link to="https://www.jewellersparadise.com/offers" className="auth-nav-item">OFFERS</Link>
                 </nav>
 
-                {/* 3. Sign Up Button (instead of Help & Support) */}
-                <div className="auth-header-right">
+                {/* 3. Login & Sign Up Buttons */}
+                <div className="auth-header-right" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                    <button
+                        className="auth-nav-item"
+                        onClick={() => navigate('/vendor/login')}
+                        style={{
+                            background: 'transparent',
+                            border: '2px solid #4C0F2E',
+                            color: '#4C0F2E',
+                            padding: '10px 24px',
+                            borderRadius: '25px',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.target.style.background = '#4C0F2E';
+                            e.target.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.target.style.background = 'transparent';
+                            e.target.style.color = '#4C0F2E';
+                        }}
+                    >
+                        Login
+                    </button>
                     <button
                         className="auth-cta-btn"
                         onClick={() => navigate('/vendor/signup')}
@@ -120,6 +161,7 @@ const PublicSupport = () => {
 
                 </div>
             </div>
+            <AuthFooter />
         </>
     );
 };

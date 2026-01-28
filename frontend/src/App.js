@@ -14,6 +14,7 @@ import PosterUpload from "./components/PosterUpload";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import PublicSupport from "./pages/PublicSupport";
+import Terms from "./pages/Terms";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
 
           <Route path="/vendor/rejected" element={<Rejected />} />
           <Route path="/vendor/help-support" element={<PublicSupport />} />
+          <Route path="/terms" element={<Terms />} />
 
           {/* Protected Routes */}
           <Route

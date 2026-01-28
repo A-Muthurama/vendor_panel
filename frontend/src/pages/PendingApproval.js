@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import AuthHeader from "../components/AuthHeader";
+import AuthFooter from "../components/AuthFooter";
 import "../styles/auth.css";
 
 const PendingApproval = () => {
@@ -75,6 +76,7 @@ const PendingApproval = () => {
 
         </div>
       </div>
+      <AuthFooter />
     </>
   );
 };

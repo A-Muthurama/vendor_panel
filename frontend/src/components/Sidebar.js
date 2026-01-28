@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Sidebar.css";
 
+import jpLogo from "../assets/jp-logo.png";
+
 const Sidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -15,9 +17,29 @@ const Sidebar = () => {
 
     return (
         <div className="sidebar">
-            <div className="sidebar-header">
-                {/* Logo Icon placed here if needed */}
-                <div style={{ fontSize: "28px" }}>💎</div>
+            <div className="sidebar-header" style={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                <img
+                    src={jpLogo}
+                    alt="JP Logo"
+                    style={{
+                        height: '45px',
+                        width: 'auto',
+                        objectFit: 'contain',
+                        mixBlendMode: 'multiply'
+                    }}
+                />
+                <h2 style={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    letterSpacing: '1px',
+                    background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textTransform: 'uppercase',
+                    margin: 0,
+                    textAlign: 'center'
+                }}>JEWELLERS PARADISE</h2>
             </div>
             <ul className="sidebar-menu">
                 {menuItems.map((item) => (
@@ -32,7 +54,7 @@ const Sidebar = () => {
                 ))}
             </ul>
             <div className="sidebar-footer">
-                <p>© 2026 Project J</p>
+                <p style={{ fontSize: '10px', opacity: 0.8 }}>© 2026 JEWELLERS PARADISE.<br />ALL RIGHTS RESERVED.</p>
             </div>
         </div>
     );

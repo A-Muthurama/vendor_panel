@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Menu, X, ChevronRight, LogOut, LayoutDashboard, Utensils, User, CreditCard, LifeBuoy } from "lucide-react";
 import "../styles/TopHeader.css";
+import jpLogo from "../assets/jp-logo.png";
 
 const TopHeader = () => {
     const { vendor, logout } = useAuth();
@@ -25,17 +26,28 @@ const TopHeader = () => {
         <>
             <header className="top-header">
                 {/* 1. Brand / Logo - Redirects to Dashboard */}
-                <div className="header-brand" onClick={() => { navigate("/vendor/dashboard"); closeMenu(); }} style={{ cursor: 'pointer' }}>
-                    <div className="brand-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6 3L3 9L12 22L21 9L18 3H6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12 22L9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12 22L15 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M3 9H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12 3V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </div>
-                    <h2 className="brand-title">PROJECT J</h2>
+                <div className="header-brand" onClick={() => { navigate("/vendor/dashboard"); closeMenu(); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <img
+                        src={jpLogo}
+                        alt="JP Logo"
+                        style={{
+                            height: '45px',
+                            width: 'auto',
+                            objectFit: 'contain',
+                            mixBlendMode: 'multiply'
+                        }}
+                    />
+                    <h2 className="brand-title" style={{
+                        fontFamily: "'Playfair Display', serif",
+                        fontSize: '18px',
+                        fontWeight: '700',
+                        letterSpacing: '1px',
+                        background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        textTransform: 'uppercase',
+                        margin: 0
+                    }}>JEWELLERS PARADISE</h2>
                 </div>
 
                 {/* 2. Navigation Menu */}
@@ -82,17 +94,28 @@ const TopHeader = () => {
                 {/* Mobile Sidebar */}
                 <div className={`mobile-sidebar ${isMenuOpen ? "open" : ""}`}>
                     <div className="mobile-sidebar-header">
-                        <div className="header-brand" onClick={() => { navigate("/vendor/dashboard"); closeMenu(); }}>
-                            <div className="brand-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6 3L3 9L12 22L21 9L18 3H6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M12 22L9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M12 22L15 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M3 9H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M12 3V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </div>
-                            <h2 className="brand-title">PROJECT J</h2>
+                        <div className="header-brand" onClick={() => { navigate("/vendor/dashboard"); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <img
+                                src={jpLogo}
+                                alt="JP Logo"
+                                style={{
+                                    height: '40px',
+                                    width: 'auto',
+                                    objectFit: 'contain',
+                                    mixBlendMode: 'multiply'
+                                }}
+                            />
+                            <h2 className="brand-title" style={{
+                                fontFamily: "'Playfair Display', serif",
+                                fontSize: '16px',
+                                fontWeight: '700',
+                                letterSpacing: '1px',
+                                background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                textTransform: 'uppercase',
+                                margin: 0
+                            }}>JEWELLERS PARADISE</h2>
                         </div>
                         <button className="close-sidebar-btn" onClick={closeMenu}>
                             <X size={24} />

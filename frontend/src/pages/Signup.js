@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { locations } from "../data/locations";
 import SearchableDropdown from "../components/SearchableDropdown";
 import AuthHeader from "../components/AuthHeader";
+import AuthFooter from "../components/AuthFooter";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(""); // Add success message state
   const [loading, setLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   // ---------- OTP STATES ----------
   const [otp, setOtp] = useState("");
@@ -180,6 +182,12 @@ const Signup = () => {
     // ---------- REQUIRED KYC CHECK ----------
     if (!files.AADHAAR || !files.PAN || !files.GST) {
       setError("Aadhaar, PAN, and GST documents are mandatory");
+      setLoading(false);
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setError("Please accept the Terms and Conditions to proceed");
       setLoading(false);
       return;
     }
@@ -349,6 +357,66 @@ const Signup = () => {
           <label>Trade License (Optional)</label>
           <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => handleFileChange("TRADE_LICENSE", e.target.files[0])} />
 
+          {/* Terms & Conditions */}
+          <div style={{
+            marginTop: '20px',
+            marginBottom: '20px',
+            padding: '15px',
+            backgroundColor: '#FDFBF7',
+            borderRadius: '8px',
+            border: '1px solid #E6DCCD',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '12px'
+            }}>
+              <input
+                type="checkbox"
+                id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                style={{
+                  width: '18px',
+                  height: '18px',
+                  cursor: 'pointer',
+                  margin: 0,
+                  marginTop: '2px',
+                  accentColor: '#4C0F2E',
+                  flexShrink: 0
+                }}
+              />
+
+              <label
+                htmlFor="terms"
+                style={{
+                  margin: 0,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  color: '#2C1E16',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}
+              >
+                I have read and agree to the{' '}
+                <Link
+                  to="/terms"
+                  target="_blank"
+                  style={{
+                    color: '#4C0F2E',
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                    borderBottom: '1px solid #4C0F2E'
+                  }}
+                >
+                  Partner Registration Policy & Terms of Service
+                </Link>
+              </label>
+            </div>
+          </div>
+
           <button disabled={loading}>
             {loading ? "Loading..." : "Register"}
           </button>
@@ -358,6 +426,7 @@ const Signup = () => {
           </div>
         </form>
       </div>
+      <AuthFooter />
     </>
   );
 };

@@ -2,6 +2,8 @@ import "../styles/auth.css";
 import { useState } from "react";
 import { forgotPassword } from "../api/authApi";
 import { Link } from "react-router-dom";
+import AuthHeader from "../components/AuthHeader";
+import AuthFooter from "../components/AuthFooter";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -26,33 +28,37 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="auth-page">
-            <form className="auth-box" onSubmit={submit}>
-                <h2>FORGOT PASSWORD</h2>
-                <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
-                    Enter your registered email and we'll send you a link to reset your password.
-                </p>
+        <>
+            <AuthHeader />
+            <div className="auth-page">
+                <form className="auth-box" onSubmit={submit}>
+                    <h2>FORGOT PASSWORD</h2>
+                    <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
+                        Enter your registered email and we'll send you a link to reset your password.
+                    </p>
 
-                {error && <div className="error-text">{error}</div>}
-                {message && <div style={{ color: 'green', textAlign: 'center', marginBottom: '15px' }}>{message}</div>}
+                    {error && <div className="error-text">{error}</div>}
+                    {message && <div style={{ color: 'green', textAlign: 'center', marginBottom: '15px' }}>{message}</div>}
 
-                <input
-                    type="email"
-                    placeholder="Enter Registration Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
+                    <input
+                        type="email"
+                        placeholder="Enter Registration Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
 
-                <button type="submit" disabled={loading}>
-                    {loading ? "Sending..." : "Send Reset Link"}
-                </button>
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Sending..." : "Send Reset Link"}
+                    </button>
 
-                <div className="auth-link" style={{ marginTop: '20px' }}>
-                    Back to <Link to="/vendor/login">Login</Link>
-                </div>
-            </form>
-        </div>
+                    <div className="auth-link" style={{ marginTop: '20px' }}>
+                        Back to <Link to="/vendor/login">Login</Link>
+                    </div>
+                </form>
+            </div>
+            <AuthFooter />
+        </>
     );
 };
 
