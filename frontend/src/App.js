@@ -16,6 +16,8 @@ import ResetPassword from "./pages/ResetPassword";
 import PublicSupport from "./pages/PublicSupport";
 import Terms from "./pages/Terms";
 
+import AuthFooter from "./components/AuthFooter";
+
 function App() {
   return (
     <AuthProvider>
@@ -85,6 +87,7 @@ function App() {
             }
           />
         </Routes>
+        <AuthFooter />
       </BrowserRouter>
     </AuthProvider>
   );

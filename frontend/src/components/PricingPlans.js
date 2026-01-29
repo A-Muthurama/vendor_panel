@@ -163,7 +163,46 @@ export default function PricingPlans() {
               ))}
             </div>
           )}
-        </div>
+
+          {/* Usage Rules Section */}
+          <div className="usage-rules-section">
+            <div className="usage-rules-title">
+              <h2>Subscription Usage Rules</h2>
+            </div>
+            <div className="rules-grid">
+              <div className="rule-item">
+                <div className="rule-icon">📉</div>
+                <div className="rule-text">
+                  <h4>Post Deduction</h4>
+                  <p>Your post balance reduces automatically each time you publish a new offer.</p>
+                </div>
+              </div>
+
+              <div className="rule-item">
+                <div className="rule-icon">🚫</div>
+                <div className="rule-text">
+                  <h4>Non-Refundable</h4>
+                  <p>Please note that credits applied to expired or deleted listings are non-refundable and cannot be restored to your account balance.</p>
+                </div>
+              </div>
+
+              <div className="rule-item">
+                <div className="rule-icon">➕</div>
+                <div className="rule-text">
+                  <h4>Top-Up Anytime</h4>
+                  <p>Running low? You can purchase a new plan anytime to add more posts.</p>
+                </div>
+              </div>
+
+              <div className="rule-item">
+                <div className="rule-icon">💼</div>
+                <div className="rule-text">
+                  <h4>Balance Accumulation</h4>
+                  <p>Posts from multiple active plans accumulate in your total balance.</p>
+                </div>
+              </div>
+            </div>
+          </div>        </div>
       </div>
     </div>
   );

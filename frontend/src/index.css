@@ -49,26 +49,26 @@ body {
   background-color: var(--bg-body);
   color: var(--text-dark);
   line-height: 1.6;
+  overflow-x: hidden;
+  /* Prevent horizontal scroll */
+  width: 100%;
 }
 
 code {
   font-family: 'Fira Code', monospace;
 }
 
-/* Scrollbar */
+/* Hide Scrollbar Globally but keep functionality */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
+  width: 0px;
+  height: 0px;
   background: transparent;
+  /* Optional: just make scrollbar invisible */
 }
 
-::-webkit-scrollbar-thumb {
-  background: #CCC;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #BBB;
+html {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
