@@ -287,7 +287,7 @@ export const createRazorpayOrder = async (req, res) => {
 /* ---------------- BUY SUBSCRIPTION ---------------- */
 export const buySubscription = async (req, res) => {
     const vendorId = req.user.id;
-    const { planName, price, posts, paymentId } = req.body; // paymentId logic skipped for simplicity, assume verified
+    const { planName, price, posts, months, paymentId } = req.body; // paymentId logic skipped for simplicity, assume verified
 
     try {
         // 0. Check Vendor Status
@@ -296,9 +296,10 @@ export const buySubscription = async (req, res) => {
             return res.status(403).json({ message: "Verification Required: Your account must be APPROVED to purchase plans." });
         }
 
-        // Calculate Expiry (30 days default)
+        // Calculate Expiry based on months (default 1)
+        const durationMonths = months || 1;
         const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 30);
+        expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
 
         const result = await pool.query(
             `INSERT INTO subscriptions 
@@ -477,3 +478,14 @@ export const testRazorpayConfig = async (req, res) => {
     }
 };
 
+
+/* ---------------- GET PLANS ---------------- */
+export const getPlans = async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM plans ORDER BY price ASC");
+        res.json(result.rows);
+    } catch (err) {
+        console.error("GET PLANS ERROR:", err);
+        res.status(500).json({ message: "Failed to fetch plans" });
+    }
+};

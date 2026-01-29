@@ -1,20 +1,30 @@
-
+import { useState, useEffect } from "react";
 import "./Pricing.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import TopHeader from "../components/TopHeader";
-import { subscribePlan, createOrder } from "../api/vendorApi";
-
-const plans = [
-  { id: 1, name: "Starter", price: 299, posts: 5 },
-  { id: 2, name: "Growth", price: 399, posts: 8, popular: true },
-  { id: 3, name: "Professional", price: 599, posts: 15 },
-  { id: 4, name: "Enterprise", price: 999, posts: 30 }
-];
+import { subscribePlan, createOrder, getPlans } from "../api/vendorApi";
 
 export default function PricingPlans() {
   const navigate = useNavigate();
   const { vendor, status } = useAuth();
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const { data } = await getPlans();
+        // Sort by price if not already sorted by backend
+        setPlans(data);
+      } catch (err) {
+        console.error("Error fetching plans:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   const loadRazorpay = () => {
     return new Promise((resolve) => {
@@ -71,6 +81,7 @@ export default function PricingPlans() {
               planName: plan.name,
               price: plan.price,
               posts: plan.posts,
+              months: plan.months || 1, // Pass months
               paymentId: response.razorpay_payment_id,
               orderId: response.razorpay_order_id,
               signature: response.razorpay_signature
@@ -122,30 +133,36 @@ export default function PricingPlans() {
           <h1>Choose Your Subscription Plan</h1>
           <h3>Select the best subscription to list your products</h3>
 
-          <div className="pricing-grid">
-            {plans.map((plan) => (
-              <div
-                key={plan.id}
-                className={`pricing-card ${plan.popular ? "popular" : ""}`}
-              >
-                {plan.popular && <span className="badge">Most Popular</span>}
+          {loading ? (
+            <p style={{ textAlign: "center", fontSize: "18px", marginTop: "20px" }}>Loading Plans...</p>
+          ) : (
+            <div className="pricing-grid">
+              {plans.map((plan) => (
+                <div
+                  key={plan.id}
+                  className={`pricing-card ${plan.popular ? "popular" : ""}`}
+                >
+                  {plan.popular && <span className="badge">Most Popular</span>}
 
-                <h3 className="plan-name" style={{ color: '#4C0F2E', fontSize: '24px', margin: '10px 0' }}>{plan.name}</h3>
-                <h2 className="price">₹{plan.price}</h2>
-                <p className="posts">{plan.posts} Product Posts</p>
+                  <h3 className="plan-name" style={{ color: '#4C0F2E', fontSize: '24px', margin: '10px 0' }}>{plan.name}</h3>
+                  <h2 className="price">₹{plan.price}</h2>
+                  <p className="posts">{plan.posts} Product Posts</p>
+                  {/* Display months if available, although not strictly requested by design but good for info */}
+                  {plan.months && <p className="duration" style={{ fontSize: '14px', color: '#666' }}>Valid for {plan.months} month(s)</p>}
 
-                <ul>
-                  <li>✔ {plan.posts} Listings</li>
-                  <li>✔ Admin Approval</li>
-                  <li>✔ Visible to Customers</li>
-                </ul>
+                  <ul>
+                    <li>✔ {plan.posts} Listings</li>
+                    <li>✔ Admin Approval</li>
+                    <li>✔ Visible to Customers</li>
+                  </ul>
 
-                <button onClick={() => handleSelect(plan)}>
-                  Choose {plan.name}
-                </button>
-              </div>
-            ))}
-          </div>
+                  <button onClick={() => handleSelect(plan)}>
+                    Choose {plan.name}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

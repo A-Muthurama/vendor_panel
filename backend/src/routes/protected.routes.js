@@ -24,6 +24,9 @@ router.get("/offers", authMiddleware, vendorController.getOffers);
 router.post("/offers", authMiddleware, upload.fields([{ name: 'poster', maxCount: 1 }, { name: 'video', maxCount: 1 }]), vendorController.createOffer);
 router.delete("/offers/:id", authMiddleware, vendorController.deleteOffer);
 
+// Plans
+router.get("/plans", authMiddleware, vendorController.getPlans);
+
 // Subscription
 router.post("/create-order", authMiddleware, vendorController.createRazorpayOrder);
 router.post("/subscribe", authMiddleware, vendorController.buySubscription);
