@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { locations } from "../data/locations";
 import SearchableDropdown from "../components/SearchableDropdown";
 import AuthHeader from "../components/AuthHeader";
-import AuthFooter from "../components/AuthFooter";
+
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -426,7 +426,7 @@ const Signup = () => {
           </div>
         </form>
       </div>
-      <AuthFooter />
+     
     </>
   );
 };

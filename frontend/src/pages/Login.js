@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import AuthHeader from "../components/AuthHeader";
-import AuthFooter from "../components/AuthFooter";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
