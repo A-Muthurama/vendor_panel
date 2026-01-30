@@ -124,7 +124,7 @@ const Login = () => {
           </div>
         </form>
       </div>
-      <AuthFooter />
+      
     </>
   );
 };
