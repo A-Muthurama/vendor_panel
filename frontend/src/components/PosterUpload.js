@@ -83,6 +83,7 @@ export default function PosterUpload() {
     const [videoPreview, setVideoPreview] = useState(null);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showDeclaration, setShowDeclaration] = useState(false);
 
     useEffect(() => {
         if (vendor) {
@@ -181,11 +182,17 @@ export default function PosterUpload() {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+
         if (!validate()) {
             return;
         }
 
+        setShowDeclaration(true);
+    };
+
+    const confirmAndPublish = async () => {
+        setShowDeclaration(false);
         setIsSubmitting(true);
 
         try {
@@ -275,7 +282,7 @@ export default function PosterUpload() {
                                             <div className="upload-placeholder">
                                                 <Upload size={32} />
                                                 <span>Upload Main Poster</span>
-                                                <small>Max 10MB (JPEG, PNG, WebP)</small>
+                                                <small>Max 100MB (JPEG, PNG, WebP)</small>
                                             </div>
                                         )}
                                     </label>
@@ -549,6 +556,47 @@ export default function PosterUpload() {
                     </div>
                 </form>
             </main>
+
+            {showDeclaration && (
+                <div className="declaration-overlay">
+                    <div className="declaration-modal">
+                        <div className="declaration-header">
+                            <Info size={24} className="icon-gold" />
+                            <h2>Partner Declaration</h2>
+                        </div>
+                        <div className="declaration-content">
+                            <p>Before publishing your offer, please acknowledge the following:</p>
+                            <ul>
+                                <li>
+                                    <strong>Legal Compliance:</strong> Stores/Partners are legally compliant with GST, BIS, Tax, advertisement norms.
+                                </li>
+                                <li>
+                                    <strong>Platform Rights:</strong> Platform has the right to suspend/remove Store/Partner when there is deviation from the platform terms and conditions.
+                                </li>
+                                <li>
+                                    <strong>Content Responsibility:</strong> Store/Partner is solely responsible for content. Platform is not responsible for any misleading information or posts.
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="declaration-actions">
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setShowDeclaration(false)}
+                                disabled={isSubmitting}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn-primary"
+                                onClick={confirmAndPublish}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? 'Publishing...' : 'I Agree & Publish'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

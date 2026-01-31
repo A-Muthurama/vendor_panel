@@ -405,3 +405,113 @@
         padding: 20px 10px;
     }
 }
+
+/* Declaration Modal */
+.declaration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(76, 15, 46, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.declaration-modal {
+    background: white;
+    width: 100%;
+    max-width: 550px;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(76, 15, 46, 0.15);
+    border: 1px solid rgba(230, 220, 205, 0.5);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.declaration-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #FDFBF7;
+}
+
+.declaration-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: #4C0F2E;
+    margin: 0;
+}
+
+.declaration-content p {
+    color: #6B4E3D;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.declaration-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.declaration-content li {
+    position: relative;
+    padding-left: 25px;
+    color: #4C0F2E;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.declaration-content li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    color: #D4AF37;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.declaration-content li strong {
+    display: block;
+    color: #4C0F2E;
+    margin-bottom: 2px;
+}
+
+.declaration-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+@media (max-width: 480px) {
+    .declaration-actions {
+        flex-direction: column-reverse;
+    }
+    .declaration-actions button {
+        width: 100%;
+    }
+    .declaration-modal {
+        padding: 20px;
+    }
+}
