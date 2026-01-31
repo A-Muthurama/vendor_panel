@@ -13,7 +13,7 @@ const PublicSupport = () => {
         {
             icon: <Mail size={32} />,
             title: "Email Support",
-            value: "support@projectj.com",
+            value: "support@jewellerparadise.com",
             desc: "We aim to respond within 24 hours."
         },
         {

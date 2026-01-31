@@ -8,7 +8,7 @@ const Support = () => {
         {
             icon: "✉️",
             title: "Email Support",
-            value: "support@projectj.com",
+            value: "support@jewellerparadise.com",
             desc: "Response within 24 hours"
         },
         {

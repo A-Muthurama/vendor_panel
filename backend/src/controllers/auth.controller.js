@@ -139,11 +139,11 @@ export const signup = async (req, res) => {
     try {
       await sendEmail({
         to: email,
-        subject: "Welcome to Project J - Registration Successful!",
+        subject: "Welcome to Jeweller Paradise - Registration Successful!",
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
             <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-              <h2 style="color: #4C0F2E; margin-top: 0;">Welcome to Project J, ${ownerName}!</h2>
+              <h2 style="color: #4C0F2E; margin-top: 0;">Welcome to Jeweller Paradise, ${ownerName}!</h2>
               <p>Congratulations! Your shop, <strong>${shopName}</strong>, has been successfully registered on our platform.</p>
               
               <div style="background-color: #fff9fa; border-left: 4px solid #4C0F2E; padding: 15px; margin: 20px 0;">
@@ -162,7 +162,7 @@ export const signup = async (req, res) => {
                 If you have any questions, feel free to reply to this email or contact our support team.
               </p>
               <p style="font-size: 14px; color: #333;">
-                Best Regards,<br/><strong>Team Project J</strong>
+                Best Regards,<br/><strong>Team Jeweller Paradise</strong>
               </p>
             </div>
           </div>
@@ -315,13 +315,13 @@ export const forgotPassword = async (req, res) => {
 
     await sendEmail({
       to: email,
-      subject: "Password Reset Request - Project J",
+      subject: "Password Reset Request - Jeweller Paradise",
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <h2 style="color: #4C0F2E; margin-top: 0;">Password Reset Request</h2>
             <p>Hi ${vendor.owner_name},</p>
-            <p>We received a request to reset your password for your Project J account. If you didn't make this request, you can ignore this email.</p>
+            <p>We received a request to reset your password for your Jeweller Paradise account. If you didn't make this request, you can ignore this email.</p>
             
             <div style="text-align: center; margin: 30px 0;">
               <a href="${resetLink}" style="background-color: #4C0F2E; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">Reset My Password</a>
@@ -336,7 +336,7 @@ export const forgotPassword = async (req, res) => {
               This link will expire in <strong>15 minutes</strong> for your security.
             </p>
             <p style="font-size: 14px; color: #333;">
-              Best Regards,<br/><strong>Team Project J</strong>
+              Best Regards,<br/><strong>Team Jeweller Paradise</strong>
             </p>
           </div>
         </div>
@@ -409,7 +409,7 @@ export const sendOTP = async (req, res) => {
     // Send Email
     await sendEmail({
       to: email,
-      subject: `Your OTP for Project J Signup: ${otp}`,
+      subject: `Your OTP for Jeweller Paradise Signup: ${otp}`,
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
           <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
@@ -425,7 +425,7 @@ export const sendOTP = async (req, res) => {
             </p>
             
             <p style="font-size: 14px; color: #333; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
-              Best Regards,<br/><strong>Team Project J</strong>
+              Best Regards,<br/><strong>Team Jeweller Paradise</strong>
             </p>
           </div>
         </div>

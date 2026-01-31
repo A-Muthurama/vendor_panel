@@ -72,7 +72,7 @@ export default function PricingPlans() {
         key: keyId,
         amount: amount,
         currency: "INR",
-        name: "Seller Marketplace",
+        name: "Jeweller Paradise",
         description: `${plan.name} Plan - ${plan.posts} Posts`,
         order_id: orderId, // Server-created order ID
         handler: async function (response) {
