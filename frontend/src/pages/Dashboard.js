@@ -10,6 +10,7 @@ const Dashboard = () => {
   const { token, status: authStatus, vendor } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ stats: { totalOffers: 0, activeOffers: 0 }, subscription: { planName: "Free" } });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) {
@@ -25,6 +26,8 @@ const Dashboard = () => {
         setStats(res.data);
       } catch (err) {
         console.error("Error fetching stats:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,8 +40,16 @@ const Dashboard = () => {
   const status = vendorData.status || authStatus;
   const isPending = status === "PENDING" || status === "PENDING_APPROVAL";
 
-  return (
+  if (loading) {
+    return (
+      <div className="dashboard-container enhanced-bg" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #D4AF37', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
+  return (
     <div className="dashboard-container enhanced-bg">
       <TopHeader />
 
