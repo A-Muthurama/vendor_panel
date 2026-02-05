@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Menu, X, ChevronRight, LogOut, LayoutDashboard, Utensils, User, CreditCard, LifeBuoy } from "lucide-react";
+import { Menu, X, ChevronRight, LogOut, LayoutDashboard, Utensils, User, LifeBuoy } from "lucide-react";
 import "../styles/TopHeader.css";
 import jpLogo from "../assets/jp-logo.png";
 
