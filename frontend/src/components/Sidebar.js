@@ -11,7 +11,7 @@ const Sidebar = () => {
         { label: "Dashboard", path: "/vendor/dashboard", icon: "📊" },
         { label: "Manage Offers", path: "/vendor/offers", icon: "🏷️" },
         { label: "Profile & KYC", path: "/vendor/profile", icon: "👤" },
-        { label: "Subscription", path: "/pricing", icon: "💎" },
+        // { label: "Subscription", path: "/pricing", icon: "💎" }, // Hidden temporarily - Free trial active
         { label: "Support", path: "/support", icon: "🎧" },
     ];
 

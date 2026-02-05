@@ -92,15 +92,46 @@ const Dashboard = () => {
           <div className="metric-card">
             <div className="metric-icon-box grey">💎</div>
             <div className="metric-content">
-              <h2 className="metric-value">{subscription.planName || "Free"}</h2>
-              <span className="metric-label">CURRENT PLAN</span>
-              {(subscription.planName === "Free" || !subscription.planName) && (
-                <button
-                  className="upgrade-mini-btn"
-                  onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: You can upgrade your plan once your account is VERIFIED.") : navigate("/pricing")}
-                >
-                  UPGRADE
-                </button>
+              {stats.trialInfo?.isInTrial ? (
+                <>
+                  <h2 className="metric-value" style={{ fontSize: '18px' }}>Free Trial</h2>
+                  <span className="metric-label">
+                    {stats.trialInfo.daysRemaining > 0
+                      ? `${stats.trialInfo.daysRemaining} DAYS LEFT`
+                      : 'TRIAL EXPIRED'}
+                  </span>
+                  {stats.trialInfo.showSubscription && stats.trialInfo.daysRemaining > 0 && (
+                    <button
+                      className="upgrade-mini-btn"
+                      onClick={() => navigate("/pricing")}
+                      style={{ marginTop: '8px' }}
+                    >
+                      VIEW PLANS
+                    </button>
+                  )}
+                  {stats.trialInfo.trialExpired && (
+                    <button
+                      className="upgrade-mini-btn"
+                      onClick={() => navigate("/pricing")}
+                      style={{ marginTop: '8px', background: '#dc2626' }}
+                    >
+                      SUBSCRIBE NOW
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h2 className="metric-value">{subscription.planName || "Free"}</h2>
+                  <span className="metric-label">CURRENT PLAN</span>
+                  {(subscription.planName === "Free" || !subscription.planName) && (
+                    <button
+                      className="upgrade-mini-btn"
+                      onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: You can upgrade your plan once your account is VERIFIED.") : navigate("/pricing")}
+                    >
+                      UPGRADE
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -118,16 +149,19 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="action-card" onClick={() => navigate("/pricing")}>
-              <div className="action-icon-circle">💰</div>
-              <div className="action-info">
-                <h4>Plans</h4>
-                <p>View upgrades</p>
+            {/* Show Plans only after 30 days or if trial expired */}
+            {(stats.trialInfo?.showSubscription || stats.trialInfo?.trialExpired) && (
+              <div className="action-card" onClick={() => navigate("/pricing")}>
+                <div className="action-icon-circle">💰</div>
+                <div className="action-info">
+                  <h4>Plans</h4>
+                  <p>View upgrades</p>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="action-card" onClick={() => navigate("/vendor/offers")}>
-              <div className="action-icon-circle">�</div>
+              <div className="action-icon-circle">📋</div>
               <div className="action-info">
                 <h4>Offers</h4>
                 <p>Manage listings</p>

@@ -15,7 +15,7 @@ const TopHeader = () => {
         { label: "DASHBOARD", path: "/vendor/dashboard", icon: <LayoutDashboard size={18} /> },
         { label: "MANAGE OFFERS", path: "/vendor/offers", icon: <Utensils size={18} /> },
         { label: "PROFILE", path: "/vendor/profile", icon: <User size={18} /> },
-        { label: "SUBSCRIPTION", path: "/pricing", icon: <CreditCard size={18} /> },
+        // { label: "SUBSCRIPTION", path: "/pricing", icon: <CreditCard size={18} /> }, // Hidden temporarily - Free trial active
         { label: "SUPPORT", path: "/support", icon: <LifeBuoy size={18} /> },
     ];
 

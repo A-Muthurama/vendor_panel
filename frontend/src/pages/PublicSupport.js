@@ -4,7 +4,7 @@ import { Mail, Phone, MessageSquare } from "lucide-react";
 import "../styles/PublicSupport.css";
 import "../styles/AuthHeader.css";
 import jpLogo from "../assets/jp-logo.png";
-import AuthFooter from "../components/AuthFooter";
+
 
 const PublicSupport = () => {
     const navigate = useNavigate();
@@ -161,7 +161,7 @@ const PublicSupport = () => {
 
                 </div>
             </div>
-            <AuthFooter />
+
         </>
     );
 };

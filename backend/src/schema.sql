@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS vendors (
   reset_password_token TEXT,
   reset_password_expires TIMESTAMP,
   profile_picture_url TEXT,
+  approved_at TIMESTAMP,
+  days_count INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

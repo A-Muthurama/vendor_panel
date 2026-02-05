@@ -1,4 +1,5 @@
 import pool from "../db.js";
+import crypto from "crypto";
 
 /* ---------------- DASHBOARD STATS ---------------- */
 export const getDashboardStats = async (req, res) => {
@@ -8,13 +9,12 @@ export const getDashboardStats = async (req, res) => {
     try {
         // 1. Get Vendor Status & Details
         const vendorRes = await client.query(
-            "SELECT shop_name, owner_name, status, rejection_reason, reasons FROM vendors WHERE id = $1",
+            "SELECT shop_name, owner_name, status, rejection_reason, reasons, approved_at, days_count FROM vendors WHERE id = $1",
             [vendorId]
         );
         const vendor = vendorRes.rows[0];
 
         // 2. Get Active Subscription
-        // We get the latest active subscription that hasn't expired
         const subRes = await client.query(
             `SELECT * FROM subscriptions 
        WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW() 
@@ -23,7 +23,45 @@ export const getDashboardStats = async (req, res) => {
         );
         const subscription = subRes.rows[0] || null;
 
-        // 3. Get Offer Counts
+        // 3. Calculate Trial Information (using IST timezone)
+        let trialInfo = null;
+        let showSubscription = false;
+
+        if (vendor.approved_at) {
+            // Convert to IST for accurate day calculation
+            const now = new Date();
+            const approvedDate = new Date(vendor.approved_at);
+
+            // Calculate days difference in IST
+            const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            const istApproved = new Date(approvedDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            const daysSinceApproval = Math.floor((istNow - istApproved) / (1000 * 60 * 60 * 24));
+            const daysRemaining = 90 - daysSinceApproval;
+
+            // Update days_count in database for tracking
+            await client.query(
+                "UPDATE vendors SET days_count = $1 WHERE id = $2",
+                [daysSinceApproval, vendorId]
+            );
+
+            // Show subscription plans after 30 days of usage
+            showSubscription = daysSinceApproval >= 30;
+
+            trialInfo = {
+                isInTrial: subscription?.plan_name === 'Free Trial',
+                daysSinceApproval,
+                daysRemaining: Math.max(0, daysRemaining),
+                trialExpired: daysRemaining <= 0,
+                showSubscription,
+                approvedAt: approvedDate.toLocaleString('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                })
+            };
+        }
+
+        // 4. Get Offer Counts
         const offersRes = await client.query(
             `SELECT 
           COUNT(*) FILTER (WHERE status = 'APPROVED') as approved_offers,
@@ -42,6 +80,7 @@ export const getDashboardStats = async (req, res) => {
                 totalPosts: subscription.total_posts,
                 expiryDate: subscription.expiry_date
             } : null,
+            trialInfo,
             stats: {
                 approvedOffers: parseInt(stats.approved_offers),
                 pendingOffers: parseInt(stats.pending_offers),
@@ -287,33 +326,70 @@ export const createRazorpayOrder = async (req, res) => {
 /* ---------------- BUY SUBSCRIPTION ---------------- */
 export const buySubscription = async (req, res) => {
     const vendorId = req.user.id;
-    const { planName, price, posts, months, paymentId } = req.body; // paymentId logic skipped for simplicity, assume verified
+    const { planName, price, posts, months, paymentId, orderId, signature } = req.body;
+
+    console.log("BUY SUBSCRIPTION START:", { vendorId, planName, paymentId, orderId });
 
     try {
-        // 0. Check Vendor Status
-        const vendorRes = await pool.query("SELECT status FROM vendors WHERE id = $1", [vendorId]);
-        if (vendorRes.rows[0]?.status !== "APPROVED") {
-            return res.status(403).json({ message: "Verification Required: Your account must be APPROVED to purchase plans." });
+        // 1. Verify Razorpay Signature (Crucial for Live Mode)
+        if (!paymentId || !orderId || !signature) {
+            console.error("BUY SUBSCRIPTION ERROR: Missing payment details", { paymentId, orderId, signature });
+            return res.status(400).json({ message: "Payment details are missing. Verification failed." });
         }
 
-        // Calculate Expiry based on months (default 1)
+        const body = orderId + "|" + paymentId;
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .update(body.toString())
+            .digest("hex");
+
+        if (expectedSignature !== signature) {
+            console.error("RAZORPAY SIGNATURE MISMATCH:", { expectedSignature, signature });
+            return res.status(400).json({ message: "Invalid payment signature. Transaction failed." });
+        }
+
+        // 2. Check Vendor Status (Must be Approved to activate sub)
+        const vendorRes = await pool.query("SELECT status FROM vendors WHERE id = $1", [vendorId]);
+        const currentStatus = vendorRes.rows[0]?.status;
+
+        if (currentStatus !== "APPROVED" && currentStatus !== "VERIFIED") {
+            console.error("BUY SUBSCRIPTION ERROR: Vendor not approved", { vendorId, status: currentStatus });
+            return res.status(403).json({
+                message: `Account not ready. Status: ${currentStatus}. Please wait for admin approval.`
+            });
+        }
+
+        // 3. Calculate Expiry
         const durationMonths = months || 1;
         const expiryDate = new Date();
         expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
 
+        // 4. Record Subscription in DB
         const result = await pool.query(
             `INSERT INTO subscriptions 
-       (vendor_id, plan_name, price, total_posts, remaining_posts, expiry_date, status)
-       VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE')
-       RETURNING *`,
-            [vendorId, planName, price, posts, posts, expiryDate] // remaining = total initially
+             (vendor_id, plan_name, price, total_posts, remaining_posts, expiry_date, status, razorpay_payment_id, razorpay_order_id)
+             VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', $7, $8)
+             RETURNING *`,
+            [vendorId, planName, price, posts, posts, expiryDate, paymentId, orderId]
         );
 
-        res.status(201).json({ message: "Subscription activated", subscription: result.rows[0] });
+        console.log("SUBSCRIPTION ACTIVATED SUCCESS:", {
+            vendorId,
+            subId: result.rows[0].id,
+            plan: planName
+        });
+
+        res.status(201).json({
+            message: "Subscription activated successfully!",
+            subscription: result.rows[0]
+        });
 
     } catch (err) {
-        console.error("BUY SUB ERROR:", err);
-        res.status(500).json({ message: "Failed to activate subscription" });
+        console.error("BUY SUBSCRIPTION CATCH ERROR:", err);
+        res.status(500).json({
+            message: "Internal server error during subscription activation.",
+            error: err.message
+        });
     }
 };
 

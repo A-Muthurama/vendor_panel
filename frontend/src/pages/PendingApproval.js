@@ -38,7 +38,7 @@ const PendingApproval = () => {
               Next Steps:
             </h4>
             <ul style={{ color: "var(--text-muted)", fontSize: "14px", paddingLeft: "20px", marginBottom: 0 }}>
-              <li style={{ marginBottom: "8px" }}>Explore our <strong>Subscription Plans</strong></li>
+              <li style={{ marginBottom: "8px" }}>Get <strong>90 days FREE trial</strong> upon approval</li>
               <li style={{ marginBottom: "8px" }}>Prepare your offer details</li>
               <li>Wait for admin approval (24-48 hrs)</li>
             </ul>
@@ -46,14 +46,14 @@ const PendingApproval = () => {
 
           {/* Primary Action Button */}
           <button
-            onClick={() => navigate("/pricing")}
+            onClick={() => navigate("/vendor/dashboard")}
           >
-            View Subscription Plans
+            Go to Dashboard
           </button>
 
           {/* Secondary Action Button */}
           <button
-            onClick={() => navigate("/vendor/dashboard")}
+            onClick={() => navigate("/vendor/help-support")}
             style={{
               backgroundColor: "transparent",
               border: "2px solid var(--primary-gold)",
@@ -70,12 +70,12 @@ const PendingApproval = () => {
               e.target.style.color = "var(--text-dark)";
             }}
           >
-            Go to Dashboard
+            Contact Support
           </button>
 
         </div>
       </div>
-      
+
     </>
   );
 };
