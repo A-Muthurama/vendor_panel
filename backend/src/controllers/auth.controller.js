@@ -220,7 +220,7 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log(
-      `LOGIN DEBUG: Attempting login for email: [${email}] password: [${password}]`,
+      `LOGIN DEBUG: Attempting login for email: [${email}]`
     );
 
     const result = await pool.query("SELECT * FROM vendors WHERE email = $1", [
@@ -395,7 +395,7 @@ export const sendOTP = async (req, res) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // Delete any existing OTP for this email
     await pool.query("DELETE FROM otp_verifications WHERE email = $1", [email]);
@@ -421,7 +421,7 @@ export const sendOTP = async (req, res) => {
             </div>
 
             <p style="font-size: 13px; color: #999; text-align: center;">
-              This OTP is valid for <strong>10 minutes</strong>.
+              This OTP is valid for <strong>5 minutes</strong>.
             </p>
             
             <p style="font-size: 14px; color: #333; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
