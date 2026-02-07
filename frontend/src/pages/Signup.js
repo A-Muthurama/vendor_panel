@@ -346,7 +346,10 @@ const Signup = () => {
               onChange={handleChange}
               required
               readOnly={isEmailVerified}
-              style={isEmailVerified ? { backgroundColor: '#f0f0f0', border: '1px solid #2ecc71' } : {}}
+              style={{
+                ...(isEmailVerified ? { backgroundColor: '#f0f0f0', border: '1px solid #2ecc71' } : {}),
+                paddingRight: '90px' // Space for absolute button
+              }}
             />
             {!isEmailVerified && !showOtpInput && (
               <button
