@@ -14,6 +14,11 @@ dotenv.config();
 
 const app = express();
 
+// Root Endpoint
+app.get("/", (req, res) => {
+  res.send("Vendor API is running successfully");
+});
+
 // Time: 16 Jan 2026, 22:15 IST
 const allowedOrigins = [
   process.env.FRONTEND_URL,

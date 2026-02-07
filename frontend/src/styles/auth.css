@@ -240,18 +240,12 @@ input[type="file"]:hover {
 }
 
 /* Location Fields Layout */
+/* Location Fields Layout */
 .location-row {
   display: flex;
-  gap: 15px;
+  flex-direction: column;
+  /* Stack vertically by default */
   width: 100%;
-  margin-bottom: 5px;
-  /* Adjust as needed */
-}
-
-@media (max-width: 600px) {
-  .location-row {
-    flex-direction: column;
-    gap: 0;
-    /* Let individual field margins handle it */
-  }
+  gap: 0;
+  /* Let component margins handle spacing */
 }
