@@ -32,7 +32,7 @@ const createFreeTrialsForExistingVendors = async () => {
             await client.query(`
                 INSERT INTO subscriptions 
                 (vendor_id, plan_name, price, total_posts, remaining_posts, expiry_date, status, start_date)
-                VALUES ($1, 'Free Trial', 0, 999999, 999999, $2, 'ACTIVE', $3)
+                VALUES ($1, 'Free Trial', 0, 20, 20, $2, 'ACTIVE', $3)
                 ON CONFLICT DO NOTHING
             `, [vendor.id, trialExpiryDate, approvalDate]);
 

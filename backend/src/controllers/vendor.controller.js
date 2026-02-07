@@ -44,8 +44,8 @@ export const getDashboardStats = async (req, res) => {
                 [daysSinceApproval, vendorId]
             );
 
-            // Show subscription plans after 30 days of usage
-            showSubscription = daysSinceApproval >= 30;
+            // Show subscription plans after 90 days of usage (end of trial)
+            showSubscription = daysSinceApproval >= 45;
 
             trialInfo = {
                 isInTrial: subscription?.plan_name === 'Free Trial',
@@ -165,8 +165,8 @@ export const createOffer = async (req, res) => {
         // 3. Plan & Limit Check
         const subRes = await client.query(
             `SELECT id, remaining_posts FROM subscriptions 
-             WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW()
-             ORDER BY expiry_date DESC LIMIT 1`,
+             WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW() AND remaining_posts > 0
+             ORDER BY expiry_date ASC LIMIT 1`,
             [vendorId]
         );
 
@@ -359,18 +359,30 @@ export const buySubscription = async (req, res) => {
             });
         }
 
-        // 3. Calculate Expiry
+        // 3. Calculate Expiry (Stacking logic: Activate after existing trial/plan ends)
         const durationMonths = months || 1;
-        const expiryDate = new Date();
+
+        // Find the latest expiry date among active subscriptions to stack the new plan
+        const lastSubRes = await pool.query(
+            "SELECT expiry_date FROM subscriptions WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW() ORDER BY expiry_date DESC LIMIT 1",
+            [vendorId]
+        );
+
+        let startDate = new Date();
+        if (lastSubRes.rows.length > 0) {
+            startDate = new Date(lastSubRes.rows[0].expiry_date);
+        }
+
+        const expiryDate = new Date(startDate);
         expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
 
         // 4. Record Subscription in DB
         const result = await pool.query(
             `INSERT INTO subscriptions 
-             (vendor_id, plan_name, price, total_posts, remaining_posts, expiry_date, status, razorpay_payment_id, razorpay_order_id)
-             VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', $7, $8)
+             (vendor_id, plan_name, price, total_posts, remaining_posts, expiry_date, status, razorpay_payment_id, razorpay_order_id, start_date)
+             VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', $7, $8, $9)
              RETURNING *`,
-            [vendorId, planName, price, posts, posts, expiryDate, paymentId, orderId]
+            [vendorId, planName, price, posts, posts, expiryDate, paymentId, orderId, startDate]
         );
 
         console.log("SUBSCRIPTION ACTIVATED SUCCESS:", {
