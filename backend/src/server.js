@@ -7,6 +7,7 @@ import hpp from "hpp";
 import authRoutes from "./routes/auth.routes.js";
 import protectedRoutes from "./routes/protected.routes.js";
 import internalRoutes from "./routes/internal.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 
 dotenv.config();
@@ -14,6 +15,47 @@ dotenv.config();
 const app = express();
 
 // Time: 16 Jan 2026, 22:15 IST
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://vendor.jewellersparadise.com",
+  "https://www.vendor.jewellersparadise.com",
+  "https://vendor-api.jewellersparadise.com"
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // Check exact matches
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Check subdomain matches
+    if (
+      origin.endsWith(".jewellersparadise.com") ||
+      origin.includes("vercel.app") ||
+      origin.includes("amplifyapp.com") ||
+      origin.includes("localhost")
+    ) {
+      return callback(null, true);
+    }
+
+    console.log("CORS Blocked Origin:", origin);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-internal-key"]
+};
+
+// CORS - Must be first!
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
+
 // Security Headers
 app.use(helmet());
 
@@ -28,41 +70,6 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 app.use(limiter); // Apply to all routes
-
-// Time: 16 Jan 2026, 22:15 IST
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "https://vendor.jewellersparadise.com",
-  "https://www.vendor.jewellersparadise.com"
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    if (
-      allowedOrigins.indexOf(origin) !== -1 ||
-      allowedOrigins.includes(origin) ||
-      origin.includes("vercel.app") ||
-      origin.includes("amplifyapp.com") ||
-      origin.includes("aws") ||
-      origin.includes("localhost") ||
-      origin.endsWith("jewellersparadise.com") // comprehensive check for subdomains
-    ) {
-      callback(null, true);
-    } else {
-      console.log("CORS Blocked Origin:", origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "x-internal-key"]
-};
-app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
@@ -109,9 +116,6 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// Admin routes exist but NOT used by vendor panel
-
-
 // Additional health endpoint for monitoring
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -120,6 +124,9 @@ app.get("/health", (req, res) => {
     time: new Date().toISOString()
   });
 });
+
+// Global Error Handler - MUST be last!
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
@@ -131,8 +138,6 @@ const server = app.listen(PORT, () => {
     dbUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + "..." : "MISSING"
   });
 });
-
-
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION! Shutting down...', err);

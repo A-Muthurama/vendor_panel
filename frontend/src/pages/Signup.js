@@ -9,6 +9,8 @@ import AuthHeader from "../components/AuthHeader";
 import Toast from "../components/Toast";
 
 
+import { compressImage } from "../utils/imageCompression";
+
 const Signup = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -134,7 +136,7 @@ const Signup = () => {
   };
 
   // ---------------- FILE CHANGE ----------------
-  const handleFileChange = (type, file) => {
+  const handleFileChange = async (type, file) => { // Made async
     if (!file) return;
 
     const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
@@ -143,16 +145,27 @@ const Signup = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError("File size must be under 5MB");
+    if (file.size > 10 * 1024 * 1024) { // Increased limit for raw, will compress
+      setError("File size must be under 10MB");
       return;
     }
 
-    setError("");
+    setError(""); // Clear error
+
+    // Compress if image
+    let processFile = file;
+    if (file.type.startsWith('image/')) {
+      try {
+        // Optional: You could show a specialized toast "Optimizing image..."
+        processFile = await compressImage(file);
+      } catch (err) {
+        console.warn("Image compression failed, using original:", err);
+      }
+    }
 
     setFiles((prev) => ({
       ...prev,
-      [type]: file
+      [type]: processFile
     }));
   };
 
@@ -513,7 +526,7 @@ const Signup = () => {
           </div>
 
           <button disabled={loading}>
-            {loading ? "Loading..." : "Register"}
+            {loading ? "Processing Registration..." : "Register"}
           </button>
 
           <div className="auth-link">
