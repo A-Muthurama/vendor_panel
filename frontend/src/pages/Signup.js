@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { locations } from "../data/locations";
 import SearchableDropdown from "../components/SearchableDropdown";
 import AuthHeader from "../components/AuthHeader";
+import Toast from "../components/Toast";
 
 
 const Signup = () => {
@@ -42,8 +43,28 @@ const Signup = () => {
     TRADE_LICENSE: null
   });
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(""); // Add success message state
+  // Toast State & Shims
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+  };
+
+  const closeToast = () => {
+    setToast(null);
+  };
+
+  // Compatibility shims for existing code
+  const setError = (msg) => {
+    if (msg) showToast(msg, "error");
+    else closeToast();
+  };
+
+  const setSuccess = (msg) => {
+    if (msg) showToast(msg, "success");
+    else closeToast();
+  };
+
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
@@ -160,14 +181,27 @@ const Signup = () => {
       return;
     }
 
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters");
+    // Professional Password Validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(form.password)) {
+      setError("Password must be at least 8 characters and include: 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character (@$!%*?&)");
       setLoading(false);
       return;
     }
 
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
+    // Check for personal info in password
+    const passLower = form.password.toLowerCase();
+    const ownerLower = form.ownerName.toLowerCase().trim();
+    const shopLower = form.shopName.toLowerCase().trim();
+
+    if (ownerLower.length > 2 && passLower.includes(ownerLower)) {
+      setError("Password cannot contain your Name");
+      setLoading(false);
+      return;
+    }
+
+    if (shopLower.length > 2 && passLower.includes(shopLower)) {
+      setError("Password cannot contain your Shop Name");
       setLoading(false);
       return;
     }
@@ -243,15 +277,45 @@ const Signup = () => {
   return (
     <>
       <AuthHeader />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
       <div className="auth-page">
         <form className="auth-box" onSubmit={submit}>
           <h2>SELLER SIGNUP</h2>
 
-          {error && <div className="error-text" style={{ padding: '10px', borderRadius: '8px', marginBottom: '15px' }}>{error}</div>}
-          {success && <div className="success-text" style={{ color: 'green', fontSize: '14px', textAlign: 'center', marginBottom: '15px' }}>{success}</div>}
 
-          <input name="shopName" placeholder="Shop Name" value={form.shopName} onChange={handleChange} required />
-          <input name="ownerName" placeholder="Owner Name" value={form.ownerName} onChange={handleChange} required />
+
+          <div className="input-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+              <label></label> {/* Spacer if needed or remove label usage if placeholder is enough, keeping it clean */}
+              <span style={{ fontSize: '11px', color: '#666', marginLeft: 'auto' }}>
+                {form.shopName.length}/30
+              </span>
+            </div>
+            <input
+              name="shopName"
+              placeholder="Shop Name"
+              value={form.shopName}
+              onChange={handleChange}
+              maxLength={30}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+              <span style={{ fontSize: '11px', color: '#666', marginLeft: 'auto' }}>
+                {form.ownerName.length}/25
+              </span>
+            </div>
+            <input
+              name="ownerName"
+              placeholder="Owner Name"
+              value={form.ownerName}
+              onChange={handleChange}
+              maxLength={25}
+              required
+            />
+          </div>
 
           <div style={{ position: 'relative', width: '100%' }}>
             <input
@@ -338,10 +402,37 @@ const Signup = () => {
             />
           </div>
 
-          <input name="pincode" placeholder="Pincode" value={form.pincode} onChange={handleChange} required />
-          <textarea name="address" placeholder="Full Address" value={form.address} onChange={handleChange} required />
+          <input
+            name="pincode"
+            placeholder="Pincode"
+            value={form.pincode}
+            onChange={handleChange}
+            maxLength={6}
+            required
+          />
 
-          <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required />
+          <div className="input-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+              <span style={{ fontSize: '11px', color: '#666', marginLeft: 'auto' }}>
+                {form.address.length}/50
+              </span>
+            </div>
+            <textarea
+              name="address"
+              placeholder="Full Address"
+              value={form.address}
+              onChange={handleChange}
+              maxLength={50}
+              required
+            />
+          </div>
+
+          <div>
+            <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required />
+            <div style={{ fontSize: '11px', color: '#888', marginTop: '4px', lineHeight: '1.4' }}>
+              Must be 8+ chars with Uppercase, Lowercase, Number & Special Char
+            </div>
+          </div>
           <input type="password" name="confirmPassword" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} required />
 
           {/* ---------- KYC FILES ---------- */}
@@ -426,7 +517,7 @@ const Signup = () => {
           </div>
         </form>
       </div>
-     
+
     </>
   );
 };

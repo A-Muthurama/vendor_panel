@@ -35,7 +35,13 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("vercel.app") || origin.includes("localhost")) {
+    if (
+      allowedOrigins.indexOf(origin) !== -1 ||
+      origin.includes("vercel.app") ||
+      origin.includes("amplifyapp.com") ||
+      origin.includes("aws") ||
+      origin.includes("localhost")
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

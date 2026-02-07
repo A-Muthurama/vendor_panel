@@ -39,6 +39,40 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Missing fields" });
     }
 
+    // 2.1 Professional & Secured Validation Rules
+    if (ownerName.length > 25) {
+      return res.status(400).json({ message: "Owner Name must be within 25 characters" });
+    }
+    if (shopName.length > 30) {
+      return res.status(400).json({ message: "Shop Name must be within 30 characters" });
+    }
+    if (address.length > 50) {
+      return res.status(400).json({ message: "Address must be within 50 characters" });
+    }
+    if (!/^\d{6}$/.test(pincode)) {
+      return res.status(400).json({ message: "Pincode must be exactly 6 digits" });
+    }
+
+    // Password Complexity: Min 8, Caps, Small, Number, Special Char
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message: "Password must be at least 8 chars long and include 1 uppercase, 1 lowercase, 1 number, and 1 special char"
+      });
+    }
+
+    // Check for personal info in password
+    const passLower = password.toLowerCase();
+    const ownerLower = ownerName.toLowerCase().trim();
+    const shopLower = shopName.toLowerCase().trim();
+
+    if (ownerLower.length > 2 && passLower.includes(ownerLower)) {
+      return res.status(400).json({ message: "Password cannot contain your Name" });
+    }
+    if (shopLower.length > 2 && passLower.includes(shopLower)) {
+      return res.status(400).json({ message: "Password cannot contain your Shop Name" });
+    }
+
     if (!req.files?.AADHAAR || !req.files?.PAN || !req.files?.GST) {
       return res.status(400).json({ message: "Required KYC missing" });
     }
@@ -107,70 +141,63 @@ export const signup = async (req, res) => {
     await client.query("COMMIT");
 
     // 8.1 Sync vendor to admin backend (do not block signup on failure)
-    try {
-      const adminBackendUrl = process.env.ADMIN_BACKEND_URL;
-      const internalSyncKey = process.env.INTERNAL_SYNC_KEY;
+    const adminBackendUrl = process.env.ADMIN_BACKEND_URL;
+    const internalSyncKey = process.env.INTERNAL_SYNC_KEY;
 
-      if (!adminBackendUrl || !internalSyncKey) {
-        console.warn(
-          "Vendor sync skipped: missing ADMIN_BACKEND_URL or INTERNAL_SYNC_KEY",
-        );
-      } else {
-        await axios.post(
-          `${adminBackendUrl.replace(/\/$/, "")}/internal/vendors`,
-          {
-            externalVendorId: vendor.id, // vendors.id
-            shopName: vendor.shop_name,
-            ownerName: vendor.owner_name,
-            email: vendor.email,
+    if (adminBackendUrl && internalSyncKey) {
+      axios.post(
+        `${adminBackendUrl.replace(/\/$/, "")}/internal/vendors`,
+        {
+          externalVendorId: vendor.id,
+          shopName: vendor.shop_name,
+          ownerName: vendor.owner_name,
+          email: vendor.email,
+        },
+        {
+          headers: {
+            "x-internal-key": internalSyncKey,
           },
-          {
-            headers: {
-              "x-internal-key": internalSyncKey,
-            },
-          },
-        );
-      }
-    } catch (syncErr) {
-      console.error("Vendor sync failed:", syncErr?.response?.data || syncErr);
+          timeout: 5000 // 5s timeout
+        }
+      ).catch(syncErr => {
+        console.error("Vendor sync failed in background:", syncErr?.response?.data || syncErr.message);
+      });
     }
 
     // 9. Send Welcome Email (Don't let email failure block signup)
-    try {
-      await sendEmail({
-        to: email,
-        subject: "Welcome to Jeweller Paradise - Registration Successful!",
-        html: `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-              <h2 style="color: #4C0F2E; margin-top: 0;">Welcome to Jeweller Paradise, ${ownerName}!</h2>
-              <p>Congratulations! Your shop, <strong>${shopName}</strong>, has been successfully registered on our platform.</p>
-              
-              <div style="background-color: #fff9fa; border-left: 4px solid #4C0F2E; padding: 15px; margin: 20px 0;">
-                <p style="margin: 0; font-weight: bold; color: #4C0F2E;">Account Status: PENDING APPROVAL</p>
-                <p style="margin: 5px 0 0 0; font-size: 14px;">Our team is currently verifying your KYC documents. This process usually takes 24-48 business hours.</p>
-              </div>
-
-              <p>Once approved, you will be able to:</p>
-              <ul style="color: #555;">
-                <li>Upload and manage your jewelry offers</li>
-                <li>Reach more customers in your area</li>
-                <li>Access your vendor dashboard</li>
-              </ul>
-
-              <p style="font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
-                If you have any questions, feel free to reply to this email or contact our support team.
-              </p>
-              <p style="font-size: 14px; color: #333;">
-                Best Regards,<br/><strong>Team Jeweller Paradise</strong>
-              </p>
+    sendEmail({
+      to: email,
+      subject: "Welcome to Jeweller Paradise - Registration Successful!",
+      html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <h2 style="color: #4C0F2E; margin-top: 0;">Welcome to Jeweller Paradise, ${ownerName}!</h2>
+            <p>Congratulations! Your shop, <strong>${shopName}</strong>, has been successfully registered on our platform.</p>
+            
+            <div style="background-color: #fff9fa; border-left: 4px solid #4C0F2E; padding: 15px; margin: 20px 0;">
+              <p style="margin: 0; font-weight: bold; color: #4C0F2E;">Account Status: PENDING APPROVAL</p>
+              <p style="margin: 5px 0 0 0; font-size: 14px;">Our team is currently verifying your KYC documents. This process usually takes 24-48 business hours.</p>
             </div>
+
+            <p>Once approved, you will be able to:</p>
+            <ul style="color: #555;">
+              <li>Upload and manage your jewelry offers</li>
+              <li>Reach more customers in your area</li>
+              <li>Access your vendor dashboard</li>
+            </ul>
+
+            <p style="font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
+              If you have any questions, feel free to reply to this email or contact our support team.
+            </p>
+            <p style="font-size: 14px; color: #333;">
+              Best Regards,<br/><strong>Team Jeweller Paradise</strong>
+            </p>
           </div>
-        `,
-      });
-    } catch (emailErr) {
-      console.error("Welcome Email Failed:", emailErr);
-    }
+        </div>
+      `,
+    }).catch(emailErr => {
+      console.error("Background Welcome Email Failed:", emailErr.message);
+    });
 
     return res.status(201).json({
       message: "Signup successful. Await admin approval.",
