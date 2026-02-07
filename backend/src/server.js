@@ -53,7 +53,6 @@ const corsOptions = {
 };
 
 // CORS - Must be first!
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 // Security Headers
