@@ -53,6 +53,15 @@
     color: #a0aec0;
 }
 
+.dropdown-icon {
+    color: var(--primary-plum);
+    transition: color 0.2s ease;
+}
+
+.dropdown-trigger.active .dropdown-icon {
+    color: var(--accent-gold);
+}
+
 .chevron {
     color: #a0aec0;
     transition: transform 0.3s ease;

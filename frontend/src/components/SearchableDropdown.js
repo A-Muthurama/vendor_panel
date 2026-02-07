@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check } from 'lucide-react';
 import './SearchableDropdown.css';
 
-const SearchableDropdown = ({ options, value, onChange, placeholder, disabled, label }) => {
+const SearchableDropdown = ({ options, value, onChange, placeholder, disabled, label, icon: Icon }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const dropdownRef = useRef(null);
@@ -36,9 +36,12 @@ const SearchableDropdown = ({ options, value, onChange, placeholder, disabled, l
                 className={`dropdown-trigger ${isOpen ? 'active' : ''}`}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
             >
-                <span className={!value ? 'placeholder' : ''}>
-                    {value || placeholder}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {Icon && <Icon size={18} className="dropdown-icon" />}
+                    <span className={!value ? 'placeholder' : ''}>
+                        {value || placeholder}
+                    </span>
+                </div>
                 <ChevronDown size={18} className={`chevron ${isOpen ? 'rotate' : ''}`} />
             </div>
 

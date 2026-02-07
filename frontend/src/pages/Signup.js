@@ -10,7 +10,7 @@ import Toast from "../components/Toast";
 
 
 import { compressImage } from "../utils/imageCompression";
-import { Eye, EyeOff } from "lucide-react"; // Import Icons
+import { Eye, EyeOff, Map as MapIcon, MapPin } from "lucide-react"; // Import Icons
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -406,19 +406,21 @@ const Signup = () => {
           <input name="phone" placeholder="Phone (10-digit)" value={form.phone} onChange={handleChange} required />
 
           {/* Searchable Selects for Locations */}
-          <div style={{ display: 'flex', gap: '15px', width: '100%', marginBottom: '5px' }}>
+          <div className="location-row">
             <SearchableDropdown
               options={Object.keys(flattenedLocations)}
               value={form.state}
               onChange={(val) => handleLocationChange("state", val)}
-              placeholder="Select State"
+              placeholder="State"
+              icon={MapIcon}
             />
             <SearchableDropdown
               options={flattenedLocations[form.state] || []}
               value={form.city}
               onChange={(val) => handleLocationChange("city", val)}
-              placeholder={form.state ? "Select District" : "Select State First"}
+              placeholder={form.state ? "District" : "State First"}
               disabled={!form.state}
+              icon={MapPin}
             />
           </div>
 
