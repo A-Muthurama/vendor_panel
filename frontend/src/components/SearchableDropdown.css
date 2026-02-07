@@ -25,6 +25,8 @@
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: 48px;
+    box-sizing: border-box;
+    /* Fix width mismatch */
 }
 
 .dropdown-trigger:hover {
