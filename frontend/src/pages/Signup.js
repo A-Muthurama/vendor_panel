@@ -264,10 +264,14 @@ const Signup = () => {
 
       const message = err.response?.data?.message || "Signup failed.";
 
-      if (message.includes("already registered")) {
-        setError(<>This email is already registered. <Link to="/vendor/login" style={{ color: '#d4af37' }}>Login here</Link></>);
+      if (message.toLowerCase().includes("already registered")) {
+        setToast({
+          message: "This email is already registered. Redirecting to login...",
+          type: "info"
+        });
+        setTimeout(() => navigate("/vendor/login"), 2000);
       } else {
-        setError(message);
+        showToast(message, "error");
       }
     } finally {
       setLoading(false);
