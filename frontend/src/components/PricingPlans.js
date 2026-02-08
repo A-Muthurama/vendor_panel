@@ -140,7 +140,7 @@ export default function PricingPlans() {
               <h2 style={{ color: '#D4AF37' }}>Free Trial Benefit Active</h2>
               <p style={{ fontSize: '18px', maxWidth: '600px', margin: '15px auto' }}>
                 Your business is currently enjoying the <strong>90-Day Free Trial</strong> benefit.
-                Subscription plans will be available for you to view and purchase after 45 days of usage.
+                Subscription plans will be available for you to view and purchase after your 90-day trial period.
               </p>
               <button onClick={() => navigate("/vendor/dashboard")} className="btn-primary" style={{ marginTop: '20px' }}>
                 Back to Dashboard

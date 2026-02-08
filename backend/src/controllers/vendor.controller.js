@@ -70,7 +70,7 @@ export const getDashboardStats = async (req, res) => {
         // 4. Get Offer Counts
         const offersRes = await client.query(
             `SELECT 
-          COUNT(*) FILTER (WHERE status = 'APPROVED') as approved_offers,
+          COUNT(*) FILTER (WHERE status = 'APPROVED' AND end_date >= CURRENT_DATE) as active_offers,
           COUNT(*) FILTER (WHERE status = 'PENDING') as pending_offers,
           COUNT(*) as total_offers
         FROM offers WHERE vendor_id = $1`,
@@ -88,7 +88,7 @@ export const getDashboardStats = async (req, res) => {
             } : null,
             trialInfo,
             stats: {
-                approvedOffers: parseInt(stats.approved_offers),
+                activeOffers: parseInt(stats.active_offers),
                 pendingOffers: parseInt(stats.pending_offers),
                 totalOffers: parseInt(stats.total_offers)
             },
