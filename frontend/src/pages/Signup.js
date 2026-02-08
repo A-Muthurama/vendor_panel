@@ -72,6 +72,7 @@ const Signup = () => {
 
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [complianceConfirmed, setComplianceConfirmed] = useState(false);
 
   // ---------- OTP STATES ----------
   const [otp, setOtp] = useState("");
@@ -238,6 +239,12 @@ const Signup = () => {
 
     if (!acceptedTerms) {
       setError("Please accept the Terms and Conditions to proceed");
+      setLoading(false);
+      return;
+    }
+
+    if (!complianceConfirmed) {
+      setError("Please confirm compliance with Indian laws to proceed");
       setLoading(false);
       return;
     }
@@ -564,6 +571,52 @@ const Signup = () => {
                 >
                   Partner Registration Policy & Terms of Service
                 </Link>
+              </label>
+            </div>
+          </div>
+
+          <div style={{
+            marginBottom: '20px',
+            padding: '15px',
+            backgroundColor: '#FDFBF7',
+            borderRadius: '8px',
+            border: '1px solid #E6DCCD',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '12px'
+            }}>
+              <input
+                type="checkbox"
+                id="compliance"
+                checked={complianceConfirmed}
+                onChange={(e) => setComplianceConfirmed(e.target.checked)}
+                style={{
+                  width: '18px',
+                  height: '18px',
+                  cursor: 'pointer',
+                  margin: 0,
+                  marginTop: '2px',
+                  accentColor: '#4C0F2E',
+                  flexShrink: 0
+                }}
+              />
+
+              <label
+                htmlFor="compliance"
+                style={{
+                  margin: 0,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  color: '#2C1E16',
+                  lineHeight: '1.5',
+                  flex: 1
+                }}
+              >
+                I confirm that all offers posted comply with Indian laws and I am solely responsible for transactions.
               </label>
             </div>
           </div>
