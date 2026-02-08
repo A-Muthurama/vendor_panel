@@ -33,8 +33,14 @@ export const getDashboardStats = async (req, res) => {
             const approvedDate = new Date(vendor.approved_at);
 
             // Calculate days difference in IST
+            // Calculate days difference in IST (Calendar Days)
             const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
             const istApproved = new Date(approvedDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+
+            // Normalize to midnight to count calendar days
+            istNow.setHours(0, 0, 0, 0);
+            istApproved.setHours(0, 0, 0, 0);
+
             const daysSinceApproval = Math.floor((istNow - istApproved) / (1000 * 60 * 60 * 24));
             const daysRemaining = 90 - daysSinceApproval;
 
@@ -44,7 +50,7 @@ export const getDashboardStats = async (req, res) => {
                 [daysSinceApproval, vendorId]
             );
 
-            // Show subscription plans after 90 days of usage (end of trial)
+            // Show subscription plans after 45 days of usage (end of trial)
             showSubscription = daysSinceApproval >= 45;
 
             trialInfo = {

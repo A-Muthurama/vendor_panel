@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "../styles/auth.css";
 import AuthHeader from "../components/AuthHeader";
 
@@ -10,12 +11,34 @@ const Rejected = () => {
     const navigate = useNavigate();
     const { vendor } = useAuth();
 
-    // Check location state first (passed from login), then vendor context (persisted), then fallback
+    console.log("REJECTED DEBUG: location.state", location.state);
+    console.log("REJECTED DEBUG: vendor context", vendor);
+
+    const [backendReason, setBackendReason] = useState(null);
+
+    useEffect(() => {
+        if (!location.state?.reason && !location.state?.reasons && !vendor?.rejectionReason && !vendor?.reasons) {
+            import("../api/vendorApi").then(({ getProfile }) => {
+                getProfile().then(res => {
+                    console.log("REJECTED DEBUG: Fetched profile", res.data);
+                    if (res.data.vendor?.rejectionReason) {
+                        setBackendReason(res.data.vendor.rejectionReason);
+                    }
+                }).catch(err => {
+                    console.error("REJECTED DEBUG: Failed to fetch profile", err);
+                });
+            });
+        }
+    }, [location.state, vendor]);
+
     const reason = location.state?.reason ||
         location.state?.reasons ||
         vendor?.rejectionReason ||
         vendor?.reasons ||
+        backendReason ||
         "Your application does not meet our criteria.";
+
+    console.log("REJECTED DEBUG: computed reason", reason);
 
     return (
         <>
