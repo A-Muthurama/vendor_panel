@@ -25,18 +25,26 @@
     align-items: center;
     justify-content: center;
     color: #D4AF37;
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
 }
 
 .brand-title {
     font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    letter-spacing: 2px;
+    font-size: 20px;
+    letter-spacing: 1px;
     font-weight: 700;
     margin: 0;
     white-space: nowrap;
     display: block;
     line-height: normal;
-    /* Fix vertical alignment */
+    background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
 }
 
 .header-nav {
@@ -200,6 +208,16 @@
     border-bottom: 1px solid #f5f5f5;
 }
 
+.mobile-sidebar-header .brand-icon {
+    height: 40px;
+}
+
+.mobile-sidebar-header .brand-title {
+    font-size: 16px;
+    display: block !important;
+    /* Force show title inside sidebar even if hidden in main header */
+}
+
 .close-sidebar-btn {
     background: #fdf1f5;
     border: none;
@@ -329,7 +347,19 @@
 }
 
 @media (max-width: 480px) {
-    .brand-icon {
+    .brand-title {
         display: none;
+    }
+
+    .brand-icon {
+        display: flex;
+        /* Ensure logo is visible */
+        height: 40px;
+        /* Scale logo down slightly */
+    }
+
+    /* Ensure action buttons don't overflow */
+    .mobile-menu-toggle {
+        padding: 8px;
     }
 }

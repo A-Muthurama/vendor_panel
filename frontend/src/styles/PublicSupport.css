@@ -294,3 +294,101 @@
 .support-footer {
     animation: fadeInUp 0.8s ease-out 0.9s backwards;
 }
+
+/* --- Responsive Header Styles for Public Support --- */
+.ps-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.ps-logo {
+    height: 55px;
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+.ps-brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.ps-header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.ps-login-btn {
+    background: transparent;
+    border: 2px solid #4C0F2E;
+    color: #4C0F2E;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ps-login-btn:hover {
+    background: #4C0F2E;
+    color: #fff;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .ps-brand-title {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .ps-header-brand {
+        gap: 5px;
+    }
+
+    .ps-logo {
+        height: 40px;
+    }
+
+    .ps-brand-title {
+        font-size: 16px;
+    }
+
+    .ps-header-right {
+        gap: 8px;
+    }
+
+    .ps-login-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+
+    .auth-cta-btn {
+        padding: 8px 16px !important;
+        /* Force override */
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .ps-brand-title {
+        display: none;
+        /* Hide text on very small screens, show only logo */
+    }
+
+    .ps-header-brand {
+        flex: 0 0 auto;
+    }
+}

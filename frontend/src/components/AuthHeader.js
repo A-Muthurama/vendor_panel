@@ -9,30 +9,13 @@ const AuthHeader = () => {
     return (
         <header className="auth-header">
             {/* 1. Brand / Logo */}
-            {/* 1. Brand / Logo */}
-            <div className="auth-header-brand" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="auth-header-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
                 <img
                     src={jpLogo}
                     alt="JP Logo"
                     className="auth-brand-icon"
-                    style={{
-                        height: '55px',
-                        width: 'auto',
-                        objectFit: 'contain',
-                        mixBlendMode: 'multiply'
-                    }}
                 />
-                <h2 className="auth-brand-title" style={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: '22px',
-                    fontWeight: '700',
-                    letterSpacing: '1px',
-                    background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    textTransform: 'uppercase',
-                    margin: 0
-                }}>JEWELLERS PARADISE</h2>
+                <h2 className="auth-brand-title">JEWELLERS PARADISE</h2>
             </div>
 
             {/* 2. Navigation Menu */}

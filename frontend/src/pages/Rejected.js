@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/auth.css";
 import AuthHeader from "../components/AuthHeader";
-import AuthFooter from "../components/AuthFooter";
+
 
 const Rejected = () => {
     const location = useLocation();
@@ -50,7 +50,7 @@ const Rejected = () => {
                     </button>
                 </div>
             </div>
-            <AuthFooter />
+
         </>
     );
 };

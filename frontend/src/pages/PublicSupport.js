@@ -54,31 +54,13 @@ const PublicSupport = () => {
             {/* Custom Header with Sign Up Button */}
             <header className="auth-header">
                 {/* 1. Brand / Logo */}
-                {/* 1. Brand / Logo */}
-                {/* 1. Brand / Logo */}
-                <div className="auth-header-brand" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="auth-header-brand ps-header-brand">
                     <img
                         src={jpLogo}
                         alt="JP Logo"
-                        className="auth-brand-icon"
-                        style={{
-                            height: '55px',
-                            width: 'auto',
-                            objectFit: 'contain',
-                            mixBlendMode: 'multiply'
-                        }}
+                        className="auth-brand-icon ps-logo"
                     />
-                    <h2 className="auth-brand-title" style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: '22px',
-                        fontWeight: '700',
-                        letterSpacing: '1px',
-                        background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        textTransform: 'uppercase',
-                        margin: 0
-                    }}>JEWELLERS PARADISE</h2>
+                    <h2 className="auth-brand-title ps-brand-title">JEWELLERS PARADISE</h2>
                 </div>
 
                 {/* 2. Navigation Menu */}
@@ -88,29 +70,10 @@ const PublicSupport = () => {
                 </nav>
 
                 {/* 3. Login & Sign Up Buttons */}
-                <div className="auth-header-right" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                <div className="auth-header-right ps-header-right">
                     <button
-                        className="auth-nav-item"
+                        className="ps-login-btn"
                         onClick={() => navigate('/vendor/login')}
-                        style={{
-                            background: 'transparent',
-                            border: '2px solid #4C0F2E',
-                            color: '#4C0F2E',
-                            padding: '10px 24px',
-                            borderRadius: '25px',
-                            fontWeight: '600',
-                            fontSize: '14px',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.background = '#4C0F2E';
-                            e.target.style.color = '#fff';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.background = 'transparent';
-                            e.target.style.color = '#4C0F2E';
-                        }}
                     >
                         Login
                     </button>

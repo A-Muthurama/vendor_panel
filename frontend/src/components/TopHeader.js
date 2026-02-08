@@ -30,24 +30,9 @@ const TopHeader = () => {
                     <img
                         src={jpLogo}
                         alt="JP Logo"
-                        style={{
-                            height: '45px',
-                            width: 'auto',
-                            objectFit: 'contain',
-                            mixBlendMode: 'multiply'
-                        }}
+                        className="brand-icon"
                     />
-                    <h2 className="brand-title" style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: '18px',
-                        fontWeight: '700',
-                        letterSpacing: '1px',
-                        background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        textTransform: 'uppercase',
-                        margin: 0
-                    }}>JEWELLERS PARADISE</h2>
+                    <h2 className="brand-title">JEWELLERS PARADISE</h2>
                 </div>
 
                 {/* 2. Navigation Menu */}
@@ -94,28 +79,13 @@ const TopHeader = () => {
                 {/* Mobile Sidebar */}
                 <div className={`mobile-sidebar ${isMenuOpen ? "open" : ""}`}>
                     <div className="mobile-sidebar-header">
-                        <div className="header-brand" onClick={() => { navigate("/vendor/dashboard"); closeMenu(); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="header-brand" onClick={() => { navigate("/vendor/dashboard"); closeMenu(); }} style={{ cursor: 'pointer' }}>
                             <img
                                 src={jpLogo}
                                 alt="JP Logo"
-                                style={{
-                                    height: '40px',
-                                    width: 'auto',
-                                    objectFit: 'contain',
-                                    mixBlendMode: 'multiply'
-                                }}
+                                className="brand-icon"
                             />
-                            <h2 className="brand-title" style={{
-                                fontFamily: "'Playfair Display', serif",
-                                fontSize: '16px',
-                                fontWeight: '700',
-                                letterSpacing: '1px',
-                                background: 'linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                textTransform: 'uppercase',
-                                margin: 0
-                            }}>JEWELLERS PARADISE</h2>
+                            <h2 className="brand-title">JEWELLERS PARADISE</h2>
                         </div>
                         <button className="close-sidebar-btn" onClick={closeMenu}>
                             <X size={24} />

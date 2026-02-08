@@ -28,17 +28,26 @@
     align-items: center;
     justify-content: center;
     color: #D4AF37;
+    height: 55px;
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
 }
 
 .auth-brand-title {
     font-family: 'Playfair Display', serif;
     font-size: 24px;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     font-weight: 700;
     margin: 0;
     white-space: nowrap;
     display: block;
     line-height: normal;
+    background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
 }
 
 .auth-header-nav {
@@ -94,6 +103,22 @@
     }
 
     .auth-brand-title {
-        font-size: 20px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-brand-title {
+        display: none;
+        /* Hide text on small mobile screens */
+    }
+
+    .auth-cta-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+
+    .auth-brand-icon {
+        height: 40px;
     }
 }
