@@ -282,7 +282,7 @@ export default function PosterUpload() {
                                             <div className="upload-placeholder">
                                                 <Upload size={32} />
                                                 <span>Upload Main Poster</span>
-                                                <small>Max 100MB (JPEG, PNG, WebP)</small>
+                                                <small>Max 10MB (JPEG, PNG, WebP)</small>
                                             </div>
                                         )}
                                     </label>
@@ -301,7 +301,7 @@ export default function PosterUpload() {
                                             <div className="upload-placeholder">
                                                 <Film size={32} />
                                                 <span>Upload Showcase Video (Optional)</span>
-                                                <small>Max 10MB (MP4, MOV)</small>
+                                                <small>Max 100MB (MP4, MOV)</small>
                                             </div>
                                         )}
                                     </label>

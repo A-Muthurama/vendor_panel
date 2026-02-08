@@ -14,11 +14,11 @@ export const getDashboardStats = async (req, res) => {
         );
         const vendor = vendorRes.rows[0];
 
-        // 2. Get Active Subscription
+        // 2. Get Currently Active Subscription (started and not expired)
         const subRes = await client.query(
             `SELECT * FROM subscriptions 
-       WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW() 
-       ORDER BY expiry_date DESC LIMIT 1`,
+             WHERE vendor_id = $1 AND status = 'ACTIVE' AND start_date <= NOW() AND expiry_date > NOW() 
+             ORDER BY expiry_date ASC LIMIT 1`,
             [vendorId]
         );
         const subscription = subRes.rows[0] || null;
@@ -575,7 +575,26 @@ export const testRazorpayConfig = async (req, res) => {
 
 /* ---------------- GET PLANS ---------------- */
 export const getPlans = async (req, res) => {
+    const vendorId = req.user.id;
     try {
+        // Check if plans should be visible (45 days after approval)
+        const vendorRes = await pool.query("SELECT approved_at FROM vendors WHERE id = $1", [vendorId]);
+        const approvedAt = vendorRes.rows[0]?.approved_at;
+
+        if (approvedAt) {
+            const now = new Date();
+            const approvedDate = new Date(approvedAt);
+            const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            const istApproved = new Date(approvedDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            istNow.setHours(0, 0, 0, 0);
+            istApproved.setHours(0, 0, 0, 0);
+            const daysSinceApproval = Math.floor((istNow - istApproved) / (1000 * 60 * 60 * 24));
+
+            if (daysSinceApproval < 45) {
+                return res.json([]); // Hide plans by returning empty array
+            }
+        }
+
         const result = await pool.query("SELECT * FROM plans ORDER BY price ASC");
         res.json(result.rows);
     } catch (err) {
