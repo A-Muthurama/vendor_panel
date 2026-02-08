@@ -532,15 +532,7 @@ const Signup = () => {
                 id="terms"
                 checked={acceptedTerms}
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
-                style={{
-                  width: '18px',
-                  height: '18px',
-                  cursor: 'pointer',
-                  margin: 0,
-                  marginTop: '2px',
-                  accentColor: '#4C0F2E',
-                  flexShrink: 0
-                }}
+                className="auth-checkbox"
               />
 
               <label
@@ -592,15 +584,7 @@ const Signup = () => {
                 id="compliance"
                 checked={complianceConfirmed}
                 onChange={(e) => setComplianceConfirmed(e.target.checked)}
-                style={{
-                  width: '18px',
-                  height: '18px',
-                  cursor: 'pointer',
-                  margin: 0,
-                  marginTop: '2px',
-                  accentColor: '#4C0F2E',
-                  flexShrink: 0
-                }}
+                className="auth-checkbox"
               />
 
               <label

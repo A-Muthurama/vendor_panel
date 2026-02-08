@@ -353,13 +353,21 @@
 
     .brand-icon {
         display: flex;
-        /* Ensure logo is visible */
-        height: 40px;
-        /* Scale logo down slightly */
+        height: 32px;
+        /* Smaller logo for mobile */
     }
 
-    /* Ensure action buttons don't overflow */
+    .top-header {
+        height: 60px;
+        /* Reduced height for mobile */
+        padding: 0 12px;
+    }
+
     .mobile-menu-toggle {
         padding: 8px;
+    }
+
+    .header-right {
+        gap: 10px;
     }
 }
