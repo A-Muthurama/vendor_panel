@@ -39,12 +39,15 @@ export default function PosterUpload() {
     }, [token]);
 
     const displayPlan = stats ? {
-        posts: stats.totalPosts,
-        remaining: stats.remainingPosts
+        posts: stats.totalPosts || 20, // Default to 20 for trial context
+        remaining: stats.remainingPosts // This now comes from vendor.posts_remaining via API update
+    } : (vendor?.posts_remaining !== undefined ? {
+        posts: 20,
+        remaining: vendor.posts_remaining
     } : (locationState.state?.plan ? {
         posts: locationState.state.plan.posts,
-        remaining: locationState.state.plan.posts // Assuming new plan
-    } : { posts: 0, remaining: 0 });
+        remaining: locationState.state.plan.posts
+    } : { posts: 0, remaining: 0 }));
 
     const flattenedLocations = React.useMemo(() => {
         const data = { ...locations };

@@ -8,10 +8,10 @@ export const approveVendorInternal = async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    // 1. Update vendor status and set approved_at timestamp
+    // 1. Update vendor status and set approved_at timestamp + initial 20 posts for trial
     const approvalTime = new Date();
     await client.query(
-      "UPDATE vendors SET status = 'APPROVED', approved_at = $2 WHERE id = $1",
+      "UPDATE vendors SET status = 'APPROVED', approved_at = $2, posts_remaining = 20 WHERE id = $1",
       [id, approvalTime]
     );
 

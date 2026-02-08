@@ -7,9 +7,9 @@ export const getDashboardStats = async (req, res) => {
     const client = await pool.connect();
 
     try {
-        // 1. Get Vendor Status & Details
+        // 1. Get Vendor Status & Details (including new posts_remaining column)
         const vendorRes = await client.query(
-            "SELECT shop_name, owner_name, status, rejection_reason, reasons, approved_at, days_count FROM vendors WHERE id = $1",
+            "SELECT shop_name, owner_name, status, rejection_reason, reasons, approved_at, days_count, posts_remaining FROM vendors WHERE id = $1",
             [vendorId]
         );
         const vendor = vendorRes.rows[0];
@@ -82,7 +82,7 @@ export const getDashboardStats = async (req, res) => {
             vendor,
             subscription: subscription ? {
                 planName: subscription.plan_name,
-                remainingPosts: subscription.remaining_posts,
+                remainingPosts: vendor.posts_remaining, // Use the easy-to-catch vendor column
                 totalPosts: subscription.total_posts,
                 expiryDate: subscription.expiry_date
             } : null,
@@ -212,10 +212,15 @@ export const createOffer = async (req, res) => {
             ]
         );
 
-        // 5. Update Subscription Count
+        // 5. Update Subscription Count & Vendor Balance
         await client.query(
             "UPDATE subscriptions SET remaining_posts = remaining_posts - 1 WHERE id = $1",
             [subscription.id]
+        );
+
+        await client.query(
+            "UPDATE vendors SET posts_remaining = GREATEST(0, posts_remaining - 1) WHERE id = $1",
+            [vendorId]
         );
 
         await client.query("COMMIT");
@@ -389,6 +394,12 @@ export const buySubscription = async (req, res) => {
              VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', $7, $8, $9)
              RETURNING *`,
             [vendorId, planName, price, posts, posts, expiryDate, paymentId, orderId, startDate]
+        );
+
+        // 5. Update Vendor Table Balance
+        await pool.query(
+            "UPDATE vendors SET posts_remaining = posts_remaining + $1 WHERE id = $2",
+            [posts, vendorId]
         );
 
         console.log("SUBSCRIPTION ACTIVATED SUCCESS:", {
