@@ -29,7 +29,7 @@ const Login = () => {
     try {
       const res = await loginVendor({ email, password });
       console.log("LOGIN DEBUG: API response", res);
-      const { token, vendorStatus, vendor, rejectionReason } = res.data;
+      const { token, vendorStatus, vendor } = res.data;
 
       // Convert status to uppercase for consistency
       const normalizedStatus = (vendorStatus || "").toUpperCase();
@@ -46,7 +46,7 @@ const Login = () => {
       } else if (normalizedStatus === "LOGIN_APPROVAL" || normalizedStatus === "OFFERS_APPROVAL") {
         navigate("/vendor/pending-approval");
       } else if (normalizedStatus === "REJECTED") {
-        navigate("/vendor/rejected", { state: { reason: rejectionReason } });
+        navigate("/vendor/rejected", { state: { reason: vendor.rejectionReason } });
       } else {
         // Fallback
         navigate("/vendor/dashboard");
@@ -124,7 +124,7 @@ const Login = () => {
           </div>
         </form>
       </div>
-      
+
     </>
   );
 };

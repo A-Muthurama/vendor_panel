@@ -3,10 +3,19 @@ import "../styles/auth.css";
 import AuthHeader from "../components/AuthHeader";
 
 
+import { useAuth } from "../context/AuthContext";
+
 const Rejected = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const reason = location.state?.reason || location.state?.reasons || "Your application does not meet our criteria.";
+    const { vendor } = useAuth();
+
+    // Check location state first (passed from login), then vendor context (persisted), then fallback
+    const reason = location.state?.reason ||
+        location.state?.reasons ||
+        vendor?.rejectionReason ||
+        vendor?.reasons ||
+        "Your application does not meet our criteria.";
 
     return (
         <>

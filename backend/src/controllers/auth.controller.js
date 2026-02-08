@@ -284,8 +284,6 @@ export const login = async (req, res) => {
     return res.json({
       token,
       vendorStatus: vendor.status,
-      rejectionReason: vendor.rejection_reason || vendor.reasons,
-      reasons: vendor.reasons,
       vendor: {
         id: vendor.id,
         shopName: vendor.shop_name,
@@ -298,6 +296,7 @@ export const login = async (req, res) => {
         address: vendor.address,
         status: vendor.status,
         profilePictureUrl: vendor.profile_picture_url,
+        rejectionReason: vendor.rejection_reason || vendor.reasons
       },
     });
   } catch (err) {
