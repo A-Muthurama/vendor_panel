@@ -311,13 +311,7 @@ const Signup = () => {
 
 
 
-          <div className="input-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-              <label></label> {/* Spacer if needed or remove label usage if placeholder is enough, keeping it clean */}
-              <span style={{ fontSize: '11px', color: '#666', marginLeft: 'auto' }}>
-                {form.shopName.length}/30
-              </span>
-            </div>
+          <div className="input-group-relative">
             <input
               name="shopName"
               placeholder="Shop Name"
@@ -325,15 +319,14 @@ const Signup = () => {
               onChange={handleChange}
               maxLength={30}
               required
+              className="has-count"
             />
+            <span className={`char-count ${form.shopName.length >= 30 ? 'limit-reached' : ''}`}>
+              {form.shopName.length}/30
+            </span>
           </div>
 
-          <div className="input-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', color: '#666', marginLeft: 'auto' }}>
-                {form.ownerName.length}/25
-              </span>
-            </div>
+          <div className="input-group-relative">
             <input
               name="ownerName"
               placeholder="Owner Name"
@@ -341,7 +334,11 @@ const Signup = () => {
               onChange={handleChange}
               maxLength={25}
               required
+              className="has-count"
             />
+            <span className={`char-count ${form.ownerName.length >= 25 ? 'limit-reached' : ''}`}>
+              {form.ownerName.length}/25
+            </span>
           </div>
 
           <div style={{ position: 'relative', width: '100%' }}>
@@ -443,12 +440,7 @@ const Signup = () => {
             required
           />
 
-          <div className="input-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', color: '#666', marginLeft: 'auto' }}>
-                {form.address.length}/50
-              </span>
-            </div>
+          <div className="input-group-relative">
             <textarea
               name="address"
               placeholder="Full Address"
@@ -456,7 +448,11 @@ const Signup = () => {
               onChange={handleChange}
               maxLength={50}
               required
+              className="has-count"
             />
+            <span className={`char-count textarea ${form.address.length >= 50 ? 'limit-reached' : ''}`}>
+              {form.address.length}/50
+            </span>
           </div>
 
           <div>
@@ -552,6 +548,8 @@ const Signup = () => {
                 style={{
                   margin: 0,
                   fontSize: '14px',
+                  fontWeight: '400',
+                  textTransform: 'none',
                   cursor: 'pointer',
                   color: '#2C1E16',
                   lineHeight: '1.5',
@@ -610,6 +608,8 @@ const Signup = () => {
                 style={{
                   margin: 0,
                   fontSize: '14px',
+                  fontWeight: '400',
+                  textTransform: 'none',
                   cursor: 'pointer',
                   color: '#2C1E16',
                   lineHeight: '1.5',

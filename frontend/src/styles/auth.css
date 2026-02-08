@@ -248,3 +248,41 @@ input[type="file"]:hover {
   gap: 20px;
   /* Consistent spacing */
 }
+
+/* Character Count Styles */
+.input-group-relative {
+  position: relative;
+  width: 100%;
+}
+
+.auth-box input.has-count {
+  padding-right: 50px;
+  /* Space for counter */
+}
+
+.char-count {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: #999;
+  font-weight: 500;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.char-count.textarea {
+  top: auto;
+  bottom: 8px;
+  transform: none;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.char-count.limit-reached {
+  color: #d32f2f;
+  /* Red for limit reached */
+  font-weight: 600;
+}
