@@ -1,0 +1,466 @@
+/* ========================================
+   MOBILE RESPONSIVE ENHANCEMENTS
+   Additional responsive styles for all pages
+   ======================================== */
+
+/* ===== POSTER UPLOAD MOBILE ENHANCEMENTS ===== */
+@media (max-width: 768px) {
+    .upload-main-content {
+        padding: 25px 12px !important;
+    }
+
+    .upload-header-section {
+        gap: 15px !important;
+        margin-bottom: 30px !important;
+        padding-bottom: 15px !important;
+    }
+
+    .upload-title-box p {
+        font-size: 14px !important;
+    }
+
+    .input-row {
+        gap: 15px !important;
+    }
+
+    .card-box {
+        padding: 20px !important;
+    }
+
+    .section-header h3 {
+        font-size: 16px !important;
+    }
+
+    .form-actions {
+        gap: 12px !important;
+    }
+
+    .preview-container img,
+    .preview-container video {
+        max-height: 250px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-main-content {
+        padding: 20px 10px !important;
+    }
+
+    .upload-header-section {
+        margin-bottom: 25px !important;
+    }
+
+    .upload-title-box h1 {
+        font-size: 22px !important;
+    }
+
+    .upload-title-box p {
+        font-size: 13px !important;
+    }
+
+    .plan-usage-card {
+        padding: 12px 15px !important;
+    }
+
+    .usage-info span {
+        font-size: 13px !important;
+    }
+
+    .card-box {
+        padding: 15px !important;
+    }
+
+    .section-header {
+        margin-bottom: 15px !important;
+        padding-bottom: 10px !important;
+    }
+
+    .section-header h3 {
+        font-size: 15px !important;
+    }
+
+    .input-group label {
+        font-size: 12px !important;
+    }
+
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
+        padding: 11px 14px !important;
+        font-size: 13px !important;
+    }
+
+    .upload-label {
+        min-height: 180px !important;
+    }
+
+    .upload-placeholder span {
+        font-size: 13px !important;
+    }
+
+    .upload-placeholder small {
+        font-size: 10px !important;
+    }
+
+    .preview-container img,
+    .preview-container video {
+        max-height: 200px !important;
+    }
+
+    .checkbox-label strong {
+        font-size: 14px !important;
+    }
+
+    .checkbox-label p {
+        font-size: 11px !important;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 12px 24px !important;
+        font-size: 13px !important;
+    }
+
+    .featured-opt-in {
+        padding: 15px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .upload-main-content {
+        padding: 15px 8px !important;
+    }
+
+    .upload-title-box h1 {
+        font-size: 20px !important;
+    }
+
+    .card-box {
+        padding: 12px !important;
+    }
+
+    .section-header h3 {
+        font-size: 14px !important;
+    }
+
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+
+    .upload-label {
+        min-height: 160px !important;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 11px 20px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* ===== SEARCHABLE DROPDOWN MOBILE ===== */
+@media (max-width: 480px) {
+    .searchable-dropdown {
+        font-size: 14px !important;
+    }
+
+    .dropdown-input {
+        padding: 12px !important;
+        font-size: 14px !important;
+    }
+
+    .dropdown-list {
+        max-height: 180px !important;
+    }
+
+    .dropdown-item {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+}
+
+/* ===== PRICING MOBILE ENHANCEMENTS ===== */
+@media (max-width: 480px) {
+    .pricing-container {
+        padding: 20px 10px !important;
+    }
+
+    .pricing-container h1 {
+        font-size: 24px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .pricing-container h3 {
+        margin-bottom: 20px !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+    }
+
+    .pricing-card {
+        padding: 20px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .price {
+        font-size: 32px !important;
+        margin: 15px 0 5px !important;
+    }
+
+    .pricing-card ul li {
+        padding: 10px 0 !important;
+        font-size: 14px !important;
+    }
+
+    .usage-rules-section {
+        padding: 30px 20px !important;
+        margin: 40px 15px 30px !important;
+    }
+
+    .usage-rules-title h2 {
+        font-size: 24px !important;
+    }
+
+    .rule-item {
+        padding: 25px 20px !important;
+        min-height: 220px !important;
+    }
+
+    .rule-icon {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 24px !important;
+    }
+
+    .rule-text h4 {
+        font-size: 18px !important;
+    }
+
+    .rule-text p {
+        font-size: 14px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .pricing-container h1 {
+        font-size: 22px !important;
+    }
+
+    .pricing-card {
+        padding: 18px !important;
+    }
+
+    .price {
+        font-size: 28px !important;
+    }
+
+    .usage-rules-section {
+        padding: 25px 15px !important;
+    }
+
+    .usage-rules-title h2 {
+        font-size: 22px !important;
+    }
+
+    .rule-item {
+        padding: 20px 15px !important;
+    }
+}
+
+/* ===== SIDEBAR MOBILE ===== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 280px !important;
+    }
+
+    .sidebar-header {
+        padding: 20px 15px !important;
+    }
+
+    .sidebar-nav {
+        padding: 10px !important;
+    }
+
+    .nav-link {
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* ===== SUPPORT PAGE MOBILE ===== */
+@media (max-width: 768px) {
+    .support-container {
+        padding: 20px 12px !important;
+    }
+
+    .support-header h1 {
+        font-size: 24px !important;
+    }
+
+    .support-form {
+        padding: 20px 15px !important;
+    }
+
+    .form-group label {
+        font-size: 13px !important;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 12px !important;
+        font-size: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .support-container {
+        padding: 15px 10px !important;
+    }
+
+    .support-header h1 {
+        font-size: 22px !important;
+    }
+
+    .support-form {
+        padding: 18px 12px !important;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 11px !important;
+        font-size: 13px !important;
+    }
+}
+
+/* ===== TERMS PAGE MOBILE ===== */
+@media (max-width: 768px) {
+    .terms-container {
+        padding: 25px 15px !important;
+    }
+
+    .terms-header h1 {
+        font-size: 26px !important;
+    }
+
+    .terms-content {
+        padding: 20px 15px !important;
+    }
+
+    .terms-content h2 {
+        font-size: 20px !important;
+    }
+
+    .terms-content h3 {
+        font-size: 17px !important;
+    }
+
+    .terms-content p,
+    .terms-content li {
+        font-size: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .terms-container {
+        padding: 20px 10px !important;
+    }
+
+    .terms-header h1 {
+        font-size: 22px !important;
+    }
+
+    .terms-content {
+        padding: 15px 12px !important;
+    }
+
+    .terms-content h2 {
+        font-size: 18px !important;
+    }
+
+    .terms-content h3 {
+        font-size: 16px !important;
+    }
+
+    .terms-content p,
+    .terms-content li {
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+    }
+}
+
+/* ===== TOAST MOBILE ===== */
+@media (max-width: 480px) {
+    .toast {
+        max-width: calc(100% - 20px) !important;
+        margin: 10px !important;
+        padding: 12px 15px !important;
+        font-size: 13px !important;
+    }
+}
+
+/* ===== GENERAL MOBILE FIXES ===== */
+@media (max-width: 768px) {
+
+    /* Ensure all containers don't overflow */
+    * {
+        max-width: 100%;
+    }
+
+    /* Better touch targets */
+    button,
+    a,
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Better form inputs */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+        /* Prevents zoom on iOS */
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* Reduce horizontal padding on small screens */
+    .container,
+    .wrapper,
+    .content {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    /* Better spacing for small screens */
+    h1 {
+        line-height: 1.2 !important;
+    }
+
+    h2,
+    h3,
+    h4 {
+        line-height: 1.3 !important;
+    }
+
+    p {
+        line-height: 1.5 !important;
+    }
+}
+
+@media (max-width: 360px) {
+
+    /* Extra small screens */
+    .container,
+    .wrapper,
+    .content {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+}

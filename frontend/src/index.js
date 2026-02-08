@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import "./styles/mobile-responsive.css";
 
 // Force dark theme for the app by default
 document.documentElement.setAttribute("data-theme", "dark");

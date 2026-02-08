@@ -176,3 +176,89 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #aaa;
 }
+
+/* ===== MOBILE RESPONSIVE STYLES ===== */
+@media (max-width: 768px) {
+    .dropdown-trigger {
+        padding: 13px 14px;
+        min-height: 46px;
+    }
+
+    .dropdown-trigger span {
+        font-size: 14px;
+    }
+
+    .dropdown-label {
+        font-size: 12px;
+    }
+
+    .search-box {
+        padding: 10px;
+    }
+
+    .search-box input {
+        font-size: 14px !important;
+    }
+
+    .options-list {
+        max-height: 220px;
+    }
+
+    .option-item {
+        padding: 11px 14px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dropdown-trigger {
+        padding: 12px;
+        min-height: 44px;
+    }
+
+    .dropdown-trigger span {
+        font-size: 14px;
+    }
+
+    .dropdown-label {
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .search-box {
+        padding: 10px;
+    }
+
+    .search-box input {
+        font-size: 14px !important;
+    }
+
+    .options-list {
+        max-height: 200px;
+    }
+
+    .option-item {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .no-options {
+        padding: 15px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 360px) {
+    .dropdown-trigger {
+        padding: 11px;
+    }
+
+    .dropdown-trigger span {
+        font-size: 13px;
+    }
+
+    .option-item {
+        padding: 10px;
+        font-size: 13px;
+    }
+}

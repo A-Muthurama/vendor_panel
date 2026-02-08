@@ -171,29 +171,59 @@ input[type="file"]:hover {
 }
 
 /* Responsiveness */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .auth-page {
-    padding: 20px 15px;
+    padding: 15px 10px;
+    min-height: calc(100vh - 70px);
   }
 
   .auth-box {
-    padding: 30px 20px;
-    gap: 15px;
+    padding: 25px 18px;
+    gap: 14px;
+    max-width: 100%;
   }
 
   .auth-box h2 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .auth-box button {
-    padding: 12px;
+    padding: 13px;
     font-size: 14px;
+    margin-top: 15px;
+  }
+
+  .auth-box input,
+  .auth-box select,
+  .auth-box textarea {
+    padding: 13px 14px;
+    font-size: 14px;
+  }
+
+  .auth-box label {
+    font-size: 12px;
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 10px 8px;
+  }
+
+  .auth-box {
+    padding: 20px 15px;
+    gap: 12px;
+    border-radius: var(--radius-md);
+  }
+
   .auth-box h2 {
     font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .auth-box p,
+  .auth-box .subtitle {
+    font-size: 13px;
   }
 
   .auth-box input,
@@ -201,6 +231,59 @@ input[type="file"]:hover {
   .auth-box textarea {
     padding: 12px;
     font-size: 14px;
+  }
+
+  .auth-box button {
+    padding: 12px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  .password-toggle {
+    right: 10px;
+    padding: 6px;
+  }
+
+  .char-count {
+    font-size: 10px;
+    right: 10px;
+  }
+
+  input[type="file"]::file-selector-button {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .auth-link {
+    font-size: 13px;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-box {
+    padding: 18px 12px;
+    gap: 10px;
+  }
+
+  .auth-box h2 {
+    font-size: 20px;
+  }
+
+  .auth-box input,
+  .auth-box select,
+  .auth-box textarea {
+    padding: 11px;
+    font-size: 13px;
+  }
+
+  .auth-box label {
+    font-size: 11px;
+  }
+
+  .auth-box button {
+    padding: 11px;
+    font-size: 12px;
   }
 }
 

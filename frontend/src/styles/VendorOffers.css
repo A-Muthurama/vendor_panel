@@ -338,27 +338,122 @@
 
 /* Responsiveness */
 @media (max-width: 768px) {
+    .offers-wrapper {
+        padding: 15px 10px;
+    }
+
     .offers-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 20px;
+        gap: 15px;
+        margin-bottom: 30px;
     }
 
     .offers-header h1 {
-        font-size: 26px;
+        font-size: 24px;
+    }
+
+    .offers-header p {
+        font-size: 14px;
     }
 
     .create-btn {
         width: 100%;
         justify-content: center;
+        padding: 13px 20px;
     }
 
     .offers-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .empty-offers-state {
+        padding: 50px 25px;
+        margin: 30px auto;
+    }
+
+    .empty-offers-state h2 {
+        font-size: 24px;
+    }
+
+    .empty-offers-state p {
+        font-size: 14px;
+    }
+
+    .empty-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .primary-empty-btn,
+    .secondary-empty-btn {
+        width: 100%;
+    }
+
+    .offers-tabs {
+        gap: 8px;
+        padding-bottom: 8px;
+    }
+
+    .offers-tabs button {
+        padding: 7px 14px;
+        font-size: 13px;
+    }
+
+    .offer-image {
+        height: 180px;
+    }
+
+    .offer-details {
+        padding: 15px;
+    }
+
+    .offer-details h3 {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .offers-wrapper {
+        padding: 10px 8px;
+    }
+
+    .offers-header {
+        margin-bottom: 20px;
+    }
+
+    .offers-header h1 {
+        font-size: 22px;
+    }
+
+    .create-btn {
+        padding: 12px 18px;
+        font-size: 11px;
     }
 
     .empty-offers-state {
         padding: 40px 20px;
+        margin: 20px 10px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+    }
+
+    .empty-offers-state h2 {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .empty-offers-state p {
+        font-size: 13px;
+        margin-bottom: 30px;
+    }
+
+    .primary-empty-btn,
+    .secondary-empty-btn {
+        padding: 11px 24px;
     }
 
     .offers-tabs {
@@ -368,5 +463,87 @@
     .offers-tabs button {
         padding: 6px 12px;
         font-size: 12px;
+    }
+
+    .offer-image {
+        height: 160px;
+    }
+
+    .status-badge {
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+
+    .like-badge {
+        top: 10px;
+        left: 10px;
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .offer-details {
+        padding: 12px;
+    }
+
+    .offer-details h3 {
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+    .offer-cat {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+
+    .offer-dates {
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    .delete-btn {
+        padding: 5px 14px;
+        font-size: 11px;
+    }
+
+    .rejection-box {
+        padding: 8px;
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .offers-wrapper {
+        padding: 8px 5px;
+    }
+
+    .offers-header h1 {
+        font-size: 20px;
+    }
+
+    .create-btn {
+        padding: 11px 16px;
+    }
+
+    .empty-offers-state {
+        padding: 30px 15px;
+    }
+
+    .empty-offers-state h2 {
+        font-size: 18px;
+    }
+
+    .offer-image {
+        height: 140px;
+    }
+
+    .offer-details {
+        padding: 10px;
+    }
+
+    .offer-details h3 {
+        font-size: 14px;
     }
 }

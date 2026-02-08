@@ -226,22 +226,54 @@
 /* --- RESPONSIVE STYLES --- */
 @media (max-width: 768px) {
     .terms-container {
-        padding-top: 100px;
+        padding-top: 90px;
         padding-bottom: 40px;
-        padding-left: 20px;
-        padding-right: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
     }
 
     .terms-box {
-        padding: 30px 20px;
+        padding: 35px 22px;
+        border-radius: 20px;
     }
 
     .terms-title {
         font-size: 32px;
     }
 
+    .terms-updated {
+        font-size: 14px;
+    }
+
+    .terms-body {
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    .terms-hero {
+        padding: 25px 20px;
+    }
+
+    .terms-hero-title {
+        font-size: 22px;
+    }
+
+    .terms-hero-text {
+        font-size: 15px;
+    }
+
+    .term-item {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .term-title {
+        font-size: 18px;
+    }
+
     .term-text {
         padding-left: 0;
+        font-size: 15px;
     }
 
     .term-header {
@@ -254,32 +286,173 @@
         text-align: center;
     }
 
+    .privacy-section {
+        padding: 30px 25px;
+    }
+
     .privacy-header {
         flex-direction: column;
         text-align: center;
+    }
+
+    .privacy-title {
+        font-size: 22px;
+    }
+
+    .privacy-text {
+        font-size: 15px;
+    }
+
+    .terms-footer {
+        margin-top: 40px;
+        padding-top: 30px;
+    }
+
+    .terms-back-btn {
+        padding: 14px 40px;
+        font-size: 15px;
     }
 }
 
 @media (max-width: 480px) {
     .terms-container {
-        padding-top: 90px;
+        padding-top: 80px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .terms-box {
+        padding: 25px 18px;
+        border-radius: 16px;
+    }
+
+    .terms-badge span {
+        font-size: 12px;
     }
 
     .terms-title {
-        font-size: 28px;
+        font-size: 26px;
+    }
+
+    .terms-updated {
+        font-size: 13px;
+    }
+
+    .terms-body {
+        font-size: 14px;
+        line-height: 1.7;
     }
 
     .terms-hero {
-        padding: 20px;
+        padding: 20px 15px;
+        margin-bottom: 30px;
+    }
+
+    .terms-hero-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    .terms-hero-title {
+        font-size: 20px;
+    }
+
+    .terms-hero-text {
+        font-size: 14px;
+    }
+
+    .term-item {
+        padding: 18px 15px;
+        margin-bottom: 20px;
+    }
+
+    .term-icon {
+        font-size: 24px;
+    }
+
+    .term-title {
+        font-size: 17px;
+    }
+
+    .term-text {
+        font-size: 14px;
     }
 
     .privacy-section {
-        padding: 20px;
+        padding: 25px 18px;
+        margin-top: 40px;
+    }
+
+    .privacy-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    .privacy-title {
+        font-size: 20px;
+    }
+
+    .privacy-text {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .terms-footer {
+        margin-top: 35px;
+        padding-top: 25px;
     }
 
     .terms-back-btn {
         padding: 12px 30px;
         width: 100%;
         justify-content: center;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .terms-container {
+        padding-top: 70px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .terms-box {
+        padding: 20px 15px;
+    }
+
+    .terms-title {
+        font-size: 24px;
+    }
+
+    .terms-hero {
+        padding: 18px 12px;
+    }
+
+    .terms-hero-title {
+        font-size: 18px;
+    }
+
+    .term-item {
+        padding: 15px 12px;
+    }
+
+    .term-title {
+        font-size: 16px;
+    }
+
+    .privacy-section {
+        padding: 20px 15px;
+    }
+
+    .privacy-title {
+        font-size: 18px;
+    }
+
+    .terms-back-btn {
+        padding: 11px 25px;
+        font-size: 13px;
     }
 }
