@@ -87,7 +87,9 @@ export const getDashboardStats = async (req, res) => {
             istNow.setHours(0, 0, 0, 0);
             istApproved.setHours(0, 0, 0, 0);
 
-            const daysSinceApproval = Math.floor((istNow - istApproved) / (1000 * 60 * 60 * 24));
+            // Use Math.round and Math.max to avoid -1 or 91 days remaining due to timezone edges
+            const diffTime = istNow.getTime() - istApproved.getTime();
+            const daysSinceApproval = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
             const daysRemaining = 90 - daysSinceApproval;
 
             // Update days_count for tracking
