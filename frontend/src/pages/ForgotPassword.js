@@ -3,7 +3,6 @@ import { useState } from "react";
 import { forgotPassword } from "../api/authApi";
 import { Link } from "react-router-dom";
 import AuthHeader from "../components/AuthHeader";
-import AuthFooter from "../components/AuthFooter";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -57,7 +56,6 @@ const ForgotPassword = () => {
                     </div>
                 </form>
             </div>
-            <AuthFooter />
         </>
     );
 };
