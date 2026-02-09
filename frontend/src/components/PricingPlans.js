@@ -136,16 +136,7 @@ export default function PricingPlans() {
           {loading ? (
             <p style={{ textAlign: "center", fontSize: "18px", marginTop: "20px" }}>Loading Plans...</p>
           ) : plans.length === 0 ? (
-            <div className="plans-hidden-notice" style={{ textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(212,175,55,0.2)', marginTop: '20px' }}>
-              <h2 style={{ color: '#D4AF37' }}>Free Trial Benefit Active</h2>
-              <p style={{ fontSize: '18px', maxWidth: '600px', margin: '15px auto' }}>
-                Your business is currently enjoying the <strong>90-Day Free Trial</strong> benefit.
-                Subscription plans will be available for you to view and purchase after 45 days of usage.
-              </p>
-              <button onClick={() => navigate("/vendor/dashboard")} className="btn-primary" style={{ marginTop: '20px' }}>
-                Back to Dashboard
-              </button>
-            </div>
+            <p style={{ textAlign: "center", fontSize: "18px", marginTop: "20px" }}>No plans available at this time.</p>
           ) : (
             <div className="pricing-grid">
               {plans.map((plan) => (

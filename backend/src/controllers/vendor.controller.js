@@ -22,27 +22,24 @@ export const getDashboardStats = async (req, res) => {
             [vendorId]
         );
 
-        // --- AUTO-FIX: If APPROVED but no active subscription, grant Free Trial ---
-        if (vendor.status === 'APPROVED' && subRes.rows.length === 0) {
-            console.log(`[Auto-Fix] Approved vendor ${vendorId} is missing an active subscription. Granting/Re-activating Free Trial...`);
+        // --- AUTO-FIX: If APPROVED but no subscription record exists yet ---
+        const totalSubsRes = await client.query("SELECT COUNT(*) FROM subscriptions WHERE vendor_id = $1", [vendorId]);
+        const hasNoSubs = parseInt(totalSubsRes.rows[0].count) === 0;
+
+        if (vendor.status === 'APPROVED' && (hasNoSubs || vendor.posts_remaining === null)) {
+            console.log(`[Auto-Fix] Approved vendor ${vendorId} needs trial restoration. (No subs or posts NULL)`);
 
             const approvalTime = vendor.approved_at || new Date();
             const trialExpiryDate = new Date(approvalTime);
             trialExpiryDate.setDate(trialExpiryDate.getDate() + 90);
 
-            // Check if we can just re-activate or need to insert
-            const existingTrialRes = await client.query(
+            // Re-verify if Free Trial already exists 
+            const checkTrial = await client.query(
                 "SELECT id FROM subscriptions WHERE vendor_id = $1 AND plan_name = 'Free Trial' LIMIT 1",
                 [vendorId]
             );
 
-            if (existingTrialRes.rows.length > 0) {
-                // Update existing trial to active and 90 days from original approval
-                await client.query(
-                    "UPDATE subscriptions SET status = 'ACTIVE', expiry_date = $2, remaining_posts = GREATEST(remaining_posts, 20) WHERE id = $1",
-                    [existingTrialRes.rows[0].id, trialExpiryDate]
-                );
-            } else {
+            if (checkTrial.rows.length === 0) {
                 // Create new trial
                 await client.query(
                     `INSERT INTO subscriptions 
@@ -50,12 +47,18 @@ export const getDashboardStats = async (req, res) => {
                      VALUES ($1, 'Free Trial', 0, 20, 20, $2, 'ACTIVE', $3)`,
                     [vendorId, trialExpiryDate, approvalTime]
                 );
+                // Sync vendor record
+                await client.query("UPDATE vendors SET posts_remaining = 20, approved_at = $1 WHERE id = $2", [approvalTime, vendorId]);
+                vendor.posts_remaining = 20; // Update local object for the immediate response
+            } else {
+                // Sync vendor record if NULL
+                if (vendor.posts_remaining === null) {
+                    await client.query("UPDATE vendors SET posts_remaining = 20 WHERE id = $1", [vendorId]);
+                    vendor.posts_remaining = 20;
+                }
             }
 
-            // Ensure vendor record is synced
-            await client.query("UPDATE vendors SET posts_remaining = 20, approved_at = $1 WHERE id = $2", [approvalTime, vendorId]);
-
-            // Re-fetch subscription to ensure the rest of the controller has the data
+            // Final re-fetch for the UI
             subRes = await client.query(
                 `SELECT * FROM subscriptions 
                  WHERE vendor_id = $1 AND status = 'ACTIVE' AND start_date <= NOW() AND expiry_date > NOW() 
@@ -63,11 +66,16 @@ export const getDashboardStats = async (req, res) => {
                 [vendorId]
             );
         }
+
         const subscription = subRes.rows[0] || null;
 
         // 3. Calculate Trial Information (using IST timezone)
         let trialInfo = null;
         let showSubscription = false;
+
+        // A vendor is in trial if they are APPROVED and have no paid plan, 
+        // or if they specifically have an active 'Free Trial' subscription.
+        const isActuallyApproved = vendor.status === 'APPROVED' || vendor.status === 'Approved';
 
         if (vendor.approved_at || (subscription && subscription.plan_name === 'Free Trial')) {
             const approvalDate = vendor.approved_at ? new Date(vendor.approved_at) : new Date(subscription.start_date);
@@ -92,7 +100,7 @@ export const getDashboardStats = async (req, res) => {
             showSubscription = daysSinceApproval >= 45;
 
             trialInfo = {
-                isInTrial: subscription?.plan_name === 'Free Trial',
+                isInTrial: (subscription?.plan_name === 'Free Trial') || (isActuallyApproved && daysRemaining > 0),
                 daysSinceApproval,
                 daysRemaining: Math.max(0, daysRemaining),
                 trialExpired: daysRemaining <= 0,
@@ -116,14 +124,17 @@ export const getDashboardStats = async (req, res) => {
         );
         const stats = offersRes.rows[0];
 
+        // Synthesize a plan name for the frontend if subscription is null but they are in trial
+        const effectivePlanName = subscription?.plan_name || (trialInfo?.isInTrial ? "Free Trial" : "Free");
+
         res.json({
             vendor,
-            subscription: subscription ? {
-                planName: subscription.plan_name,
-                remainingPosts: vendor.posts_remaining, // Use the easy-to-catch vendor column
-                totalPosts: subscription.total_posts,
-                expiryDate: subscription.expiry_date
-            } : null,
+            subscription: {
+                planName: effectivePlanName,
+                remainingPosts: vendor.posts_remaining,
+                totalPosts: subscription?.total_posts || (effectivePlanName === "Free Trial" ? 20 : 0),
+                expiryDate: subscription?.expiry_date || (trialInfo?.daysRemaining ? new Date(new Date().getTime() + trialInfo.daysRemaining * 24 * 60 * 60 * 1000) : null)
+            },
             trialInfo,
             stats: {
                 activeOffers: parseInt(stats.active_offers),

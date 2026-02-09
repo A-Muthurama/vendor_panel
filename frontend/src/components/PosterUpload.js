@@ -30,7 +30,7 @@ export default function PosterUpload() {
                 const res = await axios.get(`${process.env.REACT_APP_API_URL}/protected/stats`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setStats(res.data.subscription);
+                setStats(res.data);
             } catch (err) {
                 console.error("Error fetching stats:", err);
             }
@@ -38,16 +38,18 @@ export default function PosterUpload() {
         fetchStats();
     }, [token]);
 
-    const displayPlan = stats ? {
-        posts: stats.totalPosts || 20, // Default to 20 for trial context
-        remaining: stats.remainingPosts // This now comes from vendor.posts_remaining via API update
-    } : (vendor?.posts_remaining !== undefined ? {
-        posts: 20,
-        remaining: vendor.posts_remaining
-    } : (locationState.state?.plan ? {
-        posts: locationState.state.plan.posts,
-        remaining: locationState.state.plan.posts
-    } : { posts: 0, remaining: 0 }));
+    const subscription = stats?.subscription;
+    const vendorData = stats?.vendor;
+
+    // Determine latest status from any available source
+    const currentStatus = vendorData?.status || vendor?.status || status;
+    const isApproved = currentStatus === 'APPROVED' || currentStatus === 'Approved';
+
+    // Use vendor posts_remaining as primary source, default to 20 for trial context if approved
+    const displayPlan = {
+        posts: subscription?.totalPosts || (isApproved ? 20 : 0),
+        remaining: subscription?.remainingPosts ?? vendorData?.posts_remaining ?? vendor?.posts_remaining ?? 0
+    };
 
     const flattenedLocations = React.useMemo(() => {
         const data = { ...locations };

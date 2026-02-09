@@ -296,7 +296,8 @@ export const login = async (req, res) => {
         address: vendor.address,
         status: vendor.status,
         profilePictureUrl: vendor.profile_picture_url,
-        rejectionReason: vendor.rejection_reason || vendor.reasons
+        rejectionReason: vendor.rejection_reason || vendor.reasons,
+        posts_remaining: vendor.posts_remaining
       },
     });
   } catch (err) {

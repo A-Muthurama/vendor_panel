@@ -93,14 +93,6 @@ const Dashboard = () => {
           </div>
 
           <div className="metric-card">
-            <div className="metric-icon-box gold">✍️</div>
-            <div className="metric-content">
-              <h2 className="metric-value">{vendorData.posts_remaining ?? subscription.remainingPosts ?? 0}</h2>
-              <span className="metric-label">POSTS REMAINING</span>
-            </div>
-          </div>
-
-          <div className="metric-card">
             <div className="metric-icon-box pink">🚀</div>
             <div className="metric-content">
               <h2 className="metric-value">{currentStats.activeOffers || 0}</h2>
@@ -115,11 +107,15 @@ const Dashboard = () => {
                 <>
                   <h2 className="metric-value" style={{ fontSize: '18px' }}>Free Trial</h2>
                   <span className="metric-label">
+                    {subscription.remainingPosts ?? vendorData.posts_remaining ?? 0} Posts Left
+                  </span>
+                  <span className="metric-label" style={{ opacity: 0.8, fontSize: '10px' }}>
                     {stats.trialInfo.daysRemaining > 0
-                      ? `${stats.trialInfo.daysRemaining} DAYS LEFT`
+                      ? `${stats.trialInfo.daysRemaining} DAYS REMAINING`
                       : 'TRIAL EXPIRED'}
                   </span>
-                  {stats.trialInfo.showSubscription && stats.trialInfo.daysRemaining > 0 && (
+
+                  {stats.trialInfo.showSubscription && (
                     <button
                       className="upgrade-mini-btn"
                       onClick={() => navigate("/pricing")}
@@ -128,24 +124,18 @@ const Dashboard = () => {
                       VIEW PLANS
                     </button>
                   )}
-                  {stats.trialInfo.trialExpired && (
-                    <button
-                      className="upgrade-mini-btn"
-                      onClick={() => navigate("/pricing")}
-                      style={{ marginTop: '8px', background: '#dc2626' }}
-                    >
-                      SUBSCRIBE NOW
-                    </button>
-                  )}
                 </>
               ) : (
                 <>
                   <h2 className="metric-value">{subscription.planName || "Free"}</h2>
-                  <span className="metric-label">CURRENT PLAN</span>
-                  {(subscription.planName === "Free" || !subscription.planName) && stats.trialInfo?.showSubscription && (
+                  <span className="metric-label">
+                    {subscription.remainingPosts ?? vendorData.posts_remaining ?? 0} Posts Remaining
+                  </span>
+                  {stats.trialInfo?.showSubscription && (
                     <button
                       className="upgrade-mini-btn"
                       onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: You can upgrade your plan once your account is VERIFIED.") : navigate("/pricing")}
+                      style={{ marginTop: '8px' }}
                     >
                       UPGRADE
                     </button>
