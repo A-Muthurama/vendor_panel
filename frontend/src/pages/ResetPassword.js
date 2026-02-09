@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { resetPassword } from "../api/authApi";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import AuthHeader from "../components/AuthHeader";
-import AuthFooter from "../components/AuthFooter";
+
 
 const ResetPassword = () => {
     const [newPassword, setNewPassword] = useState("");
@@ -85,7 +85,7 @@ const ResetPassword = () => {
                     </div>
                 </form>
             </div>
-            <AuthFooter />
+          
         </>
     );
 };
