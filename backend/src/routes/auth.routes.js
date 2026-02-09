@@ -1,12 +1,12 @@
 import express from "express";
 import { signup, login, forgotPassword, resetPassword, sendOTP, verifyOTP } from "../controllers/auth.controller.js";
-import { upload } from "../config/multer.js";
+import { kycUpload } from "../config/multer.js";
 
 const router = express.Router();
 
 router.post(
   "/signup",
-  upload.fields([
+  kycUpload.fields([
     { name: "AADHAAR", maxCount: 1 },
     { name: "PAN", maxCount: 1 },
     { name: "GST", maxCount: 1 },
