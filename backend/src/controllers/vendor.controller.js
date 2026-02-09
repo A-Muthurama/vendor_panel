@@ -15,42 +15,80 @@ export const getDashboardStats = async (req, res) => {
         const vendor = vendorRes.rows[0];
 
         // 2. Get Currently Active Subscription (started and not expired)
-        const subRes = await client.query(
+        let subRes = await client.query(
             `SELECT * FROM subscriptions 
              WHERE vendor_id = $1 AND status = 'ACTIVE' AND start_date <= NOW() AND expiry_date > NOW() 
              ORDER BY expiry_date ASC LIMIT 1`,
             [vendorId]
         );
+
+        // --- AUTO-FIX: If APPROVED but no active subscription, grant Free Trial ---
+        if (vendor.status === 'APPROVED' && subRes.rows.length === 0) {
+            console.log(`[Auto-Fix] Approved vendor ${vendorId} is missing an active subscription. Granting/Re-activating Free Trial...`);
+
+            const approvalTime = vendor.approved_at || new Date();
+            const trialExpiryDate = new Date(approvalTime);
+            trialExpiryDate.setDate(trialExpiryDate.getDate() + 90);
+
+            // Check if we can just re-activate or need to insert
+            const existingTrialRes = await client.query(
+                "SELECT id FROM subscriptions WHERE vendor_id = $1 AND plan_name = 'Free Trial' LIMIT 1",
+                [vendorId]
+            );
+
+            if (existingTrialRes.rows.length > 0) {
+                // Update existing trial to active and 90 days from original approval
+                await client.query(
+                    "UPDATE subscriptions SET status = 'ACTIVE', expiry_date = $2, remaining_posts = GREATEST(remaining_posts, 20) WHERE id = $1",
+                    [existingTrialRes.rows[0].id, trialExpiryDate]
+                );
+            } else {
+                // Create new trial
+                await client.query(
+                    `INSERT INTO subscriptions 
+                     (vendor_id, plan_name, price, total_posts, remaining_posts, expiry_date, status, start_date)
+                     VALUES ($1, 'Free Trial', 0, 20, 20, $2, 'ACTIVE', $3)`,
+                    [vendorId, trialExpiryDate, approvalTime]
+                );
+            }
+
+            // Ensure vendor record is synced
+            await client.query("UPDATE vendors SET posts_remaining = 20, approved_at = $1 WHERE id = $2", [approvalTime, vendorId]);
+
+            // Re-fetch subscription to ensure the rest of the controller has the data
+            subRes = await client.query(
+                `SELECT * FROM subscriptions 
+                 WHERE vendor_id = $1 AND status = 'ACTIVE' AND start_date <= NOW() AND expiry_date > NOW() 
+                 ORDER BY expiry_date ASC LIMIT 1`,
+                [vendorId]
+            );
+        }
         const subscription = subRes.rows[0] || null;
 
         // 3. Calculate Trial Information (using IST timezone)
         let trialInfo = null;
         let showSubscription = false;
 
-        if (vendor.approved_at) {
-            // Convert to IST for accurate day calculation
+        if (vendor.approved_at || (subscription && subscription.plan_name === 'Free Trial')) {
+            const approvalDate = vendor.approved_at ? new Date(vendor.approved_at) : new Date(subscription.start_date);
             const now = new Date();
-            const approvedDate = new Date(vendor.approved_at);
 
-            // Calculate days difference in IST
-            // Calculate days difference in IST (Calendar Days)
             const istNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-            const istApproved = new Date(approvedDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            const istApproved = new Date(approvalDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
 
-            // Normalize to midnight to count calendar days
             istNow.setHours(0, 0, 0, 0);
             istApproved.setHours(0, 0, 0, 0);
 
             const daysSinceApproval = Math.floor((istNow - istApproved) / (1000 * 60 * 60 * 24));
             const daysRemaining = 90 - daysSinceApproval;
 
-            // Update days_count in database for tracking
+            // Update days_count for tracking
             await client.query(
                 "UPDATE vendors SET days_count = $1 WHERE id = $2",
                 [daysSinceApproval, vendorId]
             );
 
-            // Show subscription plans after 45 days of usage (end of trial)
+            // Hide subscription plans for the first 45 days of usage
             showSubscription = daysSinceApproval >= 45;
 
             trialInfo = {
@@ -59,7 +97,7 @@ export const getDashboardStats = async (req, res) => {
                 daysRemaining: Math.max(0, daysRemaining),
                 trialExpired: daysRemaining <= 0,
                 showSubscription,
-                approvedAt: approvedDate.toLocaleString('en-IN', {
+                approvedAt: approvalDate.toLocaleString('en-IN', {
                     timeZone: 'Asia/Kolkata',
                     dateStyle: 'medium',
                     timeStyle: 'short'

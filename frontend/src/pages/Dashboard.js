@@ -93,6 +93,14 @@ const Dashboard = () => {
           </div>
 
           <div className="metric-card">
+            <div className="metric-icon-box gold">✍️</div>
+            <div className="metric-content">
+              <h2 className="metric-value">{vendorData.posts_remaining ?? subscription.remainingPosts ?? 0}</h2>
+              <span className="metric-label">POSTS REMAINING</span>
+            </div>
+          </div>
+
+          <div className="metric-card">
             <div className="metric-icon-box pink">🚀</div>
             <div className="metric-content">
               <h2 className="metric-value">{currentStats.activeOffers || 0}</h2>
@@ -134,7 +142,7 @@ const Dashboard = () => {
                 <>
                   <h2 className="metric-value">{subscription.planName || "Free"}</h2>
                   <span className="metric-label">CURRENT PLAN</span>
-                  {(subscription.planName === "Free" || !subscription.planName) && (
+                  {(subscription.planName === "Free" || !subscription.planName) && stats.trialInfo?.showSubscription && (
                     <button
                       className="upgrade-mini-btn"
                       onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: You can upgrade your plan once your account is VERIFIED.") : navigate("/pricing")}
