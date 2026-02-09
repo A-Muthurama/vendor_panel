@@ -456,9 +456,10 @@ export default function PosterUpload() {
                                         placeholder="50"
                                         value={formData.discountValueNumeric}
                                         onChange={(e) => {
-                                            const val = Math.min(1000, Number(e.target.value));
+                                            const val = Math.min(1000, Math.max(1, Number(e.target.value)));
                                             handleInputChange({ target: { name: 'discountValueNumeric', value: val } });
                                         }}
+                                        min={1}
                                         max={1000}
                                     />
                                 </div>

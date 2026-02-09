@@ -35,6 +35,12 @@ const ResetPassword = () => {
             return;
         }
 
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
+        if (!passwordRegex.test(newPassword)) {
+            setError("Password must be 8-16 characters and include: 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character (@$!%*?&)");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -85,7 +91,7 @@ const ResetPassword = () => {
                     </div>
                 </form>
             </div>
-          
+
         </>
     );
 };
