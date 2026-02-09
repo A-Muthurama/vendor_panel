@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import TopHeader from './TopHeader';
@@ -9,7 +9,6 @@ import { locations } from '../data/locations';
 import SearchableDropdown from './SearchableDropdown';
 
 export default function PosterUpload() {
-    const locationState = useLocation();
     const navigate = useNavigate();
     const { vendor, status, token } = useAuth();
 
