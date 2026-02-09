@@ -20,5 +20,11 @@ const kycStorage = new CloudinaryStorage({
   }
 });
 
-export const upload = multer({ storage });
-export const kycUpload = multer({ storage: kycStorage });
+export const upload = multer({
+  storage,
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit
+});
+export const kycUpload = multer({
+  storage: kycStorage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit for KYC docs
+});

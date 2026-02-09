@@ -12,7 +12,7 @@ export default function PosterUpload() {
     const navigate = useNavigate();
     const { vendor, status, token } = useAuth();
 
-    // Redirect if pending
+    // Redirect pending
     useEffect(() => {
         if (status === "PENDING" || status === "PENDING_APPROVAL") {
             alert("Your account is under review. You have limited access.");
@@ -136,8 +136,8 @@ export default function PosterUpload() {
         if (!file) return;
 
         if (type === 'image') {
-            if (file.size > 2 * 1024 * 1024) {
-                alert("Image size must be less than 2MB");
+            if (file.size > 10 * 1024 * 1024) {
+                alert("Image size must be less than 10MB");
                 return;
             }
             if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
@@ -170,6 +170,8 @@ export default function PosterUpload() {
         if (!formData.discountValue) newErrors.discountValue = "Discount value is required";
         if (!formData.validFrom) newErrors.validFrom = "Start date is required";
         if (!formData.validUntil) newErrors.validUntil = "End date is required";
+        if (!formData.location.state) newErrors.state = "State is required";
+        if (!formData.location.city) newErrors.city = "City is required";
         if (!formData.location.area) newErrors.area = "Area is required";
         if (!formData.location.pincode) newErrors.pincode = "Pincode is required";
         if (!formData.buyLink) newErrors.buyLink = "Buy online link is required";
@@ -360,6 +362,7 @@ export default function PosterUpload() {
                                         placeholder="e.g. Heritage Bridal Choker"
                                         value={formData.productTitle}
                                         onChange={handleInputChange}
+                                        maxLength={60}
                                     />
                                     {errors.productTitle && <span className="error-hint">{errors.productTitle}</span>}
                                 </div>
@@ -398,6 +401,7 @@ export default function PosterUpload() {
                                     placeholder="Exquisite handcrafted 22K gold choker..."
                                     value={formData.description}
                                     onChange={handleInputChange}
+                                    maxLength={100}
                                 ></textarea>
                                 {errors.description && <span className="error-hint">{errors.description}</span>}
                             </div>
@@ -441,6 +445,7 @@ export default function PosterUpload() {
                                         placeholder="50% OFF on Making"
                                         value={formData.discountValue}
                                         onChange={handleInputChange}
+                                        maxLength={25}
                                     />
                                 </div>
                                 <div className="input-group">
@@ -450,7 +455,11 @@ export default function PosterUpload() {
                                         name="discountValueNumeric"
                                         placeholder="50"
                                         value={formData.discountValueNumeric}
-                                        onChange={handleInputChange}
+                                        onChange={(e) => {
+                                            const val = Math.min(1000, Number(e.target.value));
+                                            handleInputChange({ target: { name: 'discountValueNumeric', value: val } });
+                                        }}
+                                        max={1000}
                                     />
                                 </div>
                             </div>
@@ -469,6 +478,7 @@ export default function PosterUpload() {
                                         name="validFrom"
                                         value={formData.validFrom}
                                         onChange={handleInputChange}
+                                        min={new Date().toISOString().split('T')[0]}
                                     />
                                 </div>
                                 <div className="input-group">
@@ -490,16 +500,17 @@ export default function PosterUpload() {
                             </div>
                             <div className="input-row">
                                 <div className="input-group">
-                                    <label>State</label>
+                                    <label>State*</label>
                                     <SearchableDropdown
                                         options={Object.keys(flattenedLocations)}
                                         value={formData.location.state}
                                         onChange={(val) => handleLocationChange("state", val)}
                                         placeholder="Select State"
                                     />
+                                    {errors.state && <span className="error-hint">{errors.state}</span>}
                                 </div>
                                 <div className="input-group">
-                                    <label>City/District</label>
+                                    <label>City/District*</label>
                                     <SearchableDropdown
                                         options={flattenedLocations[formData.location.state] || []}
                                         value={formData.location.city}
@@ -507,6 +518,7 @@ export default function PosterUpload() {
                                         placeholder={formData.location.state ? "Select District" : "Select State First"}
                                         disabled={!formData.location.state}
                                     />
+                                    {errors.city && <span className="error-hint">{errors.city}</span>}
                                 </div>
                             </div>
                             <div className="input-row">
@@ -518,6 +530,7 @@ export default function PosterUpload() {
                                         placeholder="Andheri West"
                                         value={formData.location.area}
                                         onChange={handleInputChange}
+                                        maxLength={25}
                                     />
                                 </div>
                                 <div className="input-group">
