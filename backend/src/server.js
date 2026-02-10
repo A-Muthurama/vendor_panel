@@ -27,27 +27,29 @@ const allowedOrigins = [
   "https://vendor-api.jewellersparadise.com",
   "http://localhost:3000",
   "http://localhost:5001"
-].filter(Boolean);
+].filter(Boolean).map(o => o.replace(/\/$/, "")); // Remove trailing slashes
 
 const corsOptions = {
   origin: function (origin, callback) {
     // 1. Allow mobile apps/server-to-server (no origin)
     if (!origin) return callback(null, true);
 
-    // 2. Allow any subdomain of jewellersparadise.com
-    const isMainDomain = origin.endsWith("jewellersparadise.com");
-    const isWhitelisted = allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin);
-    const isLocal = origin.includes("localhost") || origin.includes("127.0.0.1");
+    const normalizedOrigin = origin.replace(/\/$/, "");
 
-    if (isMainDomain || isWhitelisted || isLocal) {
+    // 2. Trust anything related to your brand or whitelisted origins
+    const isBrandDomain = normalizedOrigin.includes("jewellersparadise.com");
+    const isWhitelisted = allowedOrigins.includes(normalizedOrigin);
+    const isLocal = normalizedOrigin.includes("localhost") || normalizedOrigin.includes("127.0.0.1");
+
+    if (isBrandDomain || isWhitelisted || isLocal) {
       callback(null, true);
     } else {
       console.log("CORS Filtered Origin:", origin);
-      callback(null, false); // Don't throw error, just deny origin
+      callback(null, false);
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200, // Important for legacy browsers/proxies
+  optionsSuccessStatus: 200,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-internal-key"]
 };
@@ -55,16 +57,18 @@ const corsOptions = {
 // CORS must be first
 app.use(cors(corsOptions));
 
-// Security Headers
-app.use(helmet());
+// Security Headers - Modified for Cross-Origin standard
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // Prevent HTTP Parameter Pollution
 app.use(hpp());
 
-// Rate Limiting - Increased for Testing/Production Heavy Use
+// Rate Limiting - High limit for heavy media usage
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 1000, // Increased to 1000 for heavy usage/media uploads
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
 });
