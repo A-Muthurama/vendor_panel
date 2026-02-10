@@ -438,6 +438,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -464,6 +465,8 @@
     color: #6B4E3D;
     font-size: 15px;
     margin-bottom: 20px;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 .declaration-content ul {
@@ -481,6 +484,8 @@
     color: #4C0F2E;
     font-size: 14px;
     line-height: 1.5;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 .declaration-content li::before {
@@ -496,6 +501,8 @@
     display: block;
     color: #4C0F2E;
     margin-bottom: 2px;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 .declaration-actions {
@@ -508,9 +515,11 @@
     .declaration-actions {
         flex-direction: column-reverse;
     }
+
     .declaration-actions button {
         width: 100%;
     }
+
     .declaration-modal {
         padding: 20px;
     }

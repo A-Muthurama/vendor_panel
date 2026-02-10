@@ -66,6 +66,8 @@
   border-radius: var(--radius-md);
   box-sizing: border-box;
   transition: all 0.2s ease;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .auth-box textarea {
@@ -353,6 +355,8 @@ input[type="file"]:hover {
   font-weight: 500;
   pointer-events: none;
   transition: color 0.2s;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .char-count.textarea {

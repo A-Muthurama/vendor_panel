@@ -19,45 +19,33 @@ app.get("/", (req, res) => {
   res.send("Vendor API is running successfully");
 });
 
-// Time: 16 Jan 2026, 22:15 IST
+
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "https://vendor.jewellersparadise.com",
-  "https://www.vendor.jewellersparadise.com",
   "https://vendor-api.jewellersparadise.com"
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (like mobile apps or server-to-server)
     if (!origin) return callback(null, true);
 
-    // Check exact matches
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("localhost") || origin.includes("127.0.0.1")) {
+      callback(null, true);
+    } else {
+      console.log("CORS Blocked Origin:", origin);
+      callback(new Error('Not allowed by CORS'));
     }
-
-    // Check subdomain matches
-    if (
-      origin.endsWith(".jewellersparadise.com") ||
-      origin.includes("vercel.app") ||
-      origin.includes("amplifyapp.com") ||
-      origin.includes("localhost")
-    ) {
-      return callback(null, true);
-    }
-
-    console.log("CORS Blocked Origin:", origin);
-    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-internal-key"]
 };
 
-// CORS - Must be first!
+// CORS - Restricted to Production Domains
 app.use(cors(corsOptions));
 
 // Security Headers
