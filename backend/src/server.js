@@ -22,30 +22,37 @@ app.get("/", (req, res) => {
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
   "https://vendor.jewellersparadise.com",
-  "https://vendor-api.jewellersparadise.com"
-];
+  "https://www.vendor.jewellersparadise.com",
+  "https://vendor-api.jewellersparadise.com",
+  "http://localhost:3000",
+  "http://localhost:5001"
+].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or server-to-server)
+    // 1. Allow mobile apps/server-to-server (no origin)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("localhost") || origin.includes("127.0.0.1")) {
+    // 2. Allow any subdomain of jewellersparadise.com
+    const isMainDomain = origin.endsWith("jewellersparadise.com");
+    const isWhitelisted = allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin);
+    const isLocal = origin.includes("localhost") || origin.includes("127.0.0.1");
+
+    if (isMainDomain || isWhitelisted || isLocal) {
       callback(null, true);
     } else {
-      console.log("CORS Blocked Origin:", origin);
-      callback(new Error('Not allowed by CORS'));
+      console.log("CORS Filtered Origin:", origin);
+      callback(null, false); // Don't throw error, just deny origin
     }
   },
   credentials: true,
+  optionsSuccessStatus: 200, // Important for legacy browsers/proxies
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-internal-key"]
 };
 
-// CORS - Restricted to Production Domains
+// CORS must be first
 app.use(cors(corsOptions));
 
 // Security Headers
@@ -54,14 +61,14 @@ app.use(helmet());
 // Prevent HTTP Parameter Pollution
 app.use(hpp());
 
-// Rate Limiting
+// Rate Limiting - Increased for Testing/Production Heavy Use
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  windowMs: 15 * 60 * 1000,
+  max: 1000, // Increased to 1000 for heavy usage/media uploads
+  standardHeaders: true,
+  legacyHeaders: false,
 });
-app.use(limiter); // Apply to all routes
+app.use(limiter);
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
