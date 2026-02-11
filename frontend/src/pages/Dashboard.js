@@ -5,6 +5,7 @@ import axios from "axios";
 import TopHeader from "../components/TopHeader";
 import "../styles/dashboard.css";
 import { Clock } from 'lucide-react';
+import PremiumModal from "../components/PremiumModal";
 
 const Dashboard = () => {
   const { token, status: authStatus, vendor, updateStatus, logout } = useAuth();
@@ -12,6 +13,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState({ stats: { totalOffers: 0, activeOffers: 0 }, subscription: { planName: "Free" } });
   const [loading, setLoading] = useState(true);
   const [showStatusSyncMsg, setShowStatusSyncMsg] = useState(false);
+  const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'warning' });
 
   useEffect(() => {
     if (!token) {
@@ -157,7 +159,9 @@ const Dashboard = () => {
                   {stats.trialInfo?.showSubscription && (
                     <button
                       className="upgrade-mini-btn"
-                      onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: You can upgrade your plan once your account is VERIFIED.") : navigate("/pricing")}
+                      onClick={() => status !== 'APPROVED'
+                        ? setModal({ isOpen: true, title: "Verification Required", message: "You can upgrade your plan once your account is VERIFIED.", type: "warning" })
+                        : navigate("/pricing")}
                       style={{ marginTop: '8px' }}
                     >
                       UPGRADE
@@ -173,7 +177,9 @@ const Dashboard = () => {
         <section className="dashboard-section">
           <h3>Business Growth Tools</h3>
           <div className="actions-grid">
-            <div className="action-card" onClick={() => status !== 'APPROVED' ? alert("⚠️ Verification Required: Your account must be APPROVED to create new offers.") : navigate("/upload")}>
+            <div className="action-card" onClick={() => status !== 'APPROVED'
+              ? setModal({ isOpen: true, title: "Verification Required", message: "Your account must be APPROVED to create new offers.", type: "warning" })
+              : navigate("/upload")}>
               <div className="action-icon-circle">✨</div>
               <div className="action-info">
                 <h4>New Offer</h4>
@@ -203,6 +209,14 @@ const Dashboard = () => {
         </section>
 
       </div>
+
+      <PremiumModal
+        isOpen={modal.isOpen}
+        onClose={() => setModal({ ...modal, isOpen: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
     </div>
   );
 };

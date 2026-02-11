@@ -7,6 +7,7 @@ import { Upload, Film, MapPin, Tag, Calendar, Link as LinkIcon, Info } from 'luc
 import './PosterUpload.css';
 import { locations } from '../data/locations';
 import SearchableDropdown from './SearchableDropdown';
+import PremiumModal from './PremiumModal';
 
 export default function PosterUpload() {
     const navigate = useNavigate();
@@ -15,8 +16,13 @@ export default function PosterUpload() {
     // Redirect pending
     useEffect(() => {
         if (status === "PENDING" || status === "PENDING_APPROVAL") {
-            alert("Your account is under review. You have limited access.");
-            navigate("/vendor/dashboard");
+            setModal({
+                isOpen: true,
+                title: "Under Review",
+                message: "Your account is under review. You have limited access.",
+                type: "warning",
+                onConfirm: () => navigate("/vendor/dashboard")
+            });
         }
     }, [status, navigate]);
 
@@ -88,6 +94,7 @@ export default function PosterUpload() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showDeclaration, setShowDeclaration] = useState(false);
+    const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'success' });
 
     useEffect(() => {
         if (vendor) {
@@ -121,14 +128,23 @@ export default function PosterUpload() {
     };
 
     const handleLocationChange = (name, value) => {
-        setFormData(prev => ({
-            ...prev,
-            location: {
-                ...prev.location,
-                [name]: value,
-                ...(name === 'state' ? { city: '' } : {})
+        setFormData(prev => {
+            const newData = {
+                ...prev,
+                location: {
+                    ...prev.location,
+                    [name]: value,
+                    ...(name === 'state' ? { city: '' } : {})
+                }
+            };
+
+            // If validFrom is changed, ensure validUntil is at least the same day
+            if (name === 'validFrom' && prev.validUntil && prev.validFrom > prev.validUntil) {
+                newData.validUntil = value;
             }
-        }));
+
+            return newData;
+        });
     };
 
     const handleFileChange = (e, type) => {
@@ -137,11 +153,11 @@ export default function PosterUpload() {
 
         if (type === 'image') {
             if (file.size > 10 * 1024 * 1024) {
-                alert("Image size must be less than 10MB");
+                setModal({ isOpen: true, title: "File too large", message: "Image size must be less than 10MB", type: "error" });
                 return;
             }
             if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-                alert("Allowed formats: JPEG, PNG, WebP");
+                setModal({ isOpen: true, title: "Invalid Format", message: "Allowed formats: JPEG, PNG, WebP", type: "error" });
                 return;
             }
             setImage(file);
@@ -150,11 +166,11 @@ export default function PosterUpload() {
             reader.readAsDataURL(file);
         } else {
             if (file.size > 100 * 1024 * 1024) {
-                alert("Video size must be less than 100MB");
+                setModal({ isOpen: true, title: "File too large", message: "Video size must be less than 100MB", type: "error" });
                 return;
             }
             if (!['video/mp4', 'video/quicktime'].includes(file.type)) {
-                alert("Allowed formats: MP4, MOV");
+                setModal({ isOpen: true, title: "Invalid Format", message: "Allowed formats: MP4, MOV", type: "error" });
                 return;
             }
             setVideo(file);
@@ -233,8 +249,13 @@ export default function PosterUpload() {
                 }
             });
 
-            alert(res.data.message);
-            navigate("/vendor/offers");
+            setModal({
+                isOpen: true,
+                title: "Success",
+                message: "Offer published! Awaiting Admin verification.",
+                type: "success",
+                onConfirm: () => navigate("/vendor/offers")
+            });
         } catch (err) {
             console.error("Full Submission Error:", err);
             console.error("Response Data:", err.response?.data);
@@ -489,6 +510,7 @@ export default function PosterUpload() {
                                         name="validUntil"
                                         value={formData.validUntil}
                                         onChange={handleInputChange}
+                                        min={formData.validFrom || new Date().toISOString().split('T')[0]}
                                     />
                                 </div>
                             </div>
@@ -615,6 +637,15 @@ export default function PosterUpload() {
                     </div>
                 </div>
             )}
+
+            <PremiumModal
+                isOpen={modal.isOpen}
+                onClose={() => setModal({ ...modal, isOpen: false })}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                onConfirm={modal.onConfirm}
+            />
         </div>
     );
 }

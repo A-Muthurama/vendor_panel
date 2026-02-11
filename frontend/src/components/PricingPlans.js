@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import TopHeader from "../components/TopHeader";
 import { subscribePlan, createOrder, getPlans } from "../api/vendorApi";
+import PremiumModal from "./PremiumModal";
 
 export default function PricingPlans() {
   const navigate = useNavigate();
   const { vendor, status } = useAuth();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'success', onConfirm: null });
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -44,7 +46,12 @@ export default function PricingPlans() {
   const handleSelect = async (plan) => {
     // Safety check: Only approved vendors can pay/subscribe
     if (status !== 'APPROVED') {
-      alert("⚠️ Business Not Verified: You can only purchase plans once your business documents are VERIFIED by our team. Please check your Profile for status.");
+      setModal({
+        isOpen: true,
+        title: "Business Not Verified",
+        message: "You can only purchase plans once your business documents are VERIFIED by our team. Please check your Profile for status.",
+        type: "warning"
+      });
       return;
     }
 
@@ -63,7 +70,12 @@ export default function PricingPlans() {
       // Step 2: Load Razorpay SDK
       const res = await loadRazorpay();
       if (!res) {
-        alert("Error: Razorpay SDK failed to load. Please check your internet connection.");
+        setModal({
+          isOpen: true,
+          title: "SDK Error",
+          message: "Razorpay SDK failed to load. Please check your internet connection.",
+          type: "error"
+        });
         return;
       }
 
@@ -86,13 +98,23 @@ export default function PricingPlans() {
               orderId: response.razorpay_order_id,
               signature: response.razorpay_signature
             });
-            alert("Payment Successful & Subscription Activated");
-            navigate("/vendor/dashboard");
+            setModal({
+              isOpen: true,
+              title: "Success",
+              message: "Payment Successful & Subscription Activated",
+              type: "success",
+              onConfirm: () => navigate("/vendor/dashboard")
+            });
           } catch (err) {
             console.error("Subscription Error:", err);
             const msg = err.response?.data?.message || "Payment successful but activation failed. Contact support.";
-            alert(`Error: ${msg}`);
-            navigate("/vendor/dashboard");
+            setModal({
+              isOpen: true,
+              title: "Activation Error",
+              message: msg,
+              type: "error",
+              onConfirm: () => navigate("/vendor/dashboard")
+            });
           }
         },
         prefill: {
@@ -114,14 +136,24 @@ export default function PricingPlans() {
 
       razorpay.on('payment.failed', function (response) {
         console.error("Payment Failed Event:", response.error);
-        alert(`Payment Failed: ${response.error.description || response.error.reason || "Unknown error"}`);
+        setModal({
+          isOpen: true,
+          title: "Payment Failed",
+          message: response.error.description || response.error.reason || "Unknown error",
+          type: "error"
+        });
       });
 
       razorpay.open();
 
     } catch (e) {
       console.error("Payment Initialization Error:", e);
-      alert(`Failed to initialize payment: ${e.response?.data?.message || e.message}`);
+      setModal({
+        isOpen: true,
+        title: "Order Error",
+        message: e.response?.data?.message || "Failed to initialize payment.",
+        type: "error"
+      });
     }
   };
 
@@ -206,6 +238,15 @@ export default function PricingPlans() {
             </div>
           </div>        </div>
       </div>
+
+      <PremiumModal
+        isOpen={modal.isOpen}
+        onClose={() => setModal({ ...modal, isOpen: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onConfirm={modal.onConfirm}
+      />
     </div>
   );
 }

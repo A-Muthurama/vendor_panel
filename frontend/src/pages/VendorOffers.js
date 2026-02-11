@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import "../styles/dashboard.css";
 import "../styles/VendorOffers.css";
 import TopHeader from "../components/TopHeader";
+import PremiumModal from "../components/PremiumModal";
 
 const VendorOffers = () => {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ const VendorOffers = () => {
     const [offers, setOffers] = useState([]);
     const [fetching, setFetching] = useState(true);
     const [activeTab, setActiveTab] = useState("ALL");
+    const [modal, setModal] = useState({ isOpen: false, title: '', message: '', type: 'success', isConfirm: false, onConfirm: null });
 
     const formatToIST = (dateString) => {
         if (!dateString) return "";
@@ -47,24 +49,44 @@ const VendorOffers = () => {
         fetchOffers();
     }, [token]);
 
-    const handleDelete = async (id) => {
+    const handleDelete = (id) => {
         const offerToDelete = offers.find(o => o.id === id);
         const confirmMsg = offerToDelete?.status === 'PENDING'
             ? "Cancelling this pending offer will credit 1 post back to your account. Proceed?"
             : "Are you sure you want to delete this approved offer? (Note: Posts for approved offers are not credited back)";
 
-        if (!window.confirm(confirmMsg)) return;
+        setModal({
+            isOpen: true,
+            title: "Are you sure?",
+            message: confirmMsg,
+            type: "warning",
+            isConfirm: true,
+            onConfirm: () => executeDelete(id)
+        });
+    };
 
+    const executeDelete = async (id) => {
         try {
             const res = await axios.delete(`${process.env.REACT_APP_API_URL}/protected/offers/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            // Update local state: Change status to DELETED instead of removing from array
             setOffers(offers.map(o => o.id === id ? { ...o, status: 'DELETED' } : o));
-            alert(res.data.message);
+            setModal({
+                isOpen: true,
+                title: "Deleted",
+                message: res.data.message,
+                type: "success",
+                isConfirm: false
+            });
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to delete offer");
+            setModal({
+                isOpen: true,
+                title: "Error",
+                message: err.response?.data?.message || "Failed to delete offer",
+                type: "error",
+                isConfirm: false
+            });
         }
     };
 
@@ -181,6 +203,16 @@ const VendorOffers = () => {
                     )}
                 </div>
             </div>
+
+            <PremiumModal
+                isOpen={modal.isOpen}
+                onClose={() => setModal({ ...modal, isOpen: false })}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                isConfirm={modal.isConfirm}
+                onConfirm={modal.onConfirm}
+            />
         </div>
     );
 };
