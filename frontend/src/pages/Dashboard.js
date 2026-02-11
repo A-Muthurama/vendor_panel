@@ -43,7 +43,7 @@ const Dashboard = () => {
     };
 
     fetchStats();
-  }, [token, navigate]);
+  }, [token, navigate, authStatus, updateStatus]);
 
   const vendorData = stats.vendor || {};
   const currentStats = stats.stats || {};

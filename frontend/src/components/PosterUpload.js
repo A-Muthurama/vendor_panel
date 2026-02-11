@@ -242,7 +242,7 @@ export default function PosterUpload() {
             data.append("discountValueNumeric", formData.discountValueNumeric);
             data.append("isFeatured", formData.isFeatured);
 
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/protected/offers`, data, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/protected/offers`, data, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
