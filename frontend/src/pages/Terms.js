@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import AuthHeader from "../components/AuthHeader";
-import AuthFooter from "../components/AuthFooter";
 import "../styles/auth.css";
 import "../styles/Terms.css";
 
@@ -160,7 +159,6 @@ const Terms = () => {
                     </div>
                 </div>
             </div>
-            <AuthFooter />
         </>
     );
 };
