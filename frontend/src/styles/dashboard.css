@@ -52,6 +52,7 @@
 .highlighted-name {
   background: linear-gradient(135deg, #D4AF37, #8B6F47);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -137,6 +138,94 @@
 
 .contact-support-btn:hover {
   background: #F9A825;
+}
+
+/* Status Sync Alert (Success) */
+.status-sync-alert {
+  background: linear-gradient(135deg, #FFFAEA, #FFFFFF);
+  border: 1px solid #D4AF37;
+  padding: 1.25rem 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sync-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.sync-icon {
+  font-size: 2rem;
+}
+
+.sync-text {
+  flex: 1;
+}
+
+.sync-text h4 {
+  margin: 0 0 4px 0;
+  color: #8B6F47;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sync-text p {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.sync-relogin-btn {
+  background: #D4AF37;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  white-space: nowrap;
+}
+
+.sync-relogin-btn:hover {
+  background: #B8962D;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+}
+
+@media (max-width: 768px) {
+  .status-sync-alert {
+    padding: 1rem;
+  }
+
+  .sync-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .sync-relogin-btn {
+    width: 100%;
+  }
 }
 
 /* Metrics Grid */

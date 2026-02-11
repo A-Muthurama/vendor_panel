@@ -120,7 +120,7 @@ export const getDashboardStats = async (req, res) => {
             `SELECT 
           COUNT(*) FILTER (WHERE status = 'APPROVED' AND end_date >= CURRENT_DATE) as active_offers,
           COUNT(*) FILTER (WHERE status = 'PENDING') as pending_offers,
-          COUNT(*) as total_offers
+          COUNT(*) FILTER (WHERE status != 'DELETED') as total_offers
         FROM offers WHERE vendor_id = $1`,
             [vendorId]
         );
@@ -477,21 +477,69 @@ export const buySubscription = async (req, res) => {
 export const deleteOffer = async (req, res) => {
     const vendorId = req.user.id;
     const { id } = req.params;
+    const client = await pool.connect();
 
     try {
-        const result = await pool.query(
-            "DELETE FROM offers WHERE id = $1 AND vendor_id = $2 RETURNING id",
+        await client.query("BEGIN");
+
+        // 1. Get the current status of the offer
+        const offerRes = await client.query(
+            "SELECT status FROM offers WHERE id = $1 AND vendor_id = $2",
             [id, vendorId]
         );
 
-        if (result.rows.length === 0) {
+        if (offerRes.rows.length === 0) {
+            await client.query("ROLLBACK");
             return res.status(404).json({ message: "Offer not found or unauthorized" });
         }
 
-        res.json({ message: "Offer deleted successfully" });
+        const currentStatus = offerRes.rows[0].status;
+
+        // 2. If the offer is already deleted, stop
+        if (currentStatus === 'DELETED') {
+            await client.query("ROLLBACK");
+            return res.status(400).json({ message: "Offer is already deleted" });
+        }
+
+        // 3. Logic: If PENDING, refund +1 post
+        if (currentStatus === 'PENDING') {
+            // Update Vendors table
+            await client.query(
+                "UPDATE vendors SET posts_remaining = posts_remaining + 1 WHERE id = $1",
+                [vendorId]
+            );
+
+            // Update Subscriptions table (add to the newest active one)
+            await client.query(
+                `UPDATE subscriptions SET remaining_posts = remaining_posts + 1 
+                 WHERE id = (
+                    SELECT id FROM subscriptions 
+                    WHERE vendor_id = $1 AND status = 'ACTIVE' AND expiry_date > NOW() 
+                    ORDER BY expiry_date DESC LIMIT 1
+                 )`,
+                [vendorId]
+            );
+        }
+
+        // 4. Soft Delete: Change status to 'DELETED'
+        await client.query(
+            "UPDATE offers SET status = 'DELETED' WHERE id = $1 AND vendor_id = $2",
+            [id, vendorId]
+        );
+
+        await client.query("COMMIT");
+        res.json({
+            message: currentStatus === 'PENDING'
+                ? "Offer cancelled. 1 post has been credited back to your account."
+                : "Offer deleted successfully."
+        });
+
     } catch (err) {
+        if (client) await client.query("ROLLBACK");
         console.error("DELETE OFFER ERROR:", err);
-        res.status(500).json({ message: "Failed to delete offer" });
+        res.status(500).json({ message: "Failed to process delete request" });
+    } finally {
+        if (client) client.release();
     }
 };
 

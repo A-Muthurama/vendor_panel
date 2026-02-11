@@ -264,6 +264,14 @@ export const login = async (req, res) => {
 
     const vendor = result.rows[0];
 
+    // Check if vendor is suspended
+    if (vendor.status === 'SUSPENDED') {
+      return res.status(403).json({
+        message: "Your account is currently suspended. Kindly refer to your registered email ID for further details. If you require assistance, please contact our support team at support@jewellerparadise.com ",
+        code: "ACCOUNT_SUSPENDED"
+      });
+    }
+
     const match = await bcrypt.compare(password, vendor.password_hash);
 
     if (!match) {

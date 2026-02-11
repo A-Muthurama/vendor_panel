@@ -3,7 +3,7 @@ import { useState } from "react";
 import { loginVendor } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import AuthHeader from "../components/AuthHeader";
 
 
@@ -65,6 +65,13 @@ const Login = () => {
         setError(<>This email is not registered. <Link to="/vendor/signup" style={{ color: '#d4af37' }}>Register here</Link></>);
       } else if (code === "WRONG_PASSWORD") {
         setError(<>Incorrect password. <Link to="/vendor/forgot-password" style={{ color: '#d4af37' }}>Reset it?</Link></>);
+      } else if (code === "ACCOUNT_SUSPENDED") {
+        setError({
+          type: "premium",
+          title: "Account Suspended",
+          message: message,
+          link: { to: "/vendor/help-support", label: "Contact Support" }
+        });
       } else {
         setError(message);
       }
@@ -80,7 +87,28 @@ const Login = () => {
         <form className="auth-box" onSubmit={submit}>
           <h2>SELLER LOGIN</h2>
 
-          {error && <div className="error-text">{error}</div>}
+          {error && (
+            typeof error === 'object' && error.type === 'premium' ? (
+              <div className="premium-alert">
+                <div className="premium-alert-icon">
+                  <AlertCircle size={24} />
+                </div>
+                <div className="premium-alert-content">
+                  <span className="premium-alert-title">{error.title}</span>
+                  <span className="premium-alert-msg">{error.message}</span>
+                  {error.link && (
+                    <div className="premium-alert-footer">
+                      <Link to={error.link.to} className="premium-alert-link">
+                        {error.link.label} →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="error-text">{error}</div>
+            )
+          )}
 
           <div className="input-field">
             <input

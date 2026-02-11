@@ -127,6 +127,72 @@
   text-align: center;
 }
 
+/* ===== PREMIUM ALERT BOXES ===== */
+.premium-alert {
+  display: flex;
+  gap: 15px;
+  background: #FFF8F8;
+  border: 1px solid #FFEBEB;
+  border-left: 5px solid #CF1322;
+  padding: 16px 20px;
+  border-radius: 12px;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 4px 15px rgba(207, 19, 34, 0.08);
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.premium-alert-icon {
+  flex-shrink: 0;
+  color: #CF1322;
+  margin-top: 3px;
+}
+
+.premium-alert-content {
+  flex: 1;
+}
+
+.premium-alert-title {
+  font-weight: 800;
+  display: block;
+  margin-bottom: 6px;
+  color: #CF1322;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 13px;
+}
+
+.premium-alert-msg {
+  display: block;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.premium-alert-footer {
+  margin-top: 5px;
+  border-top: 1px solid #FFEBEB;
+  padding-top: 10px;
+}
+
+.premium-alert-link {
+  display: inline-flex;
+  align-items: center;
+  color: #4C0F2E;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.premium-alert-link:hover {
+  color: #d4af37;
+  transform: translateX(3px);
+}
+
 /* ===== LINKS ===== */
 .auth-link {
   text-align: center;

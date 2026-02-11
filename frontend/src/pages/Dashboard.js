@@ -7,10 +7,11 @@ import "../styles/dashboard.css";
 import { Clock } from 'lucide-react';
 
 const Dashboard = () => {
-  const { token, status: authStatus, vendor } = useAuth();
+  const { token, status: authStatus, vendor, updateStatus, logout } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ stats: { totalOffers: 0, activeOffers: 0 }, subscription: { planName: "Free" } });
   const [loading, setLoading] = useState(true);
+  const [showStatusSyncMsg, setShowStatusSyncMsg] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -23,6 +24,14 @@ const Dashboard = () => {
         const res = await axios.get(`${process.env.REACT_APP_API_URL}/protected/stats`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        const currentVendorStatus = res.data.vendor?.status;
+
+        // If status changed from PENDING to APPROVED in the background
+        if (currentVendorStatus === "APPROVED" && (authStatus === "PENDING" || authStatus === "PENDING_APPROVAL")) {
+          updateStatus("APPROVED");
+          setShowStatusSyncMsg(true);
+        }
+
         setStats(res.data);
       } catch (err) {
         console.error("Error fetching stats:", err);
@@ -67,6 +76,20 @@ const Dashboard = () => {
             {status}
           </div>
         </div>
+
+        {/* ---------- STATUS SYNC SUCCESS ---------- */}
+        {showStatusSyncMsg && (
+          <div className="status-sync-alert">
+            <div className="sync-content">
+              <span className="sync-icon">🎉</span>
+              <div className="sync-text">
+                <h4>Account Approved!</h4>
+                <p>Your account has been fully verified. Please login again to use all features.</p>
+              </div>
+              <button className="sync-relogin-btn" onClick={logout}>Login Again</button>
+            </div>
+          </div>
+        )}
 
         {/* ---------- PENDING ALERT ---------- */}
         {isPending && (

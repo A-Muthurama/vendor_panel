@@ -48,14 +48,23 @@ const VendorOffers = () => {
     }, [token]);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this offer?")) return;
+        const offerToDelete = offers.find(o => o.id === id);
+        const confirmMsg = offerToDelete?.status === 'PENDING'
+            ? "Cancelling this pending offer will credit 1 post back to your account. Proceed?"
+            : "Are you sure you want to delete this approved offer? (Note: Posts for approved offers are not credited back)";
+
+        if (!window.confirm(confirmMsg)) return;
+
         try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}/protected/offers/${id}`, {
+            const res = await axios.delete(`${process.env.REACT_APP_API_URL}/protected/offers/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setOffers(offers.filter(o => o.id !== id));
+
+            // Update local state: Change status to DELETED instead of removing from array
+            setOffers(offers.map(o => o.id === id ? { ...o, status: 'DELETED' } : o));
+            alert(res.data.message);
         } catch (err) {
-            alert("Failed to delete offer");
+            alert(err.response?.data?.message || "Failed to delete offer");
         }
     };
 
@@ -107,6 +116,12 @@ const VendorOffers = () => {
                         >
                             Rejected ({offers.filter(o => o.status === 'REJECTED').length})
                         </button>
+                        <button
+                            className={activeTab === "DELETED" ? "active" : ""}
+                            onClick={() => setActiveTab("DELETED")}
+                        >
+                            Deleted ({offers.filter(o => o.status === 'DELETED').length})
+                        </button>
                     </div>
 
                     {fetching ? (
@@ -142,7 +157,11 @@ const VendorOffers = () => {
                                             </div>
                                         )}
                                         <div className="offer-actions">
-                                            <button className="delete-btn" onClick={() => handleDelete(offer.id)}>Delete</button>
+                                            {offer.status !== 'DELETED' ? (
+                                                <button className="delete-btn" onClick={() => handleDelete(offer.id)}>Delete</button>
+                                            ) : (
+                                                <button className="delete-btn disabled" disabled>Deleted</button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

@@ -44,6 +44,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("vendor", JSON.stringify(updatedVendor));
   };
 
+  const updateStatus = (newStatus) => {
+    setStatus(newStatus);
+    localStorage.setItem("status", newStatus);
+  };
+
   const logout = () => {
     setToken(null);
     setStatus(null);
@@ -62,7 +67,8 @@ export const AuthProvider = ({ children }) => {
         vendor,
         login,
         logout,
-        updateVendor
+        updateVendor,
+        updateStatus
       }}
     >
       {children}
