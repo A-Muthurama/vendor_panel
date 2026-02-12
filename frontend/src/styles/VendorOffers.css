@@ -180,6 +180,12 @@
     font-family: var(--font-heading);
     font-size: 18px;
     margin-bottom: 8px;
+    /* Handle long words or strings without spaces */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    line-height: 1.4;
 }
 
 .offer-cat {
