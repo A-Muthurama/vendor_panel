@@ -67,25 +67,26 @@
 }
 
 .label-with-counter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.label-with-counter label {
-    margin-bottom: 0;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-bottom: 6px !important;
 }
 
 .char-count {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 500;
+    font-size: 13px !important;
+    color: #D4AF37 !important;
+    /* Brand Gold */
+    font-weight: 600 !important;
+    background: rgba(212, 175, 55, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
 }
 
 .char-count.limit {
-    color: #d32f2f;
-    font-weight: 700;
+    color: #d32f2f !important;
+    background: rgba(211, 47, 47, 0.1);
 }
 
 /* Form Layout */
@@ -545,4 +546,34 @@
     .declaration-modal {
         padding: 20px;
     }
+}
+
+/* --- HIGH VISIBILITY CHARACTER COUNTERS --- */
+.label-with-counter {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-bottom: 8px !important;
+}
+
+.char-count {
+    display: inline-block !important;
+    font-size: 13px !important;
+    color: #4C0F2E !important;
+    /* Primary Maroon */
+    background: #F0E6D2 !important;
+    /* Light Gold background */
+    padding: 2px 10px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+    border: 1px solid #D4AF37 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.char-count.limit {
+    color: #FFFFFF !important;
+    background: #d32f2f !important;
+    /* Solid Red when limit reached */
+    border-color: #b71c1c !important;
 }
