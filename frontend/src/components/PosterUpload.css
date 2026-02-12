@@ -66,6 +66,28 @@
     font-weight: 500;
 }
 
+.label-with-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.label-with-counter label {
+    margin-bottom: 0;
+}
+
+.char-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.char-count.limit {
+    color: #d32f2f;
+    font-weight: 700;
+}
+
 /* Form Layout */
 .upload-form-grid {
     display: grid;

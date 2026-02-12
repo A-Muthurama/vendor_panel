@@ -217,6 +217,14 @@ export default function PosterUpload() {
         setShowDeclaration(false);
         setIsSubmitting(true);
 
+        // Initial "Submitting" modal
+        setModal({
+            isOpen: true,
+            title: "Publishing Offer",
+            message: "Submitting your offer, please wait while we process your request...",
+            type: "loading"
+        });
+
         try {
             const data = new FormData();
             data.append("title", formData.productTitle);
@@ -259,7 +267,12 @@ export default function PosterUpload() {
         } catch (err) {
             console.error("Full Submission Error:", err);
             console.error("Response Data:", err.response?.data);
-            alert(err.response?.data?.message || "Failed to submit offer. Please try again.");
+            setModal({
+                isOpen: true,
+                title: "Error",
+                message: err.response?.data?.message || "Failed to submit offer. Please try again.",
+                type: "error"
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -376,7 +389,12 @@ export default function PosterUpload() {
 
                             <div className="input-row">
                                 <div className={`input-group full ${errors.productTitle ? 'has-error' : ''}`}>
-                                    <label>Product Title*</label>
+                                    <div className="label-with-counter">
+                                        <label>Product Title*</label>
+                                        <span className={`char-count ${(formData.productTitle?.length || 0) >= 60 ? 'limit' : ''}`}>
+                                            {formData.productTitle?.length || 0}/60
+                                        </span>
+                                    </div>
                                     <input
                                         type="text"
                                         name="productTitle"
@@ -415,7 +433,12 @@ export default function PosterUpload() {
                             </div>
 
                             <div className="input-group full">
-                                <label>Description*</label>
+                                <div className="label-with-counter">
+                                    <label>Description*</label>
+                                    <span className={`char-count ${(formData.description?.length || 0) >= 100 ? 'limit' : ''}`}>
+                                        {formData.description?.length || 0}/100
+                                    </span>
+                                </div>
                                 <textarea
                                     name="description"
                                     rows="4"
@@ -459,7 +482,12 @@ export default function PosterUpload() {
                                     </div>
                                 )}
                                 <div className="input-group">
-                                    <label>Discount Label*</label>
+                                    <div className="label-with-counter">
+                                        <label>Discount Label*</label>
+                                        <span className={`char-count ${(formData.discountValue?.length || 0) >= 25 ? 'limit' : ''}`}>
+                                            {formData.discountValue?.length || 0}/25
+                                        </span>
+                                    </div>
                                     <input
                                         type="text"
                                         name="discountValue"
@@ -470,7 +498,7 @@ export default function PosterUpload() {
                                     />
                                 </div>
                                 <div className="input-group">
-                                    <label>Numeric Value (%)</label>
+                                    <label>Numeric Value</label>
                                     <input
                                         type="number"
                                         name="discountValueNumeric"
@@ -546,7 +574,12 @@ export default function PosterUpload() {
                             </div>
                             <div className="input-row">
                                 <div className={`input-group ${errors.area ? 'has-error' : ''}`}>
-                                    <label>Area*</label>
+                                    <div className="label-with-counter">
+                                        <label>Area*</label>
+                                        <span className={`char-count ${(formData.location.area?.length || 0) >= 25 ? 'limit' : ''}`}>
+                                            {formData.location.area?.length || 0}/25
+                                        </span>
+                                    </div>
                                     <input
                                         type="text"
                                         name="location.area"
