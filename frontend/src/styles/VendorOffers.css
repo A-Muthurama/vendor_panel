@@ -335,6 +335,11 @@
     font-size: 13px;
     color: #c62828;
     margin-bottom: 15px;
+    /* Handle long words */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 }
 
 .like-badge {
