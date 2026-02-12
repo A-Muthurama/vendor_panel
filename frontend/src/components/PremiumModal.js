@@ -10,7 +10,7 @@ const PremiumModal = ({ isOpen, onClose, title, message, type = 'success', onCon
             case 'success': return <CheckCircle className="modal-icon success" size={48} />;
             case 'error': return <AlertCircle className="modal-icon error" size={48} />;
             case 'warning': return <Info className="modal-icon warning" size={48} />;
-            case 'loading': return <Loader2 className="modal-icon info animate-spin" size={48} />;
+            case 'loading': return <Loader2 className="modal-icon loading animate-spin" size={48} />;
             default: return <Info className="modal-icon info" size={48} />;
         }
     };

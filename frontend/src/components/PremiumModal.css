@@ -61,6 +61,11 @@
     color: #f57f17;
 }
 
+.modal-icon.loading {
+    color: #4C0F2E;
+    /* Theme Gold */
+}
+
 .modal-title {
     font-size: 1.5rem;
     font-weight: 700;
