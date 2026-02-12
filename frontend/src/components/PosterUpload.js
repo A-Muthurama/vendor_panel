@@ -389,20 +389,20 @@ export default function PosterUpload() {
 
                             <div className="input-row">
                                 <div className={`input-group full ${errors.productTitle ? 'has-error' : ''}`}>
-                                    <div className="label-with-counter">
-                                        <label>Product Title*</label>
-                                        <span className={`char-count ${(formData.productTitle?.length || 0) >= 60 ? 'limit' : ''}`}>
+                                    <label>Product Title*</label>
+                                    <div className="input-wrapper">
+                                        <input
+                                            type="text"
+                                            name="productTitle"
+                                            placeholder="e.g. Heritage Bridal Choker"
+                                            value={formData.productTitle}
+                                            onChange={handleInputChange}
+                                            maxLength={60}
+                                        />
+                                        <span className={`char-count-inside ${(formData.productTitle?.length || 0) >= 60 ? 'limit' : ''}`}>
                                             {formData.productTitle?.length || 0}/60
                                         </span>
                                     </div>
-                                    <input
-                                        type="text"
-                                        name="productTitle"
-                                        placeholder="e.g. Heritage Bridal Choker"
-                                        value={formData.productTitle}
-                                        onChange={handleInputChange}
-                                        maxLength={60}
-                                    />
                                     {errors.productTitle && <span className="error-hint">{errors.productTitle}</span>}
                                 </div>
                             </div>
@@ -433,20 +433,20 @@ export default function PosterUpload() {
                             </div>
 
                             <div className="input-group full">
-                                <div className="label-with-counter">
-                                    <label>Description*</label>
-                                    <span className={`char-count ${(formData.description?.length || 0) >= 100 ? 'limit' : ''}`}>
+                                <label>Description*</label>
+                                <div className="input-wrapper">
+                                    <textarea
+                                        name="description"
+                                        rows="4"
+                                        placeholder="Exquisite handcrafted 22K gold choker..."
+                                        value={formData.description}
+                                        onChange={handleInputChange}
+                                        maxLength={100}
+                                    ></textarea>
+                                    <span className={`char-count-inside ${(formData.description?.length || 0) >= 100 ? 'limit' : ''}`}>
                                         {formData.description?.length || 0}/100
                                     </span>
                                 </div>
-                                <textarea
-                                    name="description"
-                                    rows="4"
-                                    placeholder="Exquisite handcrafted 22K gold choker..."
-                                    value={formData.description}
-                                    onChange={handleInputChange}
-                                    maxLength={100}
-                                ></textarea>
                                 {errors.description && <span className="error-hint">{errors.description}</span>}
                             </div>
                         </section>
@@ -482,20 +482,20 @@ export default function PosterUpload() {
                                     </div>
                                 )}
                                 <div className="input-group">
-                                    <div className="label-with-counter">
-                                        <label>Discount Label*</label>
-                                        <span className={`char-count ${(formData.discountValue?.length || 0) >= 25 ? 'limit' : ''}`}>
+                                    <label>Discount Label*</label>
+                                    <div className="input-wrapper">
+                                        <input
+                                            type="text"
+                                            name="discountValue"
+                                            placeholder="50% OFF on Making"
+                                            value={formData.discountValue}
+                                            onChange={handleInputChange}
+                                            maxLength={25}
+                                        />
+                                        <span className={`char-count-inside ${(formData.discountValue?.length || 0) >= 25 ? 'limit' : ''}`}>
                                             {formData.discountValue?.length || 0}/25
                                         </span>
                                     </div>
-                                    <input
-                                        type="text"
-                                        name="discountValue"
-                                        placeholder="50% OFF on Making"
-                                        value={formData.discountValue}
-                                        onChange={handleInputChange}
-                                        maxLength={25}
-                                    />
                                 </div>
                                 <div className="input-group">
                                     <label>Numeric Value</label>
@@ -574,20 +574,20 @@ export default function PosterUpload() {
                             </div>
                             <div className="input-row">
                                 <div className={`input-group ${errors.area ? 'has-error' : ''}`}>
-                                    <div className="label-with-counter">
-                                        <label>Area*</label>
-                                        <span className={`char-count ${(formData.location.area?.length || 0) >= 25 ? 'limit' : ''}`}>
+                                    <label>Area*</label>
+                                    <div className="input-wrapper">
+                                        <input
+                                            type="text"
+                                            name="location.area"
+                                            placeholder="Andheri West"
+                                            value={formData.location.area}
+                                            onChange={handleInputChange}
+                                            maxLength={25}
+                                        />
+                                        <span className={`char-count-inside ${(formData.location.area?.length || 0) >= 25 ? 'limit' : ''}`}>
                                             {formData.location.area?.length || 0}/25
                                         </span>
                                     </div>
-                                    <input
-                                        type="text"
-                                        name="location.area"
-                                        placeholder="Andheri West"
-                                        value={formData.location.area}
-                                        onChange={handleInputChange}
-                                        maxLength={25}
-                                    />
                                 </div>
                                 <div className="input-group">
                                     <label>Pincode*</label>

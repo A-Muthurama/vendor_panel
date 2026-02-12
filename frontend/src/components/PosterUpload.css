@@ -548,32 +548,56 @@
     }
 }
 
-/* --- HIGH VISIBILITY CHARACTER COUNTERS --- */
-.label-with-counter {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
+/* --- LIVE CHARACTER COUNTERS (INSIDE INPUT) --- */
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+/* Fix Input Overlap & Box Sizing */
+.input-wrapper input,
+.input-wrapper textarea {
     width: 100% !important;
-    margin-bottom: 8px !important;
+    box-sizing: border-box !important;
+    /* Prevents overflow */
+    padding-right: 60px !important;
+    /* Space for counter */
 }
 
-.char-count {
-    display: inline-block !important;
-    font-size: 13px !important;
-    color: #4C0F2E !important;
-    /* Primary Maroon */
-    background: #F0E6D2 !important;
-    /* Light Gold background */
-    padding: 2px 10px !important;
-    border-radius: 4px !important;
-    font-weight: 700 !important;
-    border: 1px solid #D4AF37 !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+.input-wrapper textarea {
+    padding-bottom: 30px !important;
+    /* Space for counter in textarea */
 }
 
-.char-count.limit {
-    color: #FFFFFF !important;
-    background: #d32f2f !important;
-    /* Solid Red when limit reached */
-    border-color: #b71c1c !important;
+.char-count-inside {
+    position: absolute;
+    right: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #A09080;
+    /* Professional Muted Gold/Grey */
+    pointer-events: none;
+    z-index: 5;
+    padding: 2px 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    /* Prevent text bleed-through */
+}
+
+/* Vertically center for single line inputs */
+.input-wrapper input+.char-count-inside {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Bottom right for textarea */
+.input-wrapper textarea+.char-count-inside {
+    bottom: 12px;
+    right: 12px;
+}
+
+.char-count-inside.limit {
+    color: #d32f2f;
+    background-color: rgba(211, 47, 47, 0.05);
 }
