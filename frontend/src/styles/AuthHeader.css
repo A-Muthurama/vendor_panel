@@ -40,14 +40,15 @@
     letter-spacing: 1px;
     font-weight: 700;
     margin: 0;
-    white-space: nowrap;
+    white-space: normal;
     display: block;
-    line-height: normal;
+    line-height: 1.1;
     background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     text-transform: uppercase;
+    max-width: 200px;
 }
 
 .auth-header-nav {
@@ -109,8 +110,10 @@
 
 @media (max-width: 480px) {
     .auth-brand-title {
-        display: none;
-        /* Hide text on small mobile screens */
+        display: block;
+        font-size: 14px;
+        white-space: normal;
+        max-width: 120px;
     }
 
     .auth-cta-btn {

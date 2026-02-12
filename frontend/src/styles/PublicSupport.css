@@ -317,10 +317,13 @@
     letter-spacing: 1px;
     background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     text-transform: uppercase;
     margin: 0;
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.1;
+    max-width: 200px;
 }
 
 .ps-header-right {
@@ -384,8 +387,10 @@
 
 @media (max-width: 400px) {
     .ps-brand-title {
-        display: none;
-        /* Hide text on very small screens, show only logo */
+        display: block;
+        font-size: 14px;
+        white-space: normal;
+        max-width: 120px;
     }
 
     .ps-header-brand {

@@ -37,9 +37,9 @@
     letter-spacing: 1px;
     font-weight: 700;
     margin: 0;
-    white-space: nowrap;
+    white-space: normal;
     display: block;
-    line-height: normal;
+    line-height: 1.1;
     background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
     -webkit-background-clip: text;
     background-clip: text;
@@ -348,7 +348,11 @@
 
 @media (max-width: 480px) {
     .brand-title {
-        display: none;
+        display: block;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        white-space: normal;
+        max-width: 120px;
     }
 
     .brand-icon {
