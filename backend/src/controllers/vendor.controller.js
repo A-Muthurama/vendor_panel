@@ -280,6 +280,10 @@ export const createOffer = async (req, res) => {
             offer: offerRes.rows[0]
         });
 
+    } catch (err) {
+        if (client) await client.query("ROLLBACK");
+        console.error("CREATE OFFER ERROR:", err);
+        res.status(500).json({ message: "Failed to create offer. Please try again." });
     } finally {
         if (client) client.release();
     }
