@@ -40,15 +40,14 @@
     letter-spacing: 1px;
     font-weight: 700;
     margin: 0;
-    white-space: normal;
+    white-space: nowrap;
     display: block;
-    line-height: 1.1;
+    line-height: normal;
     background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     text-transform: uppercase;
-    max-width: 200px;
 }
 
 .auth-header-nav {
@@ -95,8 +94,9 @@
 /* Responsiveness */
 @media (max-width: 768px) {
     .auth-header {
-        padding: 0 20px;
-        height: 70px;
+        padding: 10px 20px;
+        height: auto;
+        min-height: 70px;
     }
 
     .auth-header-nav {
@@ -104,7 +104,10 @@
     }
 
     .auth-brand-title {
-        font-size: 18px;
+        font-size: 14px;
+        white-space: normal;
+        max-width: 120px;
+        line-height: 1.1;
     }
 }
 
@@ -112,8 +115,6 @@
     .auth-brand-title {
         display: block;
         font-size: 14px;
-        white-space: normal;
-        max-width: 120px;
     }
 
     .auth-cta-btn {

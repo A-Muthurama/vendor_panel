@@ -312,7 +312,7 @@
 
 .ps-brand-title {
     font-family: 'Playfair Display', serif;
-    font-size: 22px;
+    font-size: 25px;
     font-weight: 700;
     letter-spacing: 1px;
     background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
@@ -321,9 +321,8 @@
     -webkit-text-fill-color: transparent;
     text-transform: uppercase;
     margin: 0;
-    white-space: normal;
-    line-height: 1.1;
-    max-width: 200px;
+    white-space: nowrap;
+    line-height: normal;
 }
 
 .ps-header-right {
@@ -339,7 +338,7 @@
     padding: 8px 20px;
     border-radius: 25px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -366,7 +365,10 @@
     }
 
     .ps-brand-title {
-        font-size: 16px;
+        font-size: 14px;
+        white-space: normal;
+        max-width: 120px;
+        line-height: 1.1;
     }
 
     .ps-header-right {

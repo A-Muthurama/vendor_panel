@@ -37,9 +37,9 @@
     letter-spacing: 1px;
     font-weight: 700;
     margin: 0;
-    white-space: normal;
+    white-space: nowrap;
     display: block;
-    line-height: 1.1;
+    line-height: normal;
     background: linear-gradient(to right, #8B6F47, #D4AF37, #8B6F47);
     -webkit-background-clip: text;
     background-clip: text;
@@ -337,8 +337,9 @@
     }
 
     .top-header {
-        height: 70px;
-        padding: 0 15px;
+        height: auto;
+        min-height: 70px;
+        padding: 8px 15px;
     }
 
     .header-brand {
@@ -362,9 +363,10 @@
     }
 
     .top-header {
-        height: 60px;
+        height: auto;
+        min-height: 60px;
         /* Reduced height for mobile */
-        padding: 0 12px;
+        padding: 6px 12px;
     }
 
     .mobile-menu-toggle {
