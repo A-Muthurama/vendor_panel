@@ -13,19 +13,19 @@ const PublicSupport = () => {
         {
             icon: <Mail size={32} />,
             title: "Email Support",
-            value: "support@jewellerparadise.com",
+            value: "jewellersparadisej@gmail.com",
             desc: "We aim to respond within 24 hours."
         },
         {
             icon: <Phone size={32} />,
             title: "Phone Support",
-            value: "+91 99999 99999",
+            value: "+91 98400 26884",
             desc: "Mon-Sat, 10:00 AM - 7:00 PM"
         },
         {
             icon: <MessageSquare size={32} />,
             title: "WhatsApp",
-            value: "+91 88888 88888",
+            value: "+91 98400 26884",
             desc: "Instant assistance for urgent queries."
         }
     ];

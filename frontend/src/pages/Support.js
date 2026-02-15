@@ -8,19 +8,19 @@ const Support = () => {
         {
             icon: "✉️",
             title: "Email Support",
-            value: "support@jewellerparadise.com",
+            value: "jewellersparadisej@gmail.com",
             desc: "Response within 24 hours"
         },
         {
             icon: "📞",
             title: "Phone Support",
-            value: "+91 99999 99999",
+            value: "+91 98400 26884",
             desc: "Mon-Sat, 10am - 7pm"
         },
         {
             icon: "💬",
             title: "WhatsApp",
-            value: "+91 88888 88888",
+            value: "+91 98400 26884",
             desc: "Instant assistance"
         }
     ];

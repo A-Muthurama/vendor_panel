@@ -167,32 +167,49 @@ export const signup = async (req, res) => {
     // 9. Send Welcome Email (Don't let email failure block signup)
     sendEmail({
       to: email,
-      subject: "Welcome to Jeweller Paradise - Registration Successful!",
+      subject: "Welcome to Jewellers Paradise - Registration Successful!",
       html: `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h2 style="color: #4C0F2E; margin-top: 0;">Welcome to Jeweller Paradise, ${ownerName}!</h2>
-            <p>Congratulations! Your shop, <strong>${shopName}</strong>, has been successfully registered on our platform.</p>
-            
-            <div style="background-color: #fff9fa; border-left: 4px solid #4C0F2E; padding: 15px; margin: 20px 0;">
-              <p style="margin: 0; font-weight: bold; color: #4C0F2E;">Account Status: PENDING APPROVAL</p>
-              <p style="margin: 5px 0 0 0; font-size: 14px;">Our team is currently verifying your KYC documents. This process usually takes 24-48 business hours.</p>
-            </div>
+        <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
+          <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <tr>
+              <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
+                <h1 style="color: #D4AF37; margin: 0; font-size: 26px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Jewellers Paradise</h1>
+                <div style="width: 50px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
+                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Partner Onboarding</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 50px 40px;">
+                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 20px; font-weight: 600; text-align: center;">Greetings, Esteemed Partner</h2>
+                <div style="color: #555; line-height: 1.8; font-size: 15px;">
+                  <p>It is our pleasure to formally acknowledge the registration of <strong>${shopName}</strong> within the Jewellers Paradise elite vendor network.</p>
+                  
+                  <div style="background-color: #fdf8f9; border-left: 2px solid #D4AF37; padding: 25px; margin: 30px 0;">
+                    <p style="margin: 0; font-weight: 700; color: #3F0E27; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Application Status: Under Review</p>
+                    <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">Our credentialing department is currently reviewing your business documentation. This standard verification protocol ensures the integrity of our luxury marketplace and is typically completed within 24 to 48 business hours.</p>
+                  </div>
 
-            <p>Once approved, you will be able to:</p>
-            <ul style="color: #555;">
-              <li>Upload and manage your jewelry offers</li>
-              <li>Reach more customers in your area</li>
-              <li>Access your vendor dashboard</li>
-            </ul>
+                  <p>Once your partnership is activated, you will be invited to:</p>
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 15px 0;">
+                    <tr><td style="padding: 5px 0; color: #555;">• Curate and showcase your premier collections</td></tr>
+                    <tr><td style="padding: 5px 0; color: #555;">• Engage with our sophisticated clientele</td></tr>
+                    <tr><td style="padding: 5px 0; color: #555;">• Leverage bespoke business growth analytics</td></tr>
+                  </table>
 
-            <p style="font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
-              If you have any questions, feel free to reply to this email or contact our support team.
-            </p>
-            <p style="font-size: 14px; color: #333;">
-              Best Regards,<br/><strong>Team Jeweller Paradise</strong>
-            </p>
-          </div>
+                  <p style="margin-top: 40px; font-size: 14px; color: #888; text-align: center; font-style: italic;">We look forward to a mutually successful partnership.</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color: #f9f9f9; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
+                <p style="margin: 0; color: #3F0E27; font-size: 14px; font-weight: 600;">Team Jewellers Paradise</p>
+                <div style="margin-top: 15px; color: #999; font-size: 11px; line-height: 1.5;">
+                  © 2026 Jewellers Paradise. Private & Confidential.<br/>
+                  This is an automated administrative notification.
+                </div>
+              </td>
+            </tr>
+          </table>
         </div>
       `,
     }).catch(emailErr => {
@@ -267,7 +284,7 @@ export const login = async (req, res) => {
     // Check if vendor is suspended
     if (vendor.status === 'SUSPENDED') {
       return res.status(403).json({
-        message: "Your account is currently suspended. Kindly refer to your registered email ID for further details. If you require assistance, please contact our support team at support@jewellerparadise.com ",
+        message: "Your account is currently suspended. Kindly refer to your registered email ID for further details. If you require assistance, please contact our support team at jewellersparadisej@gmail.com ",
         code: "ACCOUNT_SUSPENDED"
       });
     }
@@ -350,30 +367,45 @@ export const forgotPassword = async (req, res) => {
 
     await sendEmail({
       to: email,
-      subject: "Password Reset Request - Jeweller Paradise",
+      subject: "Password Reset Request - Jewellers Paradise",
       html: `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h2 style="color: #4C0F2E; margin-top: 0;">Password Reset Request</h2>
-            <p>Hi ${vendor.owner_name},</p>
-            <p>We received a request to reset your password for your Jeweller Paradise account. If you didn't make this request, you can ignore this email.</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetLink}" style="background-color: #4C0F2E; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">Reset My Password</a>
-            </div>
+        <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
+          <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <tr>
+              <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
+                <h1 style="color: #D4AF37; margin: 0; font-size: 24px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Security Portal</h1>
+                <div style="width: 50px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
+                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Password Reset Authorization</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 50px 40px;">
+                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 20px; font-weight: 600; text-align: center;">Partner Security Request</h2>
+                <div style="color: #555; line-height: 1.8; font-size: 15px; text-align: center;">
+                  <p>A formal request to reset the administrative credentials for your Jewellers Paradise account has been initiated.</p>
+                  
+                  <div style="margin: 40px 0;">
+                    <a href="${resetLink}" style="background-color: #3F0E27; color: #D4AF37; padding: 18px 36px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 14px; border: 1px solid #D4AF37; text-transform: uppercase; letter-spacing: 2px;">Authorize Reset</a>
+                  </div>
 
-            <p style="font-size: 14px; color: #666; margin-top: 30px;">
-              If the button doesn't work, copy and paste this link into your browser:<br/>
-              <span style="color: #4C0F2E; word-break: break-all;">${resetLink}</span>
-            </p>
-
-            <p style="font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
-              This link will expire in <strong>15 minutes</strong> for your security.
-            </p>
-            <p style="font-size: 14px; color: #333;">
-              Best Regards,<br/><strong>Team Jeweller Paradise</strong>
-            </p>
-          </div>
+                  <div style="background-color: #fafafa; padding: 20px; border-radius: 4px; margin-top: 30px; text-align: left;">
+                    <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.6;">
+                      <strong>Security Note:</strong> If you did not authorize this action, please ignore this communication. Your security remains our highest priority. This link will expire in 15 minutes.
+                    </p>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color: #f9f9f9; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
+                <p style="margin: 0; color: #3F0E27; font-size: 14px; font-weight: 600;">Jewellers Paradise Security Team</p>
+                <div style="margin-top: 15px; color: #999; font-size: 11px; line-height: 1.5;">
+                  If the button above is not functional, copy this URL:<br/>
+                  <span style="color: #3F0E27; word-break: break-all; opacity: 0.7;">${resetLink}</span>
+                </div>
+              </td>
+            </tr>
+          </table>
         </div>
       `,
     });
@@ -444,25 +476,38 @@ export const sendOTP = async (req, res) => {
     // Send Email
     await sendEmail({
       to: email,
-      subject: `Your OTP for Jeweller Paradise Signup: ${otp}`,
+      subject: `Your OTP for Jewellers Paradise Signup: ${otp}`,
       html: `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; background-color: #f9f9f9;">
-          <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h2 style="color: #4C0F2E; margin-top: 0; text-align: center;">Email Verification</h2>
-            <p>Please use the following One-Time Password (OTP) to verify your email address and continue your registration:</p>
-            
-            <div style="background-color: #f4f4f4; padding: 20px; border-radius: 8px; text-align: center; margin: 30px 0;">
-              <h1 style="color: #4C0F2E; letter-spacing: 5px; margin: 0; font-size: 32px;">${otp}</h1>
-            </div>
+        <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
+          <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 500px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <tr>
+              <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
+                <h1 style="color: #D4AF37; margin: 0; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Verification</h1>
+                <div style="width: 40px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
+                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Secure Access Code</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 50px 40px; text-align: center;">
+                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 18px; font-weight: 600;">Greetings, Partner</h2>
+                <p style="color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">To continue with your administrative session, please utilize the following single-use verification code.</p>
+                
+                <div style="background-color: #fcf2f4; border: 1px solid #f2e1e5; padding: 30px; border-radius: 4px; display: inline-block; min-width: 240px;">
+                  <h1 style="color: #3F0E27; letter-spacing: 12px; margin: 0; font-size: 42px; font-weight: 300;">${otp}</h1>
+                </div>
 
-            <p style="font-size: 13px; color: #999; text-align: center;">
-              This OTP is valid for <strong>5 minutes</strong>.
-            </p>
-            
-            <p style="font-size: 14px; color: #333; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
-              Best Regards,<br/><strong>Team Jeweller Paradise</strong>
-            </p>
-          </div>
+                <p style="margin-top: 30px; font-size: 12px; color: #999;">
+                  This authorization code will remain valid for <strong>5 minutes</strong>.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color: #f9f9f9; padding: 25px; text-align: center; border-top: 1px solid #eeeeee;">
+                <p style="margin: 0; color: #3F0E27; font-size: 13px; font-weight: 600;">Jewellers Paradise Admin</p>
+                <p style="margin: 5px 0 0 0; color: #999; font-size: 10px;">© 2026 Jewellers Paradise. All Rights Reserved.</p>
+              </td>
+            </tr>
+          </table>
         </div>
       `,
     });

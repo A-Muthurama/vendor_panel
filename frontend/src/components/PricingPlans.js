@@ -84,7 +84,7 @@ export default function PricingPlans() {
         key: keyId,
         amount: amount,
         currency: "INR",
-        name: "Jeweller Paradise",
+        name: "Jewellers Paradise",
         description: `${plan.name} Plan - ${plan.posts} Posts`,
         order_id: orderId, // Server-created order ID
         handler: async function (response) {
@@ -120,7 +120,7 @@ export default function PricingPlans() {
         prefill: {
           name: vendor?.ownerName || "Seller Name",
           email: vendor?.email || "seller@email.com",
-          contact: vendor?.phone ? String(vendor.phone) : "9999999999"
+          contact: vendor?.phone ? String(vendor.phone) : "9840026884"
         },
         theme: {
           color: "#ca8a04"

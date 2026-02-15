@@ -14,8 +14,8 @@ export const sendEmail = async ({ to, subject, html }) => {
     sendSmtpEmail.subject = subject;
     sendSmtpEmail.htmlContent = html;
     sendSmtpEmail.sender = {
-        name: "Jeweller Paradise Support",
-        email: process.env.EMAIL_USER || "muthuramaa1@gmail.com"
+        name: "Jewellers Paradise Support",
+        email: process.env.EMAIL_USER || "jewellersparadisej@gmail.com"
     };
     sendSmtpEmail.to = [{ email: to }];
 
