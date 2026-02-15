@@ -167,7 +167,7 @@ export const signup = async (req, res) => {
     // 9. Send Welcome Email (Don't let email failure block signup)
     sendEmail({
       to: email,
-      subject: "Welcome to Jewellers Paradise - Registration Successful!",
+      subject: "Partnership Notification - Registration Successful",
       html: `
         <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
           <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
@@ -175,37 +175,37 @@ export const signup = async (req, res) => {
               <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
                 <h1 style="color: #D4AF37; margin: 0; font-size: 26px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Jewellers Paradise</h1>
                 <div style="width: 50px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
-                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Partner Onboarding</p>
+                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Partnership Notification</p>
               </td>
             </tr>
             <tr>
               <td style="padding: 50px 40px;">
-                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 20px; font-weight: 600; text-align: center;">Greetings, Esteemed Partner</h2>
-                <div style="color: #555; line-height: 1.8; font-size: 15px;">
-                  <p>It is our pleasure to formally acknowledge the registration of <strong>${shopName}</strong> within the Jewellers Paradise elite vendor network.</p>
+                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 18px; font-weight: 600; text-align: left; letter-spacing: 1px;">Dear Valued Partner,</h2>
+                <div style="color: #555; line-height: 1.8; font-size: 14px;">
+                  <p>This communication serves as formal acknowledgment of the registration for <strong>${shopName}</strong> within the Jewellers Paradise merchant network.</p>
                   
-                  <div style="background-color: #fdf8f9; border-left: 2px solid #D4AF37; padding: 25px; margin: 30px 0;">
-                    <p style="margin: 0; font-weight: 700; color: #3F0E27; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Application Status: Under Review</p>
-                    <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">Our credentialing department is currently reviewing your business documentation. This standard verification protocol ensures the integrity of our luxury marketplace and is typically completed within 24 to 48 business hours.</p>
+                  <div style="background-color: #fcfafb; border: 1px solid #eee; padding: 25px; margin: 30px 0; border-radius: 4px;">
+                    <p style="margin: 0; font-weight: 700; color: #3F0E27; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Current Protocol: Credential Verification</p>
+                    <p style="margin: 10px 0 0 0; font-size: 13px; color: #666;">Our administrative department is currently reviewing the submitted business documentation. This mandatory verification protocol ensures the standard of our marketplace and is typically concluded within 24 to 48 business hours.</p>
                   </div>
 
-                  <p>Once your partnership is activated, you will be invited to:</p>
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 15px 0;">
-                    <tr><td style="padding: 5px 0; color: #555;">• Curate and showcase your premier collections</td></tr>
-                    <tr><td style="padding: 5px 0; color: #555;">• Engage with our sophisticated clientele</td></tr>
-                    <tr><td style="padding: 5px 0; color: #555;">• Leverage bespoke business growth analytics</td></tr>
+                  <p>Upon successful verification, your administrative console will be provisioned with:</p>
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 15px 0; font-size: 13px; color: #555;">
+                    <tr><td style="padding: 6px 0;">• Authorized collection showcase tools</td></tr>
+                    <tr><td style="padding: 6px 0;">• Integrated merchant-client communication suite</td></tr>
+                    <tr><td style="padding: 6px 0;">• Strategic business intelligence metrics</td></tr>
                   </table>
 
-                  <p style="margin-top: 40px; font-size: 14px; color: #888; text-align: center; font-style: italic;">We look forward to a mutually successful partnership.</p>
+                  <p style="margin-top: 40px; font-size: 13px; color: #999; text-align: center; font-style: italic;">We anticipate a highly productive strategic alignment.</p>
                 </div>
               </td>
             </tr>
             <tr>
               <td style="background-color: #f9f9f9; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-                <p style="margin: 0; color: #3F0E27; font-size: 14px; font-weight: 600;">Team Jewellers Paradise</p>
-                <div style="margin-top: 15px; color: #999; font-size: 11px; line-height: 1.5;">
-                  © 2026 Jewellers Paradise. Private & Confidential.<br/>
-                  This is an automated administrative notification.
+                <p style="margin: 0; color: #3F0E27; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Jewellers Paradise Partner Relations</p>
+                <div style="margin-top: 15px; color: #bbb; font-size: 10px; line-height: 1.5;">
+                  Classification: Confidential - Administrative<br/>
+                  © 2026 Jewellers Paradise. All Rights Reserved.
                 </div>
               </td>
             </tr>
@@ -234,8 +234,6 @@ export const signup = async (req, res) => {
     });
   } catch (err) {
     console.error("SIGNUP ERROR TRACE:", err);
-    console.error("SIGNUP ERROR MESSAGE:", err.message);
-    console.error("SIGNUP ERROR STACK:", err.stack);
     if (client) {
       try {
         await client.query("ROLLBACK");
@@ -243,7 +241,6 @@ export const signup = async (req, res) => {
         console.error("Rollback failed:", rollbackErr);
       }
     }
-    // Return JSON error so frontend displays it
     return res.status(500).json({
       message: "Signup failed",
       error: err.message || "Internal Server Error",
@@ -263,16 +260,11 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(
-      `LOGIN DEBUG: Attempting login for email: [${email}]`
-    );
+    console.log(`LOGIN DEBUG: Attempting login for email: [${email}]`);
 
-    const result = await pool.query("SELECT * FROM vendors WHERE email = $1", [
-      email,
-    ]);
+    const result = await pool.query("SELECT * FROM vendors WHERE email = $1", [email]);
 
     if (result.rows.length === 0) {
-      console.log("LOGIN DEBUG: No user found with this email.", { email });
       return res.status(404).json({
         message: "This email is not registered with us.",
         code: "USER_NOT_FOUND",
@@ -304,8 +296,6 @@ export const login = async (req, res) => {
       { expiresIn: "1d" },
     );
 
-    console.log("LOGIN DEBUG: Login successful for vendor id:", vendor.id);
-
     return res.json({
       token,
       vendorStatus: vendor.status,
@@ -335,7 +325,6 @@ export const login = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    console.log(`FORGOT PASSWORD: Request received for [${email}]`);
     const result = await pool.query(
       "SELECT id, owner_name FROM vendors WHERE email = $1",
       [email],
@@ -359,7 +348,7 @@ export const forgotPassword = async (req, res) => {
     let baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
     try {
       const urlObj = new URL(baseUrl);
-      baseUrl = urlObj.origin; // This gets only 'https://your-app.vercel.app'
+      baseUrl = urlObj.origin;
     } catch (e) {
       baseUrl = baseUrl.replace(/\/$/, "");
     }
@@ -367,30 +356,30 @@ export const forgotPassword = async (req, res) => {
 
     await sendEmail({
       to: email,
-      subject: "Password Reset Request - Jewellers Paradise",
+      subject: "Credential Authorization - Jewellers Paradise Security",
       html: `
         <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
           <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <tr>
               <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
-                <h1 style="color: #D4AF37; margin: 0; font-size: 24px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Security Portal</h1>
+                <h1 style="color: #D4AF37; margin: 0; font-size: 24px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Security Protocol</h1>
                 <div style="width: 50px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
-                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Password Reset Authorization</p>
+                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Credential Authorization</p>
               </td>
             </tr>
             <tr>
               <td style="padding: 50px 40px;">
-                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 20px; font-weight: 600; text-align: center;">Partner Security Request</h2>
-                <div style="color: #555; line-height: 1.8; font-size: 15px; text-align: center;">
-                  <p>A formal request to reset the administrative credentials for your Jewellers Paradise account has been initiated.</p>
+                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 18px; font-weight: 600; text-align: left; letter-spacing: 1px;">Dear Valued Partner,</h2>
+                <div style="color: #555; line-height: 1.8; font-size: 14px; text-align: center;">
+                  <p>A formal request to modify the administrative credentials associated with your Jewellers Paradise account has been recorded within our security logs.</p>
                   
                   <div style="margin: 40px 0;">
-                    <a href="${resetLink}" style="background-color: #3F0E27; color: #D4AF37; padding: 18px 36px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 14px; border: 1px solid #D4AF37; text-transform: uppercase; letter-spacing: 2px;">Authorize Reset</a>
+                    <a href="${resetLink}" style="background-color: #3F0E27; color: #D4AF37; padding: 18px 36px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 13px; border: 1px solid #D4AF37; text-transform: uppercase; letter-spacing: 2px;">Authorize Modification</a>
                   </div>
 
-                  <div style="background-color: #fafafa; padding: 20px; border-radius: 4px; margin-top: 30px; text-align: left;">
-                    <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.6;">
-                      <strong>Security Note:</strong> If you did not authorize this action, please ignore this communication. Your security remains our highest priority. This link will expire in 15 minutes.
+                  <div style="background-color: #fafafa; border: 1px solid #eee; padding: 25px; border-radius: 4px; margin-top: 30px; text-align: left;">
+                    <p style="margin: 0; font-size: 12px; color: #666; line-height: 1.6;">
+                      <strong>Administrative Notice:</strong> If this request was not initiated by an authorized representative of your business, no further action is required. This authorization link is strictly time-bound and will be automatically invalidated by our system in 15 minutes to preserve account integrity.
                     </p>
                   </div>
                 </div>
@@ -398,10 +387,10 @@ export const forgotPassword = async (req, res) => {
             </tr>
             <tr>
               <td style="background-color: #f9f9f9; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-                <p style="margin: 0; color: #3F0E27; font-size: 14px; font-weight: 600;">Jewellers Paradise Security Team</p>
-                <div style="margin-top: 15px; color: #999; font-size: 11px; line-height: 1.5;">
-                  If the button above is not functional, copy this URL:<br/>
-                  <span style="color: #3F0E27; word-break: break-all; opacity: 0.7;">${resetLink}</span>
+                <p style="margin: 0; color: #3F0E27; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Jewellers Paradise Security Administration</p>
+                <div style="margin-top: 15px; color: #bbb; font-size: 10px; line-height: 1.5;">
+                  System Reference: ${crypto.randomBytes(4).toString('hex').toUpperCase()}<br/>
+                  © 2026 Jewellers Paradise. All Rights Reserved.
                 </div>
               </td>
             </tr>
@@ -476,35 +465,35 @@ export const sendOTP = async (req, res) => {
     // Send Email
     await sendEmail({
       to: email,
-      subject: `Your OTP for Jewellers Paradise Signup: ${otp}`,
+      subject: `Authentication Protocol - OTP: ${otp}`,
       html: `
         <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
           <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 500px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <tr>
               <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
-                <h1 style="color: #D4AF37; margin: 0; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Verification</h1>
+                <h1 style="color: #D4AF37; margin: 0; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Authentication</h1>
                 <div style="width: 40px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
-                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Secure Access Code</p>
+                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Administrative Access Code</p>
               </td>
             </tr>
             <tr>
               <td style="padding: 50px 40px; text-align: center;">
-                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 18px; font-weight: 600;">Greetings, Partner</h2>
-                <p style="color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">To continue with your administrative session, please utilize the following single-use verification code.</p>
+                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 16px; font-weight: 600; letter-spacing: 1px;">Dear Valued Partner,</h2>
+                <p style="color: #666; font-size: 13px; line-height: 1.6; margin-bottom: 30px;">To proceed with the requested administrative provisioning, please utilize the following single-use authentication credential.</p>
                 
-                <div style="background-color: #fcf2f4; border: 1px solid #f2e1e5; padding: 30px; border-radius: 4px; display: inline-block; min-width: 240px;">
+                <div style="background-color: #fdfafb; border: 1px solid #f2e1e5; padding: 30px; border-radius: 4px; display: inline-block; min-width: 240px;">
                   <h1 style="color: #3F0E27; letter-spacing: 12px; margin: 0; font-size: 42px; font-weight: 300;">${otp}</h1>
                 </div>
 
-                <p style="margin-top: 30px; font-size: 12px; color: #999;">
-                  This authorization code will remain valid for <strong>5 minutes</strong>.
+                <p style="margin-top: 30px; font-size: 11px; color: #999;">
+                  This authorization credential remains valid for <strong>5 minutes</strong>.
                 </p>
               </td>
             </tr>
             <tr>
               <td style="background-color: #f9f9f9; padding: 25px; text-align: center; border-top: 1px solid #eeeeee;">
-                <p style="margin: 0; color: #3F0E27; font-size: 13px; font-weight: 600;">Jewellers Paradise Admin</p>
-                <p style="margin: 5px 0 0 0; color: #999; font-size: 10px;">© 2026 Jewellers Paradise. All Rights Reserved.</p>
+                <p style="margin: 0; color: #3F0E27; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Jewellers Paradise Access Management</p>
+                <div style="margin-top: 10px; color: #bbb; font-size: 9px;">© 2026 Jewellers Paradise. All Rights Reserved.</div>
               </td>
             </tr>
           </table>
@@ -515,8 +504,7 @@ export const sendOTP = async (req, res) => {
     res.json({ message: "OTP sent to your email" });
   } catch (err) {
     console.error("SEND OTP ERROR:", err);
-    const errorMessage = err.response?.text || err.message || "Unknown error";
-    res.status(500).json({ message: `Failed to send OTP: ${errorMessage}` });
+    res.status(500).json({ message: "Failed to send OTP" });
   }
 };
 
