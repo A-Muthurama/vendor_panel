@@ -1,4 +1,11 @@
 import pool from "../db.js";
+import { sendEmail } from "../config/email.js";
+import {
+  getApprovalEmail,
+  getRejectionEmail,
+  getOfferApprovalEmail,
+  getOfferRejectionEmail
+} from "../utils/emailTemplates.js";
 
 /* ===== INTERNAL: APPROVE VENDOR ===== */
 export const approveVendorInternal = async (req, res) => {
@@ -28,6 +35,18 @@ export const approveVendorInternal = async (req, res) => {
     );
 
     await client.query("COMMIT");
+
+    // 3. Send Approval Email (async)
+    const vendorRes = await client.query("SELECT email, owner_name, shop_name FROM vendors WHERE id = $1", [id]);
+    if (vendorRes.rows.length > 0) {
+      const { email, owner_name, shop_name } = vendorRes.rows[0];
+      sendEmail({
+        to: email,
+        subject: "Jewellers Paradise - Account Approved",
+        html: getApprovalEmail(owner_name, shop_name),
+      }).catch(err => console.error("Internal Approval Email Error:", err));
+    }
+
     res.json({
       message: "Vendor approved with 90-day free trial",
       trialExpiryDate: trialExpiryDate
@@ -52,7 +71,18 @@ export const rejectVendorInternal = async (req, res) => {
     [id, reason || null]
   );
 
-  res.json({ message: "Vendor rejected (internal)" });
+  // Send Rejection Email
+  const vendorRes = await pool.query("SELECT email, owner_name, shop_name FROM vendors WHERE id = $1", [id]);
+  if (vendorRes.rows.length > 0) {
+    const { email, owner_name, shop_name } = vendorRes.rows[0];
+    sendEmail({
+      to: email,
+      subject: "Jewellers Paradise - Application Status Update",
+      html: getRejectionEmail(owner_name, shop_name, reason),
+    }).catch(err => console.error("Internal Rejection Email Error:", err));
+  }
+
+  res.json({ message: "Vendor rejected and notification sent" });
 };
 
 /* ===== INTERNAL: APPROVE OFFER ===== */
@@ -63,6 +93,23 @@ export const approveOfferInternal = async (req, res) => {
     "UPDATE offers SET status = 'APPROVED' WHERE id = $1",
     [id]
   );
+
+  // Send Offer Approval Email
+  const offerRes = await pool.query(
+    `SELECT v.email, v.owner_name, o.title 
+     FROM offers o 
+     JOIN vendors v ON o.vendor_id = v.id 
+     WHERE o.id = $1`,
+    [id]
+  );
+  if (offerRes.rows.length > 0) {
+    const { email, owner_name, title } = offerRes.rows[0];
+    sendEmail({
+      to: email,
+      subject: "Jewellers Paradise - Offer Published",
+      html: getOfferApprovalEmail(owner_name, title),
+    }).catch(err => console.error("Internal Offer Approval Email Error:", err));
+  }
 
   res.json({ message: "Offer approved (internal)" });
 };
@@ -76,6 +123,23 @@ export const rejectOfferInternal = async (req, res) => {
     "UPDATE offers SET status = 'REJECTED', rejection_reason = $2 WHERE id = $1",
     [id, reason || null]
   );
+
+  // Send Offer Rejection Email
+  const offerRes = await pool.query(
+    `SELECT v.email, v.owner_name, o.title 
+     FROM offers o 
+     JOIN vendors v ON o.vendor_id = v.id 
+     WHERE o.id = $1`,
+    [id]
+  );
+  if (offerRes.rows.length > 0) {
+    const { email, owner_name, title } = offerRes.rows[0];
+    sendEmail({
+      to: email,
+      subject: "Jewellers Paradise - Offer Status Update",
+      html: getOfferRejectionEmail(owner_name, title, reason),
+    }).catch(err => console.error("Internal Offer Rejection Email Error:", err));
+  }
 
   res.json({ message: "Offer rejected (internal)" });
 };

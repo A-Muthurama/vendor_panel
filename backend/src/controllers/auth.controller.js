@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "../config/email.js";
 import crypto from "crypto";
 import axios from "axios";
+import { getWelcomeEmail, getForgotPasswordEmail, getOTPEmail } from "../utils/emailTemplates.js";
 
 /* ---------------- SIGNUP ---------------- */
 export const signup = async (req, res) => {
@@ -167,51 +168,8 @@ export const signup = async (req, res) => {
     // 9. Send Welcome Email (Don't let email failure block signup)
     sendEmail({
       to: email,
-      subject: "Partnership Notification - Registration Successful",
-      html: `
-        <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
-          <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <tr>
-              <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
-                <h1 style="color: #D4AF37; margin: 0; font-size: 26px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Jewellers Paradise</h1>
-                <div style="width: 50px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
-                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Partnership Notification</p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 50px 40px;">
-                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 18px; font-weight: 600; text-align: left; letter-spacing: 1px;">Dear Valued Partner,</h2>
-                <div style="color: #555; line-height: 1.8; font-size: 14px;">
-                  <p>This communication serves as formal acknowledgment of the registration for <strong>${shopName}</strong> within the Jewellers Paradise merchant network.</p>
-                  
-                  <div style="background-color: #fcfafb; border: 1px solid #eee; padding: 25px; margin: 30px 0; border-radius: 4px;">
-                    <p style="margin: 0; font-weight: 700; color: #3F0E27; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Current Protocol: Credential Verification</p>
-                    <p style="margin: 10px 0 0 0; font-size: 13px; color: #666;">Our administrative department is currently reviewing the submitted business documentation. This mandatory verification protocol ensures the standard of our marketplace and is typically concluded within 24 to 48 business hours.</p>
-                  </div>
-
-                  <p>Upon successful verification, your administrative console will be provisioned with:</p>
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 15px 0; font-size: 13px; color: #555;">
-                    <tr><td style="padding: 6px 0;">• Authorized collection showcase tools</td></tr>
-                    <tr><td style="padding: 6px 0;">• Integrated merchant-client communication suite</td></tr>
-                    <tr><td style="padding: 6px 0;">• Strategic business intelligence metrics</td></tr>
-                  </table>
-
-                  <p style="margin-top: 40px; font-size: 13px; color: #999; text-align: center; font-style: italic;">We anticipate a highly productive strategic alignment.</p>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td style="background-color: #f9f9f9; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-                <p style="margin: 0; color: #3F0E27; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Jewellers Paradise Partner Relations</p>
-                <div style="margin-top: 15px; color: #bbb; font-size: 10px; line-height: 1.5;">
-                  Classification: Confidential - Administrative<br/>
-                  © 2026 Jewellers Paradise. All Rights Reserved.
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>
-      `,
+      subject: "Jewellers Paradise - Registration Successful",
+      html: getWelcomeEmail(shopName),
     }).catch(emailErr => {
       console.error("Background Welcome Email Failed:", emailErr.message);
     });
@@ -354,49 +312,12 @@ export const forgotPassword = async (req, res) => {
     }
     const resetLink = `${baseUrl}/vendor/reset-password?token=${token}&email=${email}`;
 
-    await sendEmail({
-      to: email,
-      subject: "Credential Authorization - Jewellers Paradise Security",
-      html: `
-        <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
-          <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <tr>
-              <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
-                <h1 style="color: #D4AF37; margin: 0; font-size: 24px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Security Protocol</h1>
-                <div style="width: 50px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
-                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Credential Authorization</p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 50px 40px;">
-                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 18px; font-weight: 600; text-align: left; letter-spacing: 1px;">Dear Valued Partner,</h2>
-                <div style="color: #555; line-height: 1.8; font-size: 14px; text-align: center;">
-                  <p>A formal request to modify the administrative credentials associated with your Jewellers Paradise account has been recorded within our security logs.</p>
-                  
-                  <div style="margin: 40px 0;">
-                    <a href="${resetLink}" style="background-color: #3F0E27; color: #D4AF37; padding: 18px 36px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 13px; border: 1px solid #D4AF37; text-transform: uppercase; letter-spacing: 2px;">Authorize Modification</a>
-                  </div>
+    const systemRef = crypto.randomBytes(4).toString('hex').toUpperCase();
 
-                  <div style="background-color: #fafafa; border: 1px solid #eee; padding: 25px; border-radius: 4px; margin-top: 30px; text-align: left;">
-                    <p style="margin: 0; font-size: 12px; color: #666; line-height: 1.6;">
-                      <strong>Administrative Notice:</strong> If this request was not initiated by an authorized representative of your business, no further action is required. This authorization link is strictly time-bound and will be automatically invalidated by our system in 15 minutes to preserve account integrity.
-                    </p>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td style="background-color: #f9f9f9; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-                <p style="margin: 0; color: #3F0E27; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Jewellers Paradise Security Administration</p>
-                <div style="margin-top: 15px; color: #bbb; font-size: 10px; line-height: 1.5;">
-                  System Reference: ${crypto.randomBytes(4).toString('hex').toUpperCase()}<br/>
-                  © 2026 Jewellers Paradise. All Rights Reserved.
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>
-      `,
+    sendEmail({
+      to: email,
+      subject: "Jewellers Paradise - Password Reset Request",
+      html: getForgotPasswordEmail(resetLink, systemRef),
     });
 
     res.json({ message: "Password reset link sent to your email." });
@@ -463,42 +384,10 @@ export const sendOTP = async (req, res) => {
     );
 
     // Send Email
-    await sendEmail({
+    sendEmail({
       to: email,
-      subject: `Authentication Protocol - OTP: ${otp}`,
-      html: `
-        <div style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #fcfafb;">
-          <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 500px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e1e1e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <tr>
-              <td style="background-color: #3F0E27; padding: 40px 20px; text-align: center;">
-                <h1 style="color: #D4AF37; margin: 0; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; font-weight: 300;">Authentication</h1>
-                <div style="width: 40px; height: 1px; background-color: #D4AF37; margin: 15px auto;"></div>
-                <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8;">Administrative Access Code</p>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 50px 40px; text-align: center;">
-                <h2 style="color: #3F0E27; margin: 0 0 25px 0; font-size: 16px; font-weight: 600; letter-spacing: 1px;">Dear Valued Partner,</h2>
-                <p style="color: #666; font-size: 13px; line-height: 1.6; margin-bottom: 30px;">To proceed with the requested administrative provisioning, please utilize the following single-use authentication credential.</p>
-                
-                <div style="background-color: #fdfafb; border: 1px solid #f2e1e5; padding: 30px; border-radius: 4px; display: inline-block; min-width: 240px;">
-                  <h1 style="color: #3F0E27; letter-spacing: 12px; margin: 0; font-size: 42px; font-weight: 300;">${otp}</h1>
-                </div>
-
-                <p style="margin-top: 30px; font-size: 11px; color: #999;">
-                  This authorization credential remains valid for <strong>5 minutes</strong>.
-                </p>
-              </td>
-            </tr>
-            <tr>
-              <td style="background-color: #f9f9f9; padding: 25px; text-align: center; border-top: 1px solid #eeeeee;">
-                <p style="margin: 0; color: #3F0E27; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Jewellers Paradise Access Management</p>
-                <div style="margin-top: 10px; color: #bbb; font-size: 9px;">© 2026 Jewellers Paradise. All Rights Reserved.</div>
-              </td>
-            </tr>
-          </table>
-        </div>
-      `,
+      subject: "Jewellers Paradise - Email Verification",
+      html: getOTPEmail(otp),
     });
 
     res.json({ message: "OTP sent to your email" });
