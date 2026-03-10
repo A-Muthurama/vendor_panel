@@ -4,19 +4,29 @@ import cloudinary from "./cloudinary.js";
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: "vendor_uploads",
-    resource_type: "auto", // Allow images and videos
-    allowed_formats: ["jpg", "jpeg", "png", "webp", "mp4", "mov", "pdf"]
+  params: (req, file) => {
+    const isPDF = file.mimetype === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf");
+    const isVideo = file.mimetype?.startsWith("video/") || ["mp4", "mov"].some(ext => file.originalname.toLowerCase().endsWith(ext));
+    
+    return {
+      folder: "vendor_uploads",
+      resource_type: isPDF ? "raw" : (isVideo ? "video" : "image"),
+      allowed_formats: (isPDF || isVideo) ? undefined : ["jpg", "jpeg", "png", "webp"],
+      public_id: (isPDF || isVideo) ? `${Date.now()}-${file.originalname}` : undefined,
+    };
   }
 });
 
 const kycStorage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: "kyc_uploads",
-    resource_type: "auto", // Allow images and pdfs
-    allowed_formats: ["jpg", "jpeg", "png", "pdf"]
+  params: (req, file) => {
+    const isPDF = file.mimetype === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf");
+    return {
+      folder: "kyc_uploads",
+      resource_type: isPDF ? "raw" : "image",
+      allowed_formats: isPDF ? undefined : ["jpg", "jpeg", "png"],
+      public_id: isPDF ? `${Date.now()}-${file.originalname}` : undefined,
+    };
   }
 });
 
