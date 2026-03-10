@@ -143,9 +143,9 @@ const Signup = () => {
   const handleFileChange = async (type, file) => { // Made async
     if (!file) return;
 
-    const allowedTypes = ["image/jpeg", "image/png"];
+    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
-      setError("KYC must be JPG, or PNG");
+      setError("KYC must be JPG, PNG, or PDF");
       return;
     }
 
@@ -500,16 +500,16 @@ const Signup = () => {
 
           {/* ---------- KYC FILES ---------- */}
           <label>Aadhaar Card (Required)</label>
-          <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange("AADHAAR", e.target.files[0])} required />
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("AADHAAR", e.target.files[0])} required />
 
           <label>PAN Card (Required)</label>
-          <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange("PAN", e.target.files[0])} required />
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("PAN", e.target.files[0])} required />
 
           <label>GST Certificate (Required)</label>
-          <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange("GST", e.target.files[0])} required />
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("GST", e.target.files[0])} required />
 
           <label>Trade License (Optional)</label>
-          <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange("TRADE_LICENSE", e.target.files[0])} />
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("TRADE_LICENSE", e.target.files[0])} />
 
           {/* Terms & Conditions */}
           <div style={{

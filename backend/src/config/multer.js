@@ -15,8 +15,8 @@ const kycStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "kyc_uploads",
-    resource_type: "image", // Only allow images
-    allowed_formats: ["jpg", "jpeg", "png"]
+    resource_type: "auto", // Allow images and pdfs
+    allowed_formats: ["jpg", "jpeg", "png", "pdf"]
   }
 });
 
