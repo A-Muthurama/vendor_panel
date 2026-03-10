@@ -6,13 +6,15 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: (req, file) => {
     const isPDF = file.mimetype === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf");
-    const isVideo = file.mimetype?.startsWith("video/") || ["mp4", "mov"].some(ext => file.originalname.toLowerCase().endsWith(ext));
+    const isVideo = file.mimetype?.startsWith("video/") || ["mp4", "mov", "m4v"].some(ext => file.originalname.toLowerCase().endsWith(ext));
     
     return {
       folder: "vendor_uploads",
-      resource_type: isPDF ? "raw" : (isVideo ? "video" : "image"),
+      // Use 'video' for videos, and 'image' for everything else (including PDFs)
+      // because 'raw' doesn't support the 'fl_attachment' transformation.
+      resource_type: isVideo ? "video" : "image",
+      public_id: `${Date.now()}-${file.originalname}`,
       allowed_formats: (isPDF || isVideo) ? undefined : ["jpg", "jpeg", "png", "webp"],
-      public_id: (isPDF || isVideo) ? `${Date.now()}-${file.originalname}` : undefined,
     };
   }
 });
@@ -23,9 +25,12 @@ const kycStorage = new CloudinaryStorage({
     const isPDF = file.mimetype === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf");
     return {
       folder: "kyc_uploads",
-      resource_type: isPDF ? "raw" : "image",
-      allowed_formats: isPDF ? undefined : ["jpg", "jpeg", "png"],
-      public_id: isPDF ? `${Date.now()}-${file.originalname}` : undefined,
+      // We use 'image' resource_type even for PDFs because Cloudinary supports 
+      // transformations like 'fl_attachment' for the image type, which allows 
+      // us to force a download in the admin panel.
+      resource_type: "image", 
+      public_id: `${Date.now()}-${file.originalname}`,
+      // No format specified here to preserve original filename + ext in public_id
     };
   }
 });
