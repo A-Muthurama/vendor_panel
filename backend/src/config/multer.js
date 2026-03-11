@@ -8,11 +8,13 @@ const storage = new CloudinaryStorage({
     const isPDF = file.mimetype === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf");
     const isVideo = file.mimetype?.startsWith("video/") || ["mp4", "mov", "m4v"].some(ext => file.originalname.toLowerCase().endsWith(ext));
     
+    let resourceType = "image";
+    if (isPDF) resourceType = "raw";
+    else if (isVideo) resourceType = "video";
+    
     return {
       folder: "vendor_uploads",
-      // Use 'video' for videos, and 'image' for everything else (including PDFs)
-      // because 'raw' doesn't support the 'fl_attachment' transformation.
-      resource_type: isVideo ? "video" : "image",
+      resource_type: resourceType,
       public_id: `${Date.now()}-${file.originalname}`,
       allowed_formats: (isPDF || isVideo) ? undefined : ["jpg", "jpeg", "png", "webp"],
     };
@@ -25,10 +27,9 @@ const kycStorage = new CloudinaryStorage({
     const isPDF = file.mimetype === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf");
     return {
       folder: "kyc_uploads",
-      // We use 'image' resource_type even for PDFs because Cloudinary supports 
-      // transformations like 'fl_attachment' for the image type, which allows 
-      // us to force a download in the admin panel.
-      resource_type: "image", 
+      // Use 'raw' resource_type for PDFs (official Cloudinary recommendation)
+      // PDFs are documents, not images. Raw asset type is correct for reliable downloads.
+      resource_type: isPDF ? "raw" : "image", 
       public_id: `${Date.now()}-${file.originalname}`,
       // No format specified here to preserve original filename + ext in public_id
     };
