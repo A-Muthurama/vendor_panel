@@ -109,9 +109,32 @@ const PublicSupport = () => {
                     </div>
 
                     {/* About Audio Section */}
-                    <div className="audio-container" style={{ textAlign: "center", marginBottom: "4rem" }}>
+                    <div className="audio-container" style={{ 
+                        margin: "0 auto 4rem auto",
+                        background: "linear-gradient(135deg, #ffffff 0%, #fdf1f5 100%)",
+                        padding: "50px 30px",
+                        borderRadius: "24px",
+                        boxShadow: "0 10px 40px rgba(76, 15, 46, 0.06)",
+                        border: "1px solid rgba(212, 175, 55, 0.2)",
+                        maxWidth: "900px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center"
+                    }}>
                         <h2 className="section-title" style={{ fontSize: "2.5rem", marginBottom: "30px" }}>About Jewellersparadise</h2>
-                        <audio controls style={{ width: "100%", maxWidth: "600px", outline: "none", boxShadow: "0 4px 15px rgba(0, 0, 0, 0.05)", borderRadius: "30px" }}>
+                        <p style={{ color: "#666", marginBottom: "30px", fontSize: "1.1rem", textAlign: "center", maxWidth: "650px", lineHeight: "1.6" }}>
+                            Listen to a quick introduction about Jewellersparadise. Learn how our platform empowers vendors to connect with millions of customers securely and efficiently.
+                        </p>
+                        <audio controls style={{ 
+                            width: "100%", 
+                            maxWidth: "600px", 
+                            outline: "none", 
+                            boxShadow: "0 8px 25px rgba(76, 15, 46, 0.15)", 
+                            borderRadius: "50px",
+                            display: "block",
+                            margin: "0 auto",
+                            backgroundColor: "#fff"
+                        }}>
                             <source src="/assets/FAQ-audio.mpeg" type="audio/mpeg" />
                             Your browser does not support the audio element.
                         </audio>
