@@ -108,6 +108,15 @@ const PublicSupport = () => {
                         ))}
                     </div>
 
+                    {/* About Audio Section */}
+                    <div className="audio-container" style={{ textAlign: "center", marginBottom: "4rem" }}>
+                        <h2 className="section-title" style={{ fontSize: "2.5rem", marginBottom: "30px" }}>About Jewellersparadise</h2>
+                        <audio controls style={{ width: "100%", maxWidth: "600px", outline: "none", boxShadow: "0 4px 15px rgba(0, 0, 0, 0.05)", borderRadius: "30px" }}>
+                            <source src="/assets/FAQ-audio.mpeg" type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+
                     {/* FAQ Section */}
                     <div className="faq-container">
                         <h2 className="section-title">Frequently Asked Questions</h2>
