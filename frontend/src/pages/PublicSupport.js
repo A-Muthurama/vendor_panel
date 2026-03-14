@@ -125,6 +125,18 @@ const PublicSupport = () => {
                         <p style={{ color: "#666", marginBottom: "30px", fontSize: "1.1rem", textAlign: "center", maxWidth: "650px", lineHeight: "1.6" }}>
                             Listen to a quick introduction about Jewellersparadise. Learn how our platform empowers vendors to connect with millions of customers securely and efficiently.
                         </p>
+                        <img 
+                            src="/images/poster.jpeg" 
+                            alt="Jewellersparadise Poster" 
+                            style={{ 
+                                width: "100%", 
+                                maxWidth: "600px", 
+                                borderRadius: "16px", 
+                                marginBottom: "25px",
+                                boxShadow: "0 6px 20px rgba(0, 0, 0, 0.08)",
+                                objectFit: "cover"
+                            }} 
+                        />
                         <audio controls style={{ 
                             width: "100%", 
                             maxWidth: "600px", 
