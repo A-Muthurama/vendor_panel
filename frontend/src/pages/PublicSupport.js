@@ -121,7 +121,7 @@ const PublicSupport = () => {
                         flexDirection: "column",
                         alignItems: "center"
                     }}>
-                        <h2 className="section-title" style={{ fontSize: "2.5rem", marginBottom: "30px" }}>About Jewellersparadise</h2>
+                        <h2 className="section-title" style={{ fontSize: "2.5rem", marginBottom: "30px", left: "auto", transform: "none" }}>About Jewellersparadise</h2>
                         <p style={{ color: "#666", marginBottom: "30px", fontSize: "1.1rem", textAlign: "center", maxWidth: "650px", lineHeight: "1.6" }}>
                             Listen to a quick introduction about Jewellersparadise. Learn how our platform empowers vendors to connect with millions of customers securely and efficiently.
                         </p>
