@@ -11,13 +11,30 @@ const VendorProfile = () => {
     const [submittedDocs, setSubmittedDocs] = useState([]);
     const [fetchingDocs, setFetchingDocs] = useState(true);
 
-    // Document types to match with backend
-    const kycConfig = [
-        { name: "Aadhaar Card", type: "AADHAAR", icon: "🆔" },
-        { name: "PAN Card", type: "PAN", icon: "💳" },
-        { name: "GST Certificate", type: "GST", icon: "📜" },
-        { name: "Trade License", type: "TRADE_LICENSE", icon: "📋" }
-    ];
+    // Document config is dynamic based on vendor country
+    const getKycConfig = (country) => {
+        if (country === "United States") {
+            return [
+                { name: "ISR Form W-9", type: "ISR_FORM_W9", icon: "📋" },
+                { name: "Trade License", type: "TRADE_LICENSE", icon: "🏢" }
+            ];
+        } else if (!country || country === "India") {
+            return [
+                { name: "Aadhaar Card", type: "AADHAAR", icon: "🆔" },
+                { name: "PAN Card", type: "PAN", icon: "💳" },
+                { name: "GST Certificate", type: "GST", icon: "📜" },
+                { name: "Trade License", type: "TRADE_LICENSE", icon: "📋" }
+            ];
+        } else {
+            return [
+                { name: "National ID / Passport", type: "NATIONAL_ID", icon: "🛂" },
+                { name: "Tax Identification", type: "TAX_ID", icon: "📄" },
+                { name: "Trade License", type: "TRADE_LICENSE", icon: "📋" }
+            ];
+        }
+    };
+
+    const kycConfig = getKycConfig(vendor?.country);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -50,10 +67,6 @@ const VendorProfile = () => {
 
     // Helper to check if a doc is submitted
     const isDocSubmitted = (type) => {
-        // If the vendor is approved, they must have submitted their core docs
-        if (vendor?.status === 'APPROVED' && ['AADHAAR', 'PAN', 'GST'].includes(type)) {
-            return true;
-        }
         return submittedDocs.includes(type.toUpperCase());
     };
 
@@ -155,6 +168,10 @@ const VendorProfile = () => {
                                 <div className="info-item">
                                     <label>Pincode</label>
                                     <div className="info-value">{vendor?.pincode || "N/A"}</div>
+                                </div>
+                                <div className="info-item">
+                                    <label>Country</label>
+                                    <div className="info-value">{vendor?.country || "India"}</div>
                                 </div>
                                 <div className="info-item full-width">
                                     <label>Complete Address</label>

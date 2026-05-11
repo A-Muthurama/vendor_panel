@@ -3,7 +3,7 @@ import axios from "axios";
 // Uses REACT_APP_API_URL from .env (for production)
 // Falls back to localhost for local development
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5001/api"
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api"
 });
 
 export const signupVendor = (data) =>

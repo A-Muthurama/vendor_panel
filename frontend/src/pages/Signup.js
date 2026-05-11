@@ -4,6 +4,8 @@ import { signupVendor, sendEmailOTP, verifyEmailOTP } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { locations } from "../data/locations";
+import { countries } from "../data/countries";
+import { countryCodes } from "../data/countryCodes";
 import SearchableDropdown from "../components/SearchableDropdown";
 import AuthHeader from "../components/AuthHeader";
 import Toast from "../components/Toast";
@@ -37,6 +39,7 @@ const Signup = () => {
     city: "",
     pincode: "",
     address: "",
+    country: "India",
     password: "",
     confirmPassword: ""
   });
@@ -45,7 +48,10 @@ const Signup = () => {
     AADHAAR: null,
     PAN: null,
     GST: null,
-    TRADE_LICENSE: null
+    TRADE_LICENSE: null,
+    ISR_FORM_W9: null,
+    NATIONAL_ID: null,
+    TAX_ID: null
   });
 
   // Toast State & Shims
@@ -125,14 +131,26 @@ const Signup = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "phone" && !/^\d{0,10}$/.test(value)) return;
-    if (name === "pincode" && !/^\d{0,6}$/.test(value)) return;
+    if (name === "phone") {
+      const [, , maxDigits] = countryCodes[form.country] || ["+", 5, 15];
+      if (!/^\d*$/.test(value)) return;
+      if (value.length > maxDigits) return;
+    }
+    if (name === "pincode") {
+      if (form.country === "India") {
+        if (!/^\d{0,6}$/.test(value)) return;
+      } else {
+        if (!/^[A-Za-z0-9\s-]{0,12}$/.test(value)) return;
+      }
+    }
 
     setForm({ ...form, [name]: value });
   };
 
   const handleLocationChange = (name, value) => {
-    if (name === "state") {
+    if (name === "country") {
+      setForm({ ...form, country: value, state: "", city: "", pincode: "", phone: "" });
+    } else if (name === "state") {
       setForm({ ...form, state: value, city: "" });
     } else {
       setForm({ ...form, [name]: value });
@@ -181,21 +199,30 @@ const Signup = () => {
 
     // ---------- VALIDATIONS ----------
     if (!form.state || !form.city) {
-      setError("Please select both State and District");
+      setError("Please select/enter both State and City");
       setLoading(false);
       return;
     }
 
-    if (form.phone.length !== 10) {
-      setError("Phone number must be exactly 10 digits");
+    const [, phoneMin, phoneMax] = countryCodes[form.country] || ["+", 5, 15];
+    if (form.phone.length < phoneMin || form.phone.length > phoneMax) {
+      setError(`Phone number must be ${phoneMin === phoneMax ? phoneMin : `${phoneMin}–${phoneMax}`} digits for ${form.country}`);
       setLoading(false);
       return;
     }
 
-    if (form.pincode.length !== 6) {
-      setError("Pincode must be exactly 6 digits");
-      setLoading(false);
-      return;
+    if (form.country === "India") {
+      if (form.pincode.length !== 6) {
+        setError("Pincode must be exactly 6 digits");
+        setLoading(false);
+        return;
+      }
+    } else {
+      if (form.pincode.length < 3) {
+        setError("Please enter a valid Pincode/Zipcode");
+        setLoading(false);
+        return;
+      }
     }
 
     // Professional Password Validation
@@ -231,10 +258,24 @@ const Signup = () => {
     }
 
     // ---------- REQUIRED KYC CHECK ----------
-    if (!files.AADHAAR || !files.PAN || !files.GST) {
-      setError("Aadhaar, PAN, and GST documents are mandatory");
-      setLoading(false);
-      return;
+    if (form.country === "United States") {
+      if (!files.ISR_FORM_W9) {
+        setError("ISR Form W-9 is mandatory for US vendors");
+        setLoading(false);
+        return;
+      }
+    } else if (form.country === "India") {
+      if (!files.AADHAAR || !files.PAN || !files.GST) {
+        setError("Aadhaar, PAN, and GST documents are mandatory");
+        setLoading(false);
+        return;
+      }
+    } else {
+      if (!files.NATIONAL_ID || !files.TAX_ID) {
+        setError("National ID and Tax ID are mandatory for international vendors");
+        setLoading(false);
+        return;
+      }
     }
 
     if (!acceptedTerms) {
@@ -251,18 +292,30 @@ const Signup = () => {
 
     try {
       const formData = new FormData();
+      const [dialCode] = countryCodes[form.country] || ["+"];
 
       // Text fields
       Object.entries(form).forEach(([key, value]) => {
-        if (key !== "confirmPassword") {
+        if (key === "confirmPassword") return;
+        if (key === "phone") {
+          // Store full international number e.g. +91XXXXXXXXXX
+          formData.append("phone", `${dialCode}${value}`);
+        } else {
           formData.append(key, value);
         }
       });
 
       // File fields (MUST MATCH BACKEND)
-      formData.append("AADHAAR", files.AADHAAR);
-      formData.append("PAN", files.PAN);
-      formData.append("GST", files.GST);
+      if (form.country === "United States") {
+        if (files.ISR_FORM_W9) formData.append("ISR_FORM_W9", files.ISR_FORM_W9);
+      } else if (form.country === "India") {
+        formData.append("AADHAAR", files.AADHAAR);
+        formData.append("PAN", files.PAN);
+        formData.append("GST", files.GST);
+      } else {
+        if (files.NATIONAL_ID) formData.append("NATIONAL_ID", files.NATIONAL_ID);
+        if (files.TAX_ID) formData.append("TAX_ID", files.TAX_ID);
+      }
 
       if (files.TRADE_LICENSE) {
         formData.append("TRADE_LICENSE", files.TRADE_LICENSE);
@@ -410,33 +463,90 @@ const Signup = () => {
             </div>
           )}
 
-          <input name="phone" placeholder="Phone (10-digit)" value={form.phone} onChange={handleChange} required />
-
           {/* Searchable Selects for Locations */}
-          <div className="location-row">
+          <div style={{ marginBottom: '15px' }}>
             <SearchableDropdown
-              options={Object.keys(flattenedLocations)}
-              value={form.state}
-              onChange={(val) => handleLocationChange("state", val)}
-              placeholder="State"
+              options={countries}
+              value={form.country}
+              onChange={(val) => handleLocationChange("country", val)}
+              placeholder="Country"
               icon={MapIcon}
             />
-            <SearchableDropdown
-              options={flattenedLocations[form.state] || []}
-              value={form.city}
-              onChange={(val) => handleLocationChange("city", val)}
-              placeholder={form.state ? "District" : "State First"}
-              disabled={!form.state}
-              icon={MapPin}
-            />
+          </div>
+
+          {/* Phone with country dial code */}
+          {(() => {
+            const [dialCode, minD, maxD] = countryCodes[form.country] || ["+", 5, 15];
+            const hint = minD === maxD ? `${minD} digits` : `${minD}–${maxD} digits`;
+            return (
+              <div style={{ display: 'flex', gap: '8px', width: '100%', marginBottom: '15px' }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: '0 14px', background: '#f5f0eb', border: '1px solid #d4c4b0',
+                  borderRadius: '8px', fontSize: '14px', fontWeight: '600',
+                  color: '#4C0F2E', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '64px'
+                }}>
+                  {dialCode}
+                </div>
+                <input
+                  name="phone"
+                  type="tel"
+                  placeholder={`Phone (${hint})`}
+                  value={form.phone}
+                  onChange={handleChange}
+                  maxLength={maxD}
+                  required
+                  style={{ marginBottom: 0, flex: 1 }}
+                />
+              </div>
+            );
+          })()}
+
+          <div className="location-row">
+            {form.country === "India" ? (
+              <>
+                <SearchableDropdown
+                  options={Object.keys(flattenedLocations)}
+                  value={form.state}
+                  onChange={(val) => handleLocationChange("state", val)}
+                  placeholder="State"
+                  icon={MapIcon}
+                />
+                <SearchableDropdown
+                  options={flattenedLocations[form.state] || []}
+                  value={form.city}
+                  onChange={(val) => handleLocationChange("city", val)}
+                  placeholder={form.state ? "District" : "State First"}
+                  disabled={!form.state}
+                  icon={MapPin}
+                />
+              </>
+            ) : (
+              <>
+                <input
+                  name="state"
+                  placeholder="State / Province"
+                  value={form.state}
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  name="city"
+                  placeholder="City"
+                  value={form.city}
+                  onChange={handleChange}
+                  required
+                />
+              </>
+            )}
           </div>
 
           <input
             name="pincode"
-            placeholder="Pincode"
+            placeholder="Pincode / Zipcode"
             value={form.pincode}
             onChange={handleChange}
-            maxLength={6}
+            maxLength={form.country === 'India' ? 6 : 12}
             required
           />
 
@@ -499,14 +609,31 @@ const Signup = () => {
           </div>
 
           {/* ---------- KYC FILES ---------- */}
-          <label>Aadhaar Card (Required)</label>
-          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("AADHAAR", e.target.files[0])} required />
+          {form.country === "United States" ? (
+            <>
+              <label>ISR Form W-9 (Required)</label>
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("ISR_FORM_W9", e.target.files[0])} required />
+            </>
+          ) : form.country === "India" ? (
+            <>
+              <label>Aadhaar Card (Required)</label>
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("AADHAAR", e.target.files[0])} required />
 
-          <label>PAN Card (Required)</label>
-          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("PAN", e.target.files[0])} required />
+              <label>PAN Card (Required)</label>
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("PAN", e.target.files[0])} required />
 
-          <label>GST Certificate (Required)</label>
-          <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("GST", e.target.files[0])} required />
+              <label>GST Certificate (Required)</label>
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("GST", e.target.files[0])} required />
+            </>
+          ) : (
+            <>
+              <label>National ID / Passport (Required)</label>
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("NATIONAL_ID", e.target.files[0])} required />
+
+              <label>Tax Identification Document (Required)</label>
+              <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("TAX_ID", e.target.files[0])} required />
+            </>
+          )}
 
           <label>Trade License (Optional)</label>
           <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={(e) => handleFileChange("TRADE_LICENSE", e.target.files[0])} />

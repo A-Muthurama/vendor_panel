@@ -556,7 +556,7 @@ export const getVendorProfile = async (req, res) => {
     try {
         // 1. Get Full Vendor Details
         const vendorRes = await client.query(
-            "SELECT id, shop_name, owner_name, email, phone, state, city, pincode, address, status, profile_picture_url, rejection_reason, reasons FROM vendors WHERE id = $1",
+            "SELECT id, shop_name, owner_name, email, phone, state, city, pincode, address, country, status, profile_picture_url, rejection_reason, reasons FROM vendors WHERE id = $1",
             [vendorId]
         );
         const vendor = vendorRes.rows[0];
@@ -585,6 +585,7 @@ export const getVendorProfile = async (req, res) => {
                 city: vendor.city,
                 pincode: vendor.pincode,
                 address: vendor.address,
+                country: vendor.country || "India",
                 status: vendor.status,
                 profilePictureUrl: vendor.profile_picture_url,
                 rejectionReason: vendor.rejection_reason || vendor.reasons,

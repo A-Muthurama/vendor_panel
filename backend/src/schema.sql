@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS vendors (
   city VARCHAR(100),
   pincode VARCHAR(20),
   address TEXT,
+  country VARCHAR(100) DEFAULT 'India',
   status VARCHAR(50) DEFAULT 'PENDING',
   rejection_reason TEXT,
   reset_password_token TEXT,

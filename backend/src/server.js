@@ -94,10 +94,11 @@ app.get("/api/health", async (req, res) => {
   try {
     // Test database connection
     const { Pool } = await import("pg");
-    const isLocal = process.env.DATABASE_URL?.includes("localhost") || process.env.DATABASE_URL?.includes("127.0.0.1");
+    const dbUrl = process.env.DATABASE_URL || "";
+    const isLocal = !dbUrl || dbUrl.includes("localhost") || dbUrl.includes("127.0.0.1");
     console.log("Health Check DB Config:", { isLocal, ssl: isLocal ? false : { rejectUnauthorized: false } });
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: dbUrl || undefined,
       ssl: isLocal ? false : { rejectUnauthorized: false }
     });
     await pool.query("SELECT 1");

@@ -23,6 +23,7 @@ export const signup = async (req, res) => {
       city,
       pincode,
       address,
+      country = "India",
     } = req.body;
 
     // 2. Client-side validation fallback
@@ -50,8 +51,20 @@ export const signup = async (req, res) => {
     if (address.length > 50) {
       return res.status(400).json({ message: "Address must be within 50 characters" });
     }
-    if (!/^\d{6}$/.test(pincode)) {
-      return res.status(400).json({ message: "Pincode must be exactly 6 digits" });
+    // Validate pincode: strict 6-digit for India, loose for others
+    if (country === "India") {
+      if (!/^\d{6}$/.test(pincode)) {
+        return res.status(400).json({ message: "Pincode must be exactly 6 digits" });
+      }
+    } else {
+      if (pincode.length < 3 || pincode.length > 12) {
+        return res.status(400).json({ message: "Invalid Pincode/Zipcode" });
+      }
+    }
+
+    // Validate phone: must start with + for international or be 10 digits for India
+    if (!/^\+?\d[\d\s-]{4,18}$/.test(phone)) {
+      return res.status(400).json({ message: "Invalid phone number" });
     }
 
     // Password Complexity: Min 8, Caps, Small, Number, Special Char
@@ -74,8 +87,18 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Password cannot contain your Shop Name" });
     }
 
-    if (!req.files?.AADHAAR || !req.files?.PAN || !req.files?.GST) {
-      return res.status(400).json({ message: "Required KYC missing" });
+    if (country === "United States") {
+      if (!req.files?.ISR_FORM_W9) {
+        return res.status(400).json({ message: "ISR Form W-9 is required for US vendors" });
+      }
+    } else if (country === "India") {
+      if (!req.files?.AADHAAR || !req.files?.PAN || !req.files?.GST) {
+        return res.status(400).json({ message: "Required KYC missing for Indian vendors" });
+      }
+    } else {
+      if (!req.files?.NATIONAL_ID || !req.files?.TAX_ID) {
+        return res.status(400).json({ message: "National ID and Tax ID are required for international vendors" });
+      }
     }
 
     // 3. Start Transaction
@@ -96,8 +119,8 @@ export const signup = async (req, res) => {
     // 5. Insert Vendor
     const vendorResult = await client.query(
       `INSERT INTO vendors 
-       (shop_name, owner_name, email, phone, password_hash, state, city, pincode, address)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+       (shop_name, owner_name, email, phone, password_hash, state, city, pincode, address, country)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
        RETURNING id, shop_name, owner_name, email`,
       [
         shopName,
@@ -109,6 +132,7 @@ export const signup = async (req, res) => {
         city,
         pincode,
         address,
+        country,
       ],
     );
 
@@ -188,6 +212,7 @@ export const signup = async (req, res) => {
         city,
         pincode,
         address,
+        country,
       },
     });
   } catch (err) {
@@ -267,6 +292,7 @@ export const login = async (req, res) => {
         city: vendor.city,
         pincode: vendor.pincode,
         address: vendor.address,
+        country: vendor.country || "India",
         status: vendor.status,
         profilePictureUrl: vendor.profile_picture_url,
         rejectionReason: vendor.rejection_reason || vendor.reasons,

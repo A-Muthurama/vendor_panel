@@ -5,10 +5,11 @@ dotenv.config();
 
 const { Pool } = pkg;
 
-const isLocal = process.env.DATABASE_URL?.includes("localhost") || process.env.DATABASE_URL?.includes("127.0.0.1");
+const dbUrl = process.env.DATABASE_URL || "";
+const isLocal = !dbUrl || dbUrl.includes("localhost") || dbUrl.includes("127.0.0.1");
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: dbUrl || undefined,
   ssl: isLocal ? false : { rejectUnauthorized: false }
 });
 
