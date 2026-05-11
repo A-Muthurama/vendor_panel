@@ -34,8 +34,6 @@ const VendorProfile = () => {
         }
     };
 
-    const kycConfig = getKycConfig(vendor?.country);
-
     useEffect(() => {
         const fetchProfile = async () => {
             if (!token) return;
@@ -60,6 +58,8 @@ const VendorProfile = () => {
 
     // Use current session data immediately, background update later
     const vendor = profileData || authVendor;
+
+    const kycConfig = getKycConfig(vendor?.country);
 
     const getInitials = () => {
         return vendor?.ownerName?.charAt(0).toUpperCase() || "V";
