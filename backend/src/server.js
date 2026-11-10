@@ -14,18 +14,16 @@ dotenv.config();
 
 const app = express();
 
-// Root Endpoint
-app.get("/", (req, res) => {
-  res.send("Vendor API is running successfully");
-});
-
-
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "https://vendor.jewellersparadise.com",
   "https://www.vendor.jewellersparadise.com",
+  "https://jewellersparadise.com",
+  "https://www.jewellersparadise.com",
   "https://vendor-api.jewellersparadise.com",
+  "https://vendor-panel-ashen.vercel.app",
   "http://localhost:3000",
+  "http://localhost:5000",
   "http://localhost:5001"
 ].filter(Boolean).map(o => o.replace(/\/$/, "")); // Remove trailing slashes
 
@@ -36,12 +34,13 @@ const corsOptions = {
 
     const normalizedOrigin = origin.replace(/\/$/, "");
 
-    // 2. Trust anything related to your brand or whitelisted origins
+    // 2. Trust brand domain, allowed origins list, vercel deployments, and localhost
     const isBrandDomain = normalizedOrigin.includes("jewellersparadise.com");
     const isWhitelisted = allowedOrigins.includes(normalizedOrigin);
+    const isVercel = normalizedOrigin.endsWith(".vercel.app");
     const isLocal = normalizedOrigin.includes("localhost") || normalizedOrigin.includes("127.0.0.1");
 
-    if (isBrandDomain || isWhitelisted || isLocal) {
+    if (isBrandDomain || isWhitelisted || isVercel || isLocal) {
       callback(null, true);
     } else {
       console.log("CORS Filtered Origin:", origin);
@@ -51,11 +50,23 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "x-internal-key"]
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "x-internal-key",
+    "X-Requested-With",
+    "Accept",
+    "Origin"
+  ]
 };
 
-// CORS must be first
+// CORS must be first before any routes
 app.use(cors(corsOptions));
+
+// Root Endpoint
+app.get("/", (req, res) => {
+  res.send("Vendor API is running successfully");
+});
 
 // Security Headers - Modified for Cross-Origin standard
 app.use(helmet({
